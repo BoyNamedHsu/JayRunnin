@@ -65,13 +65,6 @@ public class Overworld : MonoBehaviour
         for (int x = 0; x < height; x++) {
             if (gridworld[x, col].character != '0') {
                 gridworld[x, col].character = '0';
-                for (int i = 0; i < GameManager.followers.Count; i++)
-                {
-                    if (GameManager.followers[i].position == (x, col)) {
-                        GameManager.followers.RemoveAt(i);
-                        break;
-                    }
-                }
             }
         }
     }

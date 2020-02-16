@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    enum Direction {North, East, South, West, None};
+    public enum Direction {North, East, South, West, None};
     private Overworld grid;
     public static (int x, int y) playerStart = (0, 0);
     public static List<(int x, int y)> directions;
     public static List<Living> followers;
-    public static CarTile car;
+    public static List<CarTile> cars;
     // Add enum for object and elements
 
 
@@ -21,12 +21,17 @@ public class GameManager : MonoBehaviour
             new Jay(playerStart.x, playerStart.y), 
             new Follower(1, 0, false), 
             new Follower(2, 0, false), 
-            new Follower(3, 0, false) };
+            new Follower(3, 0, false),
+            new Follower(4, 0, false),
+            new Follower(5, 0, false)};
         grid = GameObject.Find("Overworld").GetComponent<Overworld>();
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
-        car = new CarTile(3, 5);
+        cars = new List<CarTile> {
+            new CarTile(1, 5),
+            new CarTile(3, 5)
+        };
     }
 
     // Update is called once per frame
@@ -46,17 +51,45 @@ public class GameManager : MonoBehaviour
                 // don't need to subtract index by 1 because start i at 1
                 grid.Move(followers[i].position, directions[directions.Count - i], 'f');
                 followers[i].position = directions[directions.Count - i];
-                print(followers[i].position);
 
             }
             directions.Add(followers[0].position);
             directions.RemoveAt(0);
-
-            car.countDown();
-            Debug.Log(car.countdown);
-            if (car.gone && car.countdown == 1) {
-                grid.kill(car.yPos);
+            bool killed = false;
+            for (int i = 0; i < cars.Count; i++)
+            {
+                CarTile car = cars[i];
+                car.countDown();
+                if (car.gone && car.countdown == 1)
+                {
+                    killed = true;
+                    grid.kill(car.yPos);
+                    print("Directions " + string.Join(",", directions));
+                    print("Followers " + string.Join(",", followers));
+                    for (int j = 0; j < followers.Count; j++)
+                    {
+                        if (followers[j].position.y == car.yPos)
+                            followers.RemoveAt(j);
+                    }
+                }
             }
+            if (killed)
+            {
+                for (int i = 1; i < followers.Count; i++)
+                {
+                    grid.Move(followers[i].position, directions[directions.Count - i], 'f');
+                    followers[i].position = directions[directions.Count - i];
+                }
+            }
+
+            /*            for (int i = 1; i < directions.Count; i++)
+                        {
+                            *//* (int x, int y) next = followers[i].Move(directions[directions.Count - i - 1]);*//*
+                            // don't need to subtract index by 1 because start i at 1
+                            grid.Move(followers[i].position, directions[directions.Count - i], 'f');
+                            followers[i].position = directions[directions.Count - i];
+
+                        }*/
 
         }
         //print(string.Join(",", directions));
@@ -100,8 +133,6 @@ public class GameManager : MonoBehaviour
         {
             followers[0].position = temp;
         }
-        print(string.Join(",", directions));
-        print(dir);
         return dir;
     }
 
