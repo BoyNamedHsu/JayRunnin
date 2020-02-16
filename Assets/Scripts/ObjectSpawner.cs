@@ -1,188 +1,195 @@
-﻿// using System;
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-// using UnityEngine.Tilemaps;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
-// public class ObjectSpawner : MonoBehaviour
-// {
-//     // For Thomas and Kelvin:
-//     enum SpriteType
-//     {
-//         Jay,
-//         Cone,
-//         Manhole
-//     }
+public class ObjectSpawner : MonoBehaviour
+{
+    // I need prefabs for each object type, IE cones, manholes, jay, etc
+    public GameObject jay, cone, zebra, follower, car_obj;  // and prefabs for other game objects
 
-//     // This stems from Kelvin/Thomas's implementation
-//     private class TileObj
-//     {
-//         public SpriteType sType;
+    private enum TurnPhase
+    {
+        moves,
+        cars,
+        update, 
+        wait
+    }
 
-//         public TileObj (SpriteType sType) {
-//             this.sType = sType;
-//         }
-//     }
+    // I also need references to each GameObject we instantiate
+    private Dictionary<Living, GameObject> spawnedSprites;
 
-//     /*
-//      * 
-//      * MY CODE STARTS HERE:
-//      * 
-//      */
-//     // I need prefabs for each object type, IE cones, manholes, jay, etc
-//     public GameObject jay, cone, zebra, follower;
+    // Positions each sprite should "drift" towards
+    private Dictionary<GameObject, Vector2> destinations;
 
-//     // I also need references to each GameObject we instantiate
-//     private Dictionary<TileObj, GameObject> spawnedSprites;
+    // Coordinates (x, y) of the bottom left and top right cells
+    private Vector2Int blCell;
+    private Vector2Int trCell;
 
-//     // Coordinates (x, y) of the bottom left 
-//     private Vector2Int blCell;
-//     // Tilemap
-//     Tilemap tilemap;
+    // Tilemap
+    Tilemap tilemap;
 
-//     // Given a start grid state and end grid state, generates a list of diffs for updating sprite locations
-//     // returns each TileObj mapped to a tuple of its old location (or null if it did not previously exist), and its new location
-//     // (or null if that object no longer exists, IE was destroyed)
-//     private Dictionary<TileObj, Tuple<Vector2Int?, Vector2Int?>> getStateDiff(TileObj[,] startGrid, TileObj[,] endGrid)
-//     {
-//         Dictionary<TileObj, Tuple<Vector2Int?, Vector2Int?>> diffs = new Dictionary<TileObj, Tuple<Vector2Int?, Vector2Int?>>();
+    // we shouldn't need this but uh, Thomas didn't use Vector2Int
+    private Vector2Int convertThomTuple((int x, int y) coords)
+    {
+        return new Vector2Int(coords.x, coords.y);
+    }
 
-//         // get all old locations
-//         for (int y = 0; y < startGrid.GetLength(0); y++)
-//         {
-//             for (int x = 0; x < startGrid.GetLength(1); x++)
-//             {
-//                 TileObj curr = startGrid[y, x];
-//                 if (curr != null)
-//                 {
-//                     Vector2Int? oldLoc = new Vector2Int(y, x);
-//                     Vector2Int? newLoc = null;
+  private Vector2Int getDest(GameManager.Direction dir, Vector2Int src)
+  {
+    Vector2Int dest = new Vector2Int(src.x, src.y);
+    switch (dir)
+    {
+      case GameManager.Direction.North:
+        dest.y++;
+        break;
+      case GameManager.Direction.South:
+        dest.y--;
+        break;
+      case GameManager.Direction.East:
+        dest.x++;
+        break;
+      case GameManager.Direction.West:
+        dest.x--;
+        break;
+      default:
+        return dest; // This should never occur
+    }
+    return dest;
+  }
 
-//                     diffs[curr] = new Tuple<Vector2Int?, Vector2Int?>(oldLoc, newLoc);
-//                 }
-//             }
-//         }
+    // moves part of a list of people, starting with the given person in line
+    private void MoveList(GameManager.Direction dir, List<Living> people, int startPerson)
+    {
+        Vector2Int dest = getDest(dir, convertThomTuple(people[startPerson].position)); // position must be a Vector2Int, change living obj
+        for (int i = startPerson; i < people.Count; i++)
+        {
+            Living curr = people[i];
+            Vector2Int src = convertThomTuple(curr.position); // current position of living obj
 
-//         // get all new locations
-//         for (int y = 0; y < endGrid.GetLength(0); y++)
-//         {
-//             for (int x = 0; x < endGrid.GetLength(1); x++)
-//             {
-//                 TileObj curr = endGrid[y, x];
+            GameObject currSprite = spawnedSprites[curr];
+            destinations[currSprite] = convertCellLoc(dest); // move to destination
+            dest = src; // next obj moves to this object's previous position
+        }
+    }
 
-//                 if (curr != null)
-//                 {
-//                     Vector2Int? oldLoc = diffs.ContainsKey(curr) ? diffs[curr].Item1 : null;
-//                     Vector2Int? newLoc = new Vector2Int(y, x);
+    // moves an entire list of people, starting with Jay
+    private void MoveFullChain(GameManager.Direction dir, List<Living> people)
+    {
+        MoveList(dir, people, 0);
+    }
 
-//                     diffs[curr] = new Tuple<Vector2Int?, Vector2Int?>(oldLoc, newLoc);
-//                 }
-//             }
-//         }
+    // converts a given Vector2Int into a location in the world space
+    private Vector2 convertCellLoc(Vector2Int coords)
+    {
+        // adjust coords over bottom left cell
+        Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
+        Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
 
-//         return diffs;
-//     }
+        return new Vector2(res.x + 1, res.y + 1); // 1 cell of padding
+    }
 
-//     // converts a given Vector2Int into a location in the world space
-//     private Vector2 convertCellLoc(Vector2Int coords)
-//     {
-//         // adjust coords over bottom left cell
-//         Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
-//         Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
+    public void runCar(List<CarTile> cars)
+    {
+        foreach (CarTile car in cars)
+        {
+            if (car.countdown == 0 && !car.gone) // we should just remove cars from the list instead
+            {
+                GameObject carSprite = Instantiate(car_obj) as GameObject;
+                carSprite.transform.position = convertCellLoc(new Vector2Int(car.yPos, trCell.y - blCell.y + 1));
+                destinations[carSprite] = convertCellLoc(new Vector2Int(car.yPos, -10));
+            }
+        }
+    }
 
-//         return new Vector2(res.y, res.x); // this is flipped to fix a bug
-//     }
+    private void spawnObj(Living character)
+    {
+        Vector2Int loc = convertThomTuple(character.position);
+        SpriteType characterType = character.sType;
+        GameObject newObj;
 
-//     private GameObject spawnObj (TileObj obj, Vector2Int loc)
-//     {
-//         SpriteType objType = obj.sType;
-//         GameObject newObj;
+        switch (character.sType)
+        {
+            case SpriteType.Jay:
+                newObj = Instantiate(jay) as GameObject;
+                break;
+            case SpriteType.Cone:
+                newObj = Instantiate(cone) as GameObject;
+                break;
+            case SpriteType.Zebra:
+                newObj = Instantiate(zebra) as GameObject;
+                break;
+            case SpriteType.Follower:
+                newObj = Instantiate(follower) as GameObject;
+                break;
+            default:
+                print("Spawn failed!");
+                return; // This should never occur
+        }
 
-//         switch (obj.sType)
-//         {
-//             case SpriteType.Cone:
-//                 newObj = Instantiate(cone) as GameObject;
-//                 break;
-//             case SpriteType.Jay:
-//                 newObj = Instantiate(jay) as GameObject;
-//                 break;
-//             case SpriteType.Manhole:
-//                 newObj = Instantiate(manhole) as GameObject;
-//                 break;
-//             default:
-//                 return null; // This should never occur
-//         }
-//         newObj.transform.position = convertCellLoc(loc);
-//         return newObj;
-//     }
+        Vector2 worldLoc = convertCellLoc(loc);
 
-//     private void renderTileObjDiff(TileObj obj, Vector2Int? oldLoc, Vector2Int? newLoc)
-//     {
-//         // Assert(oldLoc != null || newLoc != null);
-//         if (oldLoc == null && newLoc != null) // our first time seeing this object!, we need to instantiate it
-//         {
-//             spawnedSprites[obj] = spawnObj(obj, newLoc.Value);
-//         } else if (oldLoc != null && newLoc == null) // we need to destroy an object that's currently rendered
-//         {
-//             GameObject removed = spawnedSprites[obj];
-//             spawnedSprites.Remove(obj);
-//             Destroy(removed);
-//         } else if (oldLoc != null && newLoc != null) // otherwise we just need to transform thie object
-//         {
-//             spawnedSprites[obj].transform.position = convertCellLoc(newLoc.Value);
-//         } else
-//         {
-//             return; // this should be unreachable?
-//         }
-//     }
+        newObj.transform.position = worldLoc;
+        spawnedSprites[character] = newObj;
+        destinations[newObj] = worldLoc;
+    }
 
-//     private void renderDiffs(Dictionary<TileObj, Tuple<Vector2Int?, Vector2Int?>> stateDiffs)
-//     {
-//         foreach (TileObj obj in stateDiffs.Keys)
-//         {
-//             renderTileObjDiff(obj, stateDiffs[obj].Item1, stateDiffs[obj].Item2);
-//         }
-//     }
+    // Start is called before the first frame update
+    void Start()
+    {
+        tilemap = transform.GetComponent<Tilemap>();
+        spawnedSprites = new Dictionary<Living, GameObject>();
+        destinations = new Dictionary<GameObject, Vector2>();
 
-//     // Start is called before the first frame update
-//     void Start()
-//     {
-//         tilemap = transform.GetComponent<Tilemap>();
-//         spawnedSprites = new Dictionary<TileObj, GameObject>();
+        // bl stands for bottom left not "boys love"
+        Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
+        blCell.x = blLoc.x;
+        blCell.y = blLoc.y;
+        // tr stands for top right
+        Vector3Int trLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(
+            new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0)));
+        trCell.x = trLoc.x;
+        trCell.y = trLoc.y;
 
-//         // bl stands for bottom left not "boys love"
-//         Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
-//         blCell.x = blLoc.x;
-//         blCell.y = blLoc.y;
+        // Testing chain movement
+        /*
+        List<Living> testChain = new List<Living>();
+        Jay player = new Jay(0, 0);
+        
+        testChain.Add(player);
+        for (int i = 1; i < 5; i++)
+        {
+            testChain.Add(new Follower(0, i, true));
+        }
 
-//         /*
-//          * Testing with grids:
-//          */
+        // now spawn each "chess piece"
+        foreach (Living character in testChain)
+        {
+            spawnObj(character);
+        }
 
-//         TileObj coneObj = new TileObj(SpriteType.Cone);
-//         TileObj jayObj = new TileObj(SpriteType.Jay);
-//         TileObj copObj = new TileObj(SpriteType.Manhole); // should be a manhole, just a cop rn
+        // finally try moving the chain around
+        MoveFullChain(GameManager.Direction.East, testChain);
+        */
 
-//         TileObj[,] emptyG = {{null, null, null},
-//                              {null, null, null},
-//                              {null, null, null}};
+        // Testing car movement
+        List<CarTile> cars = new List<CarTile>();
+        cars.Add(new CarTile(1, 0));
+        cars.Add(new CarTile(4, 0));
+        runCar(cars);
+    }
 
-//         TileObj[,] grid1 = {{null, null, null},
-//                             {null, coneObj, copObj},
-//                             {null, null, jayObj}};
+    void Update()
+    {
+        // drift each GameObject closer to its destination
+        foreach (GameObject obj in destinations.Keys)
+        {
+            Vector2 destination = destinations[obj];
+            Vector2 currPos = obj.transform.position;
 
-//         TileObj[,] grid2 = {{null, null, copObj},
-//                             {null, null, coneObj},
-//                             {null, jayObj, null}};
-
-//         TileObj[,] grid3 = {{null, null, null},
-//                             {null, null, null},
-//                             {null, null, coneObj}};
-
-//         Dictionary<TileObj, Tuple<Vector2Int?, Vector2Int?>> diffs = getStateDiff(emptyG, grid1);
-//         renderDiffs(diffs);
-
-//         renderDiffs(getStateDiff(grid1, grid2));
-//         //renderDiffs(getStateDiff(grid2, grid3));
-//     }
-// }
+            Vector2 newPos = Vector2.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+            obj.transform.position = newPos;
+        }
+    }
+}
