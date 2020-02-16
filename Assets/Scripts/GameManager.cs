@@ -30,7 +30,9 @@ public class GameManager : MonoBehaviour
         }
         cars = new List<CarTile> {
             new CarTile(1, 5),
-            new CarTile(3, 5)
+            new CarTile(2, 5),
+            new CarTile(3, 5),
+            new CarTile(5, 7)
         };
     }
 
@@ -60,16 +62,17 @@ public class GameManager : MonoBehaviour
             {
                 CarTile car = cars[i];
                 car.countDown();
-                if (car.gone && car.countdown == 1)
+                if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
                 {
                     killed = true;
                     grid.kill(car.yPos);
-                    print("Directions " + string.Join(",", directions));
-                    print("Followers " + string.Join(",", followers));
+
                     for (int j = 0; j < followers.Count; j++)
                     {
                         if (followers[j].position.y == car.yPos)
+                        {
                             followers.RemoveAt(j);
+                        }
                     }
                 }
             }
@@ -77,22 +80,17 @@ public class GameManager : MonoBehaviour
             {
                 for (int i = 1; i < followers.Count; i++)
                 {
-                    grid.Move(followers[i].position, directions[directions.Count - i], 'f');
-                    followers[i].position = directions[directions.Count - i];
+                    print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
+                    grid.Move(followers[i].position, directions[directions.Count - i - 1], 'f');
+                    followers[i].position = directions[directions.Count - i - 1];
                 }
+                while (directions.Count != followers.Count - 1)
+                    directions.RemoveAt(0);
             }
 
-            /*            for (int i = 1; i < directions.Count; i++)
-                        {
-                            *//* (int x, int y) next = followers[i].Move(directions[directions.Count - i - 1]);*//*
-                            // don't need to subtract index by 1 because start i at 1
-                            grid.Move(followers[i].position, directions[directions.Count - i], 'f');
-                            followers[i].position = directions[directions.Count - i];
-
-                        }*/
-
         }
-        //print(string.Join(",", directions));
+/*        print("Directions " + string.Join(",", directions));
+        print("Followers " + string.Join(",", followers));*/
     }
 
     // Returns the direction Jay has moved, else returns null if an invalid move occurs
