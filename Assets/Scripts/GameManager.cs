@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour
         cars = new List<CarTile> {
             new CarTile(1, 5),
             new CarTile(2, 5),
-            new CarTile(3, 5)
+            new CarTile(3, 5),
+            new CarTile(5, 7)
         };
     }
 
@@ -61,7 +62,7 @@ public class GameManager : MonoBehaviour
             {
                 CarTile car = cars[i];
                 car.countDown();
-                if (car.gone && car.countdown == 1)
+                if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
                 {
                     killed = true;
                     grid.kill(car.yPos);

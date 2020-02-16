@@ -39,6 +39,25 @@ public class Overworld : MonoBehaviour
     public string toString()
     {
         string tess = "";
+
+        for (int i = 0; i < width; i++)
+        {
+            bool contains = false;
+            for (int j = 0; j < GameManager.cars.Count; j++)
+            {
+                if (GameManager.cars[j].yPos == i)
+                {
+                    tess += GameManager.cars[j].countdown;
+                    contains = true;
+                }
+            }
+
+            if (!contains)
+            {
+                tess += " ";
+            }
+        }
+        tess += Environment.NewLine;
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)

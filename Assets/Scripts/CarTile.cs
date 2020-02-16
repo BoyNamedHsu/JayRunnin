@@ -26,9 +26,9 @@ public class CarTile
             // Car animation
             Debug.Log("vroom");
             gone = true;
-        } else {
-            countdown--;
+         
         }
+        countdown--;
 
     }
 }
