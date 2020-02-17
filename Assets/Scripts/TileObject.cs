@@ -6,6 +6,7 @@ public class TileObject : GameElement
 {
     public bool blocked; // If blocked, then character can't move on this tile
     public Vector2Int position;
+    public Sprite tileImage;
     // Start is called before the first frame update
 
     public TileObject(int x, int y)
