@@ -104,27 +104,27 @@ public class GameManager : MonoBehaviour
         Vector2Int temp = followers[0].position;  // Jay's position
         if (Input.GetButtonDown("Vertical"))
         {
-            if (moveVertical < 0 && temp.x < grid.height - 1)  // South
+            if (moveVertical < 0 && temp.y > 0)  // South
             {
-                temp.x = temp.x + 1;
+                temp.y--;
                 if (grid.TileOccupied(temp)) dir = Direction.South;
             }
-            else if (moveVertical > 0 && temp.x > 0)  // North
+            else if (moveVertical > 0 && temp.y < grid.height - 1)  // North
             {
-                temp.x = temp.x - 1;
+                temp.y++;
                 if (grid.TileOccupied(temp)) dir = Direction.North;
             }
         }
         else if (Input.GetButtonDown("Horizontal"))
         {
-            if (moveHorizontal > 0 && temp.y < grid.width - 1)  // East
+            if (moveHorizontal < 0 && temp.x > 0)  // West
             {
-                temp.y = temp.y + 1;
+                temp.x--;
                 if (grid.TileOccupied(temp)) dir = Direction.East;
             }
-            else if (moveHorizontal < 0 && temp.y > 0)  // West
+            else if (moveHorizontal > 0 && temp.x < grid.width - 1)  // East
             {
-                temp.y = temp.y - 1;
+                temp.x++;
                 if (grid.TileOccupied(temp)) dir = Direction.West;
             }
         }
