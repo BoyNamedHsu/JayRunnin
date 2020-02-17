@@ -117,7 +117,8 @@ public class Overworld : MonoBehaviour
     public bool TileOccupied(Vector2Int coords)
     {   
         // return if tiles are unnocupied
-        return eGridworld[coords.x, coords.y].eid == GameElement.ElementType.Default ||
-               lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower;
+        return (lGridworld[coords.x, coords.y].eid == GameElement.ElementType.Jay ||
+               lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower) &&
+               !eGridworld[coords.x, coords.y].blocked;
     }
 }

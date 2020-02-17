@@ -44,7 +44,7 @@ public class ObjectSpawner : MonoBehaviour
                 GameObject sprite = spawnedSprites[obj];
                 Vector3 currPos = sprite.transform.position;
 
-                Vector3 newPos = Vector3.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+                Vector3 newPos = Vector3.Lerp(currPos, destination, 4.0f * Time.deltaTime);
                 sprite.transform.position = newPos;
             }
 
@@ -159,28 +159,17 @@ public class ObjectSpawner : MonoBehaviour
         trCell.x = trLoc.x;
         trCell.y = trLoc.y;
         Debug.Log("trcell " + trCell.x + ", " + trCell.y);
-
-        // Testing chain movement
-        Jay player = new Jay(0, 0);
-        List<Living> testChain = new List<Living>();
-        testChain.Add(player);
-        for (int i = 1; i < 5; i++)
-        {
-            testChain.Add(new Follower(0, i, true));
-        }
-
-        SetMap(testChain);
-
-        player.position = new Vector2Int(1, 1);
-
-        MoveSprites();
     }
 
     // converts a given Vector2Int into a location in the world space
     private Vector3 ConvertCellLoc(Vector2Int coords)
     {
+        // since 2d arrays are indexed y, x we need to flip our coords
+        Vector2Int coordsFlipped = new Vector2Int(coords.y, coords.x);
+
         // adjust coords over bottom left cell
-        Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
+        Vector3Int adjustedCoords = 
+            new Vector3Int(coordsFlipped.x + blCell.x, coordsFlipped.y + blCell.y, 0);
         Debug.Log("adjusted to " + adjustedCoords);
 
         Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);

@@ -7,11 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
-    private ObjectSpawner render;
+    public ObjectSpawner render;
     public static Vector2Int playerStart = new Vector2Int(0, 0);
     public static List<Vector2Int> directions;
     public static List<Living> followers;
     public static List<CarTile> cars;
+    public Tilemap tilemap;
 
     // Start is called before the first frame update
     void Awake()
@@ -24,16 +25,16 @@ public class GameManager : MonoBehaviour
             new Follower(3, 0, false),
             };
         grid = GameObject.Find("Overworld").GetComponent<Overworld>();
-        render = GameObject.Find("ObjectSpawner").GetComponent<ObjectSpawner>();
+        render = tilemap.GetComponent<ObjectSpawner>();
         render.SetMap(followers);
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
         cars = new List<CarTile> {
-            new CarTile(1, 5),
-            new CarTile(2, 5),
-            new CarTile(3, 5),
-            new CarTile(5, 7)
+            //new CarTile(1, 5),
+            //new CarTile(2, 5),
+            //new CarTile(3, 5),
+            //new CarTile(5, 7)
         };
     }
 
@@ -50,12 +51,10 @@ public class GameManager : MonoBehaviour
             {
                 grid.Move(followers[i].position, directions[directions.Count - i], GameElement.ElementType.Follower);
                 followers[i].position = directions[directions.Count - i];
-                render.MoveSprites(followers);
-
             }
             directions.Add(followers[0].position);
             directions.RemoveAt(0);
-
+            render.MoveSprites();
             bool killed = false;
 
             for (int i = 0; i < cars.Count; i++)
@@ -81,7 +80,7 @@ public class GameManager : MonoBehaviour
             {
                 for (int i = 1; i < followers.Count; i++)
                 {
-                    print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
+                    //print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
                     grid.Move(followers[i].position, directions[directions.Count - i - 1], GameElement.ElementType.Follower);
                     followers[i].position = directions[directions.Count - i - 1];
                 }
@@ -133,7 +132,7 @@ public class GameManager : MonoBehaviour
         return dir;
     }
 
-    // moves part of a list of people, starting with the given person in line
+    /*// moves part of a list of people, starting with the given person in line
     private void MoveList(Direction dir, List<Living> people, int startPerson)
     {
         Vector2Int dest = getDest(dir, people[startPerson].position); // position must be a Vector2Int, change living obj
@@ -148,7 +147,7 @@ public class GameManager : MonoBehaviour
         }
 
         ObjectSpawner.MoveSprites();
-    }
+    }*/
 
 
 }
