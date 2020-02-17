@@ -30,6 +30,7 @@ public class ObjectSpawner : MonoBehaviour
         return this.currAnimation == Animation.None;
     }
 
+    
     public void MoveSprites(Dictionary<Living, Vector2Int> destinations)
     {
         currAnimation = Animation.MoveSprites;
@@ -61,6 +62,41 @@ public class ObjectSpawner : MonoBehaviour
                 return true;
             };
         
+        animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
+    }
+    
+    // Snaps all current GameObjects to their proper locations
+    public void MoveSprites()
+    {
+        currAnimation = Animation.MoveSprites;
+
+        // when called, this method moves each GameObject closer to its given destination
+        Func<bool> MoveSpritesUpdate = () =>
+        {
+            foreach (Living obj in spawnedSprites.Keys)
+            {
+                Vector3 destination = ConvertCellLoc(obj.position);
+                GameObject sprite = spawnedSprites[obj];
+                Vector3 currPos = sprite.transform.position;
+
+                Vector3 newPos = Vector3.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+                sprite.transform.position = newPos;
+            }
+
+            // now check if this animation is completed and update AnimationState if so
+            bool animationIsComplete = true;
+            foreach (Living obj in spawnedSprites.Keys)
+            {
+                animationIsComplete = animationIsComplete &&
+                    (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.01f);
+            }
+            if (animationIsComplete)
+            {
+                this.currAnimation = Animation.None; // if so, our animation is set back to None
+            }
+            return true;
+        };
+
         animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
     }
 
@@ -170,14 +206,9 @@ public class ObjectSpawner : MonoBehaviour
 
         SetMap(testChain);
 
-        Dictionary<Living, Vector2Int> movements = new Dictionary<Living, Vector2Int>();
-        movements[testChain[1]] = new Vector2Int(0, 0);
-        movements[player] = new Vector2Int(1, 0);
+        player.position = new Vector2Int(1, 1);
 
-        // MoveSprites
-        MoveSprites(movements);
-
-        // Then MoveCar
+        MoveSprites();
     }
 
     // converts a given Vector2Int into a location in the world space
