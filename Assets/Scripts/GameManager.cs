@@ -10,16 +10,19 @@ public class GameManager : MonoBehaviour
     private ObjectSpawner render;
     public static Vector2Int playerStart = new Vector2Int(0, 0);
     public static List<Vector2Int> directions;
-    public static List<Living> followers;
+    public static List<GameElement> followers;
     public static List<CarTile> cars;
     public static List<TileObject> tiles;
     public Tilemap tilemap;
 
+    public bool moveDisabled; // disable movements while renderer is playing. This is hacky :(
+
     // Start is called before the first frame update
     void Awake()
     {
+        moveDisabled = false;
         directions = new List<Vector2Int>();
-        followers = new List<Living> {
+        followers = new List<GameElement> {
             new Jay(playerStart.x, playerStart.y),
             new Follower(1, 0, false),
             new Follower(2, 0, false),
@@ -52,7 +55,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (render.IsInAnimation())
+        if (moveDisabled)
         {
             return; // don't listen for key inputs while renderer is animating
         }
@@ -60,51 +63,67 @@ public class GameManager : MonoBehaviour
         Direction moved = Move();
         if (moved != Direction.None)
         {
-            // Entering this branch assumes that move is valid.
-            
-            // Test if valid move
-            for (int i = 1; i < followers.Count; i++)
-            {
-                grid.Move(followers[i].position, directions[directions.Count - i], GameElement.ElementType.Follower);
-                followers[i].position = directions[directions.Count - i];
-            }
-            directions.Add(followers[0].position);
-            directions.RemoveAt(0);
-            render.MoveSprites();
-            bool killed = false;
+            StartCoroutine(UpdateGameState(moved));
+        }
+    }
 
-            for (int i = 0; i < cars.Count; i++)
+    // updates state of board and waits for animations to play
+    IEnumerator UpdateGameState(Direction moved)
+    {
+        moveDisabled = true; // players can't input additional controls while we're processing this one
+
+        // Entering this method assumes that move is valid.
+
+        // Test if valid move
+        for (int i = 1; i < followers.Count; i++)
+        {
+            grid.Move(followers[i].position, directions[directions.Count - i], GameElement.ElementType.Follower);
+            followers[i].position = directions[directions.Count - i];
+        }
+        directions.Add(followers[0].position);
+        directions.RemoveAt(0);
+
+        // Move sprites
+        render.MoveSprites();
+
+        // yield return new WaitUntil(() => !render.IsInAnimation());
+
+        bool killed = false;
+
+        for (int i = 0; i < cars.Count; i++)
+        {
+            CarTile car = cars[i];
+            car.countDown();
+            if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
             {
-                CarTile car = cars[i];
-                car.countDown();
-                if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
+                killed = true;
+                grid.kill(car.yPos);
+
+                for (int j = 0; j < followers.Count; j++)
                 {
-                    killed = true;
-                    grid.kill(car.yPos);
-
-                    for (int j = 0; j < followers.Count; j++)
+                    if (followers[j].position.y == car.yPos)
                     {
-                        if (followers[j].position.y == car.yPos)
-                        {
-                            followers.RemoveAt(j);
-                        }
+                        followers.RemoveAt(j);
                     }
                 }
             }
-
-            if (killed)
-            {
-                for (int i = 1; i < followers.Count; i++)
-                {
-                    //print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
-                    grid.Move(followers[i].position, directions[directions.Count - i - 1], GameElement.ElementType.Follower);
-                    followers[i].position = directions[directions.Count - i - 1];
-                }
-                while (directions.Count != followers.Count - 1)
-                    directions.RemoveAt(0);
-            }
-
         }
+
+        if (killed)
+        {
+            for (int i = 1; i < followers.Count; i++)
+            {
+                //print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
+                grid.Move(followers[i].position, directions[directions.Count - i - 1], GameElement.ElementType.Follower);
+                followers[i].position = directions[directions.Count - i - 1];
+            }
+            while (directions.Count != followers.Count - 1)
+                directions.RemoveAt(0);
+        }
+
+        moveDisabled = false;
+
+        yield return null;
     }
 
     // Returns the direction Jay has moved, else returns null if an invalid move occurs

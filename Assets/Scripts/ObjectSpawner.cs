@@ -34,9 +34,9 @@ public class ObjectSpawner : MonoBehaviour
   // Snaps all current GameObjects to their proper locations
   public void MoveSprites()
   {
-    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
+    if (this.currAnimation != Animation.None) // THIS SHOULD NEVER HAPPEN
     {
-      Debug.Log("MoveSprites animation was cancelled");
+      // Debug.Log("MoveSprites animation was cancelled");
       return;
     }
 
@@ -45,7 +45,7 @@ public class ObjectSpawner : MonoBehaviour
     // when called, this method moves each GameObject closer to its given destination
     Func<bool> MoveSpritesUpdate = () =>
     {
-      foreach (Living obj in spawnedSprites.Keys)
+      foreach (GameElement obj in spawnedSprites.Keys)
       {
         Vector3 destination = ConvertCellLoc(obj.position);
         GameObject sprite = spawnedSprites[obj];
@@ -57,7 +57,7 @@ public class ObjectSpawner : MonoBehaviour
 
       // now check if this animation is completed and update AnimationState if so
       bool animationIsComplete = true;
-      foreach (Living obj in spawnedSprites.Keys)
+      foreach (GameElement obj in spawnedSprites.Keys)
       {
         animationIsComplete = animationIsComplete &&
                 (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.01f);
@@ -72,11 +72,11 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
-  public void MoveCars(List<Living> killed, List<CarTile> cars)
+  public void MoveCars(List<GameElement> killed, List<CarTile> cars)
   {
-    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
+    if (this.currAnimation != Animation.None) // THIS SHOULD NEVER HAPPEN
     {
-      Debug.Log("MoveCars animation was cancelled");
+      // Debug.Log("MoveCars animation was cancelled");
       return;
     }
 
@@ -115,8 +115,8 @@ public class ObjectSpawner : MonoBehaviour
           }
           if (animationIsComplete)
           {
-            // cleanup sprites destroyed by the car
-            foreach (Living runOver in killed)
+            // cleanup GameElement destroyed by the car
+            foreach (GameElement runOver in killed)
             {
               DestroySprite(runOver);
             }
@@ -137,9 +137,9 @@ public class ObjectSpawner : MonoBehaviour
 
   // SpawnCopSprites (List<Manholes> holes)
 
-  public void SetMap(List<Living> people, List<TileObject> tiles)
+  public void SetMap(List<GameElement> people, List<TileObject> tiles)
   {
-    foreach (Living person in people)
+    foreach (GameElement person in people)
     {
       SpawnSprite(person);
     }
@@ -237,7 +237,7 @@ public class ObjectSpawner : MonoBehaviour
     spawnedSprites[character] = newObj;
   }
 
-  private void DestroySprite(Living character)
+  private void DestroySprite(GameElement character)
   {
     Destroy(spawnedSprites[character]);
     spawnedSprites.Remove(character);
