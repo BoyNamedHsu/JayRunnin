@@ -11,19 +11,18 @@ public class Overworld : MonoBehaviour
     //There are 2 layers to represent the gridworld:
     private TileObject[,] eGridworld; // Layer 1 :Environment
     private Living[,] lGridworld; // Layer 2 : Jay and followers
-
     public int height;
     public int width;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Generate environment
         initializeEnvironment();
-        //ian.text = "";
 
         // Generate Second layer
         initializeLiving();
+
     }
 
     private void initializeEnvironment()
@@ -52,45 +51,6 @@ public class Overworld : MonoBehaviour
                         GameManager.followers[i].position.y].eid = GameElement.ElementType.Follower;
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //ian.text = toString();
-    }
-
-    /*public string toString()
-    {
-        string tess = "";
-
-        for (int i = 0; i < width; i++)
-        {
-            bool contains = false;
-            for (int j = 0; j < GameManager.cars.Count; j++)
-            {
-                if (GameManager.cars[j].yPos == i)
-                {
-                    tess += GameManager.cars[j].countdown;
-                    contains = true;
-                }
-            }
-
-            if (!contains)
-            {
-                tess += " ";
-            }
-        }
-        tess += Environment.NewLine;
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                tess += gridworld[i, j].eid;
-            }
-            tess += Environment.NewLine;
-        }
-        return tess;
-    }*/
 
     public bool Move(Vector2Int prev, Vector2Int current, GameElement.ElementType character)
     {
@@ -123,8 +83,27 @@ public class Overworld : MonoBehaviour
     }
     
     // Spawns a tileobject at a certain coordinate
-    public void spawnTile(TileObject tile)
+    public void spawnTile(Vector2Int coords, GameElement.ElementType eType)
     {
-        eGridworld[tile.position.x, tile.position.y] = tile;
+        Debug.Log("hello");
+        TileObject newObj = new TileObject(coords.x, coords.y);
+        switch (eType)
+        {   
+            case GameElement.ElementType.Cone:
+                eGridworld[coords.x, coords.y] = new ConeTile(coords.x, coords.y);
+                break;
+            case GameElement.ElementType.Zebra:
+                eGridworld[coords.x, coords.y] = new ZebraTile(coords.x, coords.y);
+                break;
+            case GameElement.ElementType.ManHole:
+                //newObj = Instantiate(follower_sprite) as GameObject;
+                eGridworld[coords.x, coords.y] = new ConeTile(coords.x, coords.y);
+                break;
+            default:
+                Debug.Log("Spawn failed!");
+                newObj = new ConeTile(coords.x, coords.y);
+                eGridworld[coords.x, coords.y] = new TileObject(coords.x, coords.y);
+                return;
+        }
     }
 }
