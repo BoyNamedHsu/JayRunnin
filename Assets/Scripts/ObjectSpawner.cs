@@ -9,7 +9,10 @@ public class ObjectSpawner : MonoBehaviour
   private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
-  public GameObject jay_sprite, cone_sprite, zebra_sprite, follower_sprite, car_sprite;  // and prefabs for other game ObjectSpawner
+  public GameObject jay_sprite, cone_sprite, zebra_sprite, follower_sprite,
+        car_warning_sprite;  // and prefabs for other game ObjectSpawner
+
+  public GameObject car_sprite; // and prefabs for other game ObjectSpawner
 
   // Coordinates (x, y) of the bottom left and top right cells
   private Vector2Int blCell;
@@ -72,7 +75,7 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
-  public void MoveCars(List<GameElement> killed, List<CarTile> cars)
+  public void MoveCars(List<GameElement> killed, List<int> carColumns)
   {
     if (this.currAnimation != Animation.None) // THIS SHOULD NEVER HAPPEN
     {
@@ -80,18 +83,16 @@ public class ObjectSpawner : MonoBehaviour
       return;
     }
 
-    currAnimation = Animation.MoveSprites;
+    currAnimation = Animation.MoveCars;
 
     // each car spawned is mapped to its destination, IE a y-pos off-camera
     Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
-    foreach (CarTile car in cars)
+    foreach (int xPos in carColumns)
     {
-      if (car.countdown == 0 && !car.gone) // we should just remove cars from the list instead
-      {
         GameObject carSprite = Instantiate(car_sprite) as GameObject;
-        carSprite.transform.position = ConvertCellLoc(new Vector2Int(car.yPos, trCell.y - blCell.y + 1));
-        carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(car.yPos, -5)); // add that car's destination
-      }
+        // carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, 3));
+        carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, trCell.y - blCell.y + 1));
+        carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -2)); // add that car's destination
     }
 
     // when called, this method moves each car down the map, destroy objects in killed they touch along the way
@@ -101,8 +102,18 @@ public class ObjectSpawner : MonoBehaviour
           {
             Vector3 destination = carDestinations[car];
             Vector3 currPos = car.transform.position;
+            // if a car is near any followers, destroy them
+            for (int i = 0; i < killed.Count; i++)
+            {
+                if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
+                {
+                    // DestroySprite(killed[i]);
+                    killed.RemoveAt(i);
+                    i--;
+                }
+            }
 
-            Vector3 newPos = Vector2.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+            Vector3 newPos = Vector2.Lerp(currPos, destination, 10.0f * Time.deltaTime);
             car.transform.position = newPos;
           }
 
@@ -111,11 +122,11 @@ public class ObjectSpawner : MonoBehaviour
           foreach (GameObject car in carDestinations.Keys)
           {
             animationIsComplete = animationIsComplete &&
-                    (Vector3.Distance(car.transform.position, carDestinations[car]) < 0.01f);
+                    (Vector3.Distance(car.transform.position, carDestinations[car]) < 2.0f);
           }
           if (animationIsComplete)
           {
-            // cleanup GameElement destroyed by the car
+            // cleanup GameElements destroyed by the car (if they didn't get cleaned up already)
             foreach (GameElement runOver in killed)
             {
               DestroySprite(runOver);
@@ -137,7 +148,7 @@ public class ObjectSpawner : MonoBehaviour
 
   // SpawnCopSprites (List<Manholes> holes)
 
-  public void SetMap(List<GameElement> people, List<TileObject> tiles)
+  public void SetMap(List<GameElement> people, List<TileObject> tiles, List<CarTile> cars)
   {
     foreach (GameElement person in people)
     {
@@ -147,7 +158,11 @@ public class ObjectSpawner : MonoBehaviour
     {
       SpawnSprite(tile);
     }
-  }
+    foreach (CarTile car in cars)
+    {
+        SpawnSprite(car);
+    }
+    }
 
   void Update()
   {
@@ -218,6 +233,9 @@ public class ObjectSpawner : MonoBehaviour
         break;
       case GameElement.ElementType.Follower:
         newObj = Instantiate(follower_sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Car:
+        newObj = Instantiate(car_warning_sprite) as GameObject;
         break;
       default:
         print("Spawn failed!");

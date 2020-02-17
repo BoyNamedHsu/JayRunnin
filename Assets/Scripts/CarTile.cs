@@ -6,14 +6,14 @@ public class CarTile : TileObject
 {
     public int countdown;
     public bool gone;
-    public int yPos; // col that car starts at, must be >= 0
+    public int xPos; // col that car starts at, must be >= 0
     // Start is called before the first frame update
-    public CarTile(int y, int count) : base(y, 0)
+    public CarTile(int x, int count) : base(x, 0)
     {
         this.eid = ElementType.Car;
         this.countdown = count;
         this.gone = false;
-        this.yPos = y;
+        this.xPos = x;
     }
 
     public void countDown()

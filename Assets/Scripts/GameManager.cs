@@ -37,19 +37,17 @@ public class GameManager : MonoBehaviour
         {
             new ConeTile(2, 2)
         };
+        cars = new List<CarTile>
+        {
+            new CarTile(1, 5)
+        };
 
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.SetMap(followers, tiles);
+        render.SetMap(followers, tiles, cars);
 
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
-        cars = new List<CarTile> {
-            //new CarTile(1, 5),
-            //new CarTile(2, 5),
-            //new CarTile(3, 5),
-            //new CarTile(5, 7)
-        };
     }
 
     // Update is called once per frame
@@ -83,48 +81,59 @@ public class GameManager : MonoBehaviour
         directions.Add(followers[0].position);
         directions.RemoveAt(0);
 
-        // Move sprites
+        /*--Animate those changes--*/
         render.MoveSprites();
+        yield return new WaitUntil(() => !render.IsInAnimation());
 
-        // yield return new WaitUntil(() => !render.IsInAnimation());
+        List<int> carColumns = new List<int>();
+        List<GameElement> killed = new List<GameElement>();
 
-        bool killed = false;
-
-        for (int i = 0; i < cars.Count; i++)
+        foreach (CarTile car in cars)
         {
-            CarTile car = cars[i];
             car.countDown();
             if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
             {
-                killed = true;
-                grid.kill(car.yPos);
-
-                for (int j = 0; j < followers.Count; j++)
+                carColumns.Add(car.xPos);
+                foreach (GameElement follower in followers)
                 {
-                    if (followers[j].position.y == car.yPos)
-                    {
-                        followers.RemoveAt(j);
-                    }
+                    if (follower.position.x == car.xPos)
+                        killed.Add(follower);
                 }
             }
         }
 
-        if (killed)
+        Debug.Log("columns:");
+        Debug.Log(carColumns);
+
+        /*--Animate those changes--*/
+        render.MoveCars(killed, carColumns);
+        yield return new WaitUntil(() => !render.IsInAnimation());
+
+        // if any were killed we need to tighten
+        if (killed.Count > 0)
         {
-            for (int i = 1; i < followers.Count; i++)
+            for (int i = followers.Count - 1; i > 0; i--) // We can't elim Jay!
             {
-                //print(followers[i].position + " yee " + directions[directions.Count - i - 1]);
-                grid.Move(followers[i].position, directions[directions.Count - i - 1], GameElement.ElementType.Follower);
-                followers[i].position = directions[directions.Count - i - 1];
+                if (killed.Contains(followers[i]))
+                {
+                    for (int j = followers.Count - 1; j > i; j--)
+                    {
+                        followers[j].position = followers[j - 1].position;
+                    }
+                    followers.RemoveAt(i);
+                }
+
+                /*--Animate those changes--*/
+                render.MoveSprites(); // ugh, I don't like de-sync potential here
+                yield return new WaitUntil(() => !render.IsInAnimation());
             }
-            while (directions.Count != followers.Count - 1)
-                directions.RemoveAt(0);
         }
 
         moveDisabled = false;
-
         yield return null;
     }
+
+    private 
 
     // Returns the direction Jay has moved, else returns null if an invalid move occurs
     Direction Move()
@@ -166,23 +175,4 @@ public class GameManager : MonoBehaviour
         }
         return dir;
     }
-
-    /*// moves part of a list of people, starting with the given person in line
-    private void MoveList(Direction dir, List<Living> people, int startPerson)
-    {
-        Vector2Int dest = getDest(dir, people[startPerson].position); // position must be a Vector2Int, change living obj
-        for (int i = startPerson; i < people.Count; i++)
-        {
-            Living curr = people[i];
-            Vector2Int src = curr.position; // current position of living obj
-
-            GameObject currSprite = spawnedSprites[curr];
-            destinations[currSprite] = convertCellLoc(dest); // move to destination
-            dest = src; // next obj moves to this object's previous position
-        }
-
-        ObjectSpawner.MoveSprites();
-    }*/
-
-
 }
