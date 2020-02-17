@@ -52,6 +52,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (render.IsInAnimation())
+        {
+            return; // don't listen for key inputs while renderer is animating
+        }
+
         Direction moved = Move();
         if (moved != Direction.None)
         {

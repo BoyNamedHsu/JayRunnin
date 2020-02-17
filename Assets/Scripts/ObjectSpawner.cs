@@ -51,12 +51,12 @@ public class ObjectSpawner : MonoBehaviour
         GameObject sprite = spawnedSprites[obj];
         Vector3 currPos = sprite.transform.position;
 
-        Vector3 newPos = Vector3.Lerp(currPos, destination, 4.0f * Time.deltaTime);
+        Vector3 newPos = Vector3.Lerp(currPos, destination, 10.0f * Time.deltaTime);
         sprite.transform.position = newPos;
       }
 
-          // now check if this animation is completed and update AnimationState if so
-          bool animationIsComplete = true;
+      // now check if this animation is completed and update AnimationState if so
+      bool animationIsComplete = true;
       foreach (Living obj in spawnedSprites.Keys)
       {
         animationIsComplete = animationIsComplete &&
@@ -65,7 +65,7 @@ public class ObjectSpawner : MonoBehaviour
       if (animationIsComplete)
       {
         this.currAnimation = Animation.None; // if so, our animation is set back to None
-          }
+      }
       return true;
     };
 
@@ -106,8 +106,8 @@ public class ObjectSpawner : MonoBehaviour
             car.transform.position = newPos;
           }
 
-              // now check if this animation is completed and update AnimationState if so
-              bool animationIsComplete = true;
+          // now check if this animation is completed and update AnimationState if so
+          bool animationIsComplete = true;
           foreach (GameObject car in carDestinations.Keys)
           {
             animationIsComplete = animationIsComplete &&
@@ -115,20 +115,20 @@ public class ObjectSpawner : MonoBehaviour
           }
           if (animationIsComplete)
           {
-                // cleanup sprites destroyed by the car
-                foreach (Living runOver in killed)
+            // cleanup sprites destroyed by the car
+            foreach (Living runOver in killed)
             {
               DestroySprite(runOver);
             }
-                // and destroy car sprites now that they're offscreen
-                foreach (GameObject car in carDestinations.Keys)
+            // and destroy car sprites now that they're offscreen
+            foreach (GameObject car in carDestinations.Keys)
             {
               Destroy(car);
             }
 
-                // and cleanup the car sprites
-                this.currAnimation = Animation.None; // if so, our animation is set back to None
-              }
+            // and cleanup the car sprites
+            this.currAnimation = Animation.None; // if so, our animation is set back to None
+          }
           return true;
         };
 
@@ -141,7 +141,7 @@ public class ObjectSpawner : MonoBehaviour
   {
     foreach (Living person in people)
     {
-        SpawnSprite(person);
+      SpawnSprite(person);
     }
     foreach (TileObject tile in tiles)
     {
@@ -196,14 +196,19 @@ public class ObjectSpawner : MonoBehaviour
 
   private void SpawnSprite(GameElement character)
   {
+    Debug.Log("Cell size: " + tilemap.cellSize);
+
     Vector2Int loc = character.position;
+    Debug.Log(loc);
     GameElement.ElementType characterType = character.eid;
+    Debug.Log(characterType);
     GameObject newObj;
 
     switch (character.eid)
     {
       case GameElement.ElementType.Jay:
         newObj = Instantiate(jay_sprite) as GameObject;
+        Debug.Log("j");
         break;
       case GameElement.ElementType.Cone:
         newObj = Instantiate(cone_sprite) as GameObject;
@@ -220,8 +225,15 @@ public class ObjectSpawner : MonoBehaviour
     }
 
     Debug.Log("new location: " + ConvertCellLoc(loc));
-
     newObj.transform.position = ConvertCellLoc(loc);
+
+    SpriteRenderer newObjBounds = newObj.GetComponent<SpriteRenderer>();
+
+    Vector3 tilesize = tilemap.cellSize;
+    Vector3 spritesize = newObjBounds.bounds.size;
+
+    // scale sprite to size of grid
+    newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
     spawnedSprites[character] = newObj;
   }
 
