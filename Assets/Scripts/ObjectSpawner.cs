@@ -9,7 +9,7 @@ public class ObjectSpawner : MonoBehaviour
     private enum Animation{MoveSprites, MoveCars, SpawnCopSprites, None}; // All animation "states" our renderer can be in
 
     // I need prefabs for each object type, IE cones, manholes, jay, etc
-    public GameObject jay, cone, zebra, follower, car_obj;  // and prefabs for other game ObjectSpawner
+    public GameObject jay_sprite, cone_sprite, zebra_sprite, follower_sprite, car_sprite;  // and prefabs for other game ObjectSpawner
 
     // Coordinates (x, y) of the bottom left and top right cells
     private Vector2Int blCell;
@@ -72,9 +72,9 @@ public class ObjectSpawner : MonoBehaviour
         {
             if (car.countdown == 0 && !car.gone) // we should just remove cars from the list instead
             {
-                GameObject carSprite = Instantiate(car_obj) as GameObject;
-                carSprite.transform.position = convertCellLoc(new Vector2Int(car.yPos, trCell.y - blCell.y + 1));
-                carDestinations[carSprite] = convertCellLoc(new Vector2Int(car.yPos, -5)); // add that car's destination
+                GameObject carSprite = Instantiate(car_sprite) as GameObject;
+                carSprite.transform.position = ConvertCellLoc(new Vector2Int(car.yPos, trCell.y - blCell.y + 1));
+                carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(car.yPos, -5)); // add that car's destination
             }
         }
 
@@ -101,7 +101,7 @@ public class ObjectSpawner : MonoBehaviour
                     // cleanup sprites destroyed by the car
                     foreach (Living runOver in killed)
                     {
-                        Destroy(spawnedSprites[runOver]);
+                        DestroySprite(runOver);
                     }
                     // and destroy car sprites now that they're offscreen
                     foreach (GameObject car in carSprites.Keys)
@@ -123,7 +123,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         foreach (Living person in people)
         {
-            spawnObj(person);
+            SpawnSprite(person);
         }
     }
 
@@ -186,7 +186,7 @@ public class ObjectSpawner : MonoBehaviour
     }
 
     // converts a given Vector2Int into a location in the world space
-    private Vector2 convertCellLoc(Vector2Int coords)
+    private Vector2 ConvertCellLoc(Vector2Int coords)
     {
         // adjust coords over bottom left cell
         Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
@@ -197,7 +197,7 @@ public class ObjectSpawner : MonoBehaviour
         return new Vector2(res.x + 1, res.y + 1); // 1 cell of padding
     }
 
-    private void spawnObj(Living character)
+    private void SpawnSprite(Living character)
     {
         Vector2Int loc = character.position;
         Debug.Log(loc);
@@ -208,17 +208,17 @@ public class ObjectSpawner : MonoBehaviour
         switch (character.eid)
         {
             case GameElement.ElementType.Jay:
-                newObj = Instantiate(jay) as GameObject;
+                newObj = Instantiate(jay_sprite) as GameObject;
                 Debug.Log("j");
                 break;
             case GameElement.ElementType.Cone:
-                newObj = Instantiate(cone) as GameObject;
+                newObj = Instantiate(cone_sprite) as GameObject;
                 break;
             case GameElement.ElementType.Zebra:
-                newObj = Instantiate(zebra) as GameObject;
+                newObj = Instantiate(zebra_sprite) as GameObject;
                 break;
             case GameElement.ElementType.Follower:
-                newObj = Instantiate(follower) as GameObject;
+                newObj = Instantiate(follower_sprite) as GameObject;
                 Debug.Log("f");
                 break;
             default:
@@ -226,10 +226,16 @@ public class ObjectSpawner : MonoBehaviour
                 return; // This should never occur
         }
 
-        Vector2 worldLoc = convertCellLoc(loc);
+        Vector2 worldLoc = ConvertCellLoc(loc);
 
         newObj.transform.position = worldLoc;
         spawnedSprites[character] = newObj;
         destinations[newObj] = worldLoc;
+    }
+
+    private void DestroySprite(Living character)
+    {
+        Destroy(spawnedSprites[character]);
+        spawnedSprites.Remove(character);
     }
 }
