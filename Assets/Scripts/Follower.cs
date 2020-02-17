@@ -8,7 +8,9 @@ public class Follower : Living
 
     public Follower(int x, int y, bool cop) : base(x, y)
     {
+        this.eid = ElementType.Follower;
         this.cop = cop;
+        this.alive = true;
     }
 
 /*    public (int x, int y) Move((int x, int )

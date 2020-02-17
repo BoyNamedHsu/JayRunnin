@@ -6,5 +6,8 @@ public class Jay : Living
 {   
     //enum Direction {up, down, left, right}
     //public Direction direction;
-    public Jay (int x, int y) : base(x, y) { }
+    public Jay (int x, int y) : base(x, y) {
+        this.eid = ElementType.Jay;
+        this.alive = true;
+    }
 }

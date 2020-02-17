@@ -8,35 +8,58 @@ using TMPro;
 
 public class Overworld : MonoBehaviour
 {
-    private Tile[,] gridworld;
+    //There are 2 layers to represent the gridworld:
+    private TileObject[,] eGridworld; // Layer 1 :Environment
+    private Living[,] lGridworld; // Layer 2 : Jay and followers
+
     public int height;
     public int width;
-    public TextMeshProUGUI ian;
 
     // Start is called before the first frame update
     void Start()
     {
-        gridworld = new Tile[height, width];
+        // Generate environment
+        initializeEnvironment();
+        //ian.text = "";
+
+        // Generate Second layer
+        initializeLiving();
+    }
+
+    private void initializeEnvironment()
+    {
+        //Initializing new TileObjects to each index of array
+        eGridworld = new TileObject[height, width];
         for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++)
-                gridworld[i, j] = new Tile();
+                eGridworld[i, j] = new TileObject(i, j);
+    }
 
-        gridworld[GameManager.playerStart.x, GameManager.playerStart.y].character = 'c';
+    private void initializeLiving()
+    {
+        //Initializing new TileObjects to each index of array
+        lGridworld = new Living[height, width];
+        for (int i = 0; i < height; i++)
+            for (int j = 0; j < width; j++)
+                lGridworld[i, j] = new Living(i, j);
+
+        lGridworld[GameManager.playerStart.x, GameManager.playerStart.y].eid = GameElement.ElementType.Jay; // Set Jay
+
+        // Generate Followers
         for (int i = 1; i < GameManager.followers.Count(); i++)
         {
-            gridworld[GameManager.followers[i].position.x, 
-                        GameManager.followers[i].position.y].character = 'f';
+            lGridworld[GameManager.followers[i].position.x,
+                        GameManager.followers[i].position.y].eid = GameElement.ElementType.Follower;
         }
-        ian.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        ian.text = toString();
+        //ian.text = toString();
     }
 
-    public string toString()
+    /*public string toString()
     {
         string tess = "";
 
@@ -62,39 +85,39 @@ public class Overworld : MonoBehaviour
         {
             for (int j = 0; j < width; j++)
             {
-                tess += gridworld[i, j].character;
+                tess += gridworld[i, j].eid;
             }
             tess += Environment.NewLine;
         }
         return tess;
-    }
+    }*/
 
-    public bool Move((int x, int y) prev, (int x, int y) current, char character)
+    public bool Move(Vector2Int prev, Vector2Int current, GameElement.ElementType character)
     {
         if (TileOccupied(current))
         {
-            gridworld[prev.x, prev.y].character = '0';
-            gridworld[current.x, current.y].character = character;
+            lGridworld[prev.x, prev.y].eid = GameElement.ElementType.Default;
+            lGridworld[current.x, current.y].eid = character;
             return true;
         }
         return false;
     }
 
+    // **Fix this method**
     public void kill(int col) {
-        for (int x = 0; x < height; x++) {
-            if (gridworld[x, col].character != '0') {
-                gridworld[x, col].character = '0';
+        for (int x = 0; x < height; x++) { // check if living too...
+            if (lGridworld[x, col].eid != GameElement.ElementType.Default) {
+                lGridworld[x, col].alive = false;
+                lGridworld[x, col].eid = GameElement.ElementType.Default;
             }
         }
     }
 
-    public Tile[,] getGrid() {
-        return gridworld;
-    }
-
     // Returns whether or not coords is occupied
-    public bool TileOccupied((int x, int y) coords)
-    {
-        return gridworld[coords.x, coords.y].character == '0';
+    public bool TileOccupied(Vector2Int coords)
+    {   
+        // return if tiles are unnocupied
+        return eGridworld[coords.x, coords.y].eid == GameElement.ElementType.Default ||
+               lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower;
     }
 }

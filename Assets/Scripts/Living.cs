@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Living
+public class Living : GameElement
 {
-    private bool alive;
-    public (int x, int y) position;
+    public bool alive;
+    public Vector2Int position;
 
     public Living(int x, int y)
     {
-        this.position = (x, y);
-        this.alive = true;
+        this.alive = false;
+        this.position = new Vector2Int(x, y);
+        this.eid = ElementType.Default;
     }
 }
