@@ -51,7 +51,7 @@ public class ObjectSpawner : MonoBehaviour
         GameObject sprite = spawnedSprites[obj];
         Vector3 currPos = sprite.transform.position;
 
-        Vector3 newPos = Vector3.Lerp(currPos, destination, 4.0f * Time.deltaTime);
+        Vector3 newPos = Vector3.Lerp(currPos, destination, 10.0f * Time.deltaTime);
         sprite.transform.position = newPos;
       }
 
