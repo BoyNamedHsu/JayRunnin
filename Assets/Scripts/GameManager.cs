@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static List<Vector2Int> directions;
     public static List<Living> followers;
     public static List<CarTile> cars;
+    public static ConeTile cone;
     public Tilemap tilemap;
 
     // Start is called before the first frame update
@@ -36,6 +37,9 @@ public class GameManager : MonoBehaviour
             //new CarTile(3, 5),
             //new CarTile(5, 7)
         };
+
+        cone = new ConeTile(2, 2);
+        grid.spawnTile(cone);
     }
 
     // Update is called once per frame

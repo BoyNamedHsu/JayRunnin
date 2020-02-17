@@ -121,4 +121,10 @@ public class Overworld : MonoBehaviour
                lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower) &&
                !eGridworld[coords.x, coords.y].blocked;
     }
+    
+    // Spawns a tileobject at a certain coordinate
+    public void spawnTile(TileObject tile)
+    {
+        eGridworld[tile.position.x, tile.position.y] = tile;
+    }
 }
