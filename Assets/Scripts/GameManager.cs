@@ -102,11 +102,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log("columns:");
-        Debug.Log(carColumns);
-
         /*--Animate those changes--*/
-        render.MoveCars(killed, carColumns);
+        render.MoveCars(killed, carColumns); // This animation gets hung.... yikes
         yield return new WaitUntil(() => !render.IsInAnimation());
 
         // if any were killed we need to tighten

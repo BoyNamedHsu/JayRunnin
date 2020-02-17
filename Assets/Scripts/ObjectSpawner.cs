@@ -37,9 +37,9 @@ public class ObjectSpawner : MonoBehaviour
   // Snaps all current GameObjects to their proper locations
   public void MoveSprites()
   {
-    if (this.currAnimation != Animation.None) // THIS SHOULD NEVER HAPPEN
+    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
-      // Debug.Log("MoveSprites animation was cancelled");
+      Debug.Log("MoveSprites animation was cancelled");
       return;
     }
 
@@ -75,22 +75,23 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
-  public void MoveCars(List<GameElement> killed, List<int> carColumns)
+  public void MoveCars(List<GameElement> killedOrig, List<int> carColumns)
   {
-    if (this.currAnimation != Animation.None) // THIS SHOULD NEVER HAPPEN
+    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
-      // Debug.Log("MoveCars animation was cancelled");
+      Debug.Log("MoveCars animation was cancelled");
       return;
     }
 
     currAnimation = Animation.MoveCars;
+
+    List<GameElement> killed = new List<GameElement>(killedOrig);
 
     // each car spawned is mapped to its destination, IE a y-pos off-camera
     Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
     foreach (int xPos in carColumns)
     {
         GameObject carSprite = Instantiate(car_sprite) as GameObject;
-        // carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, 3));
         carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, trCell.y - blCell.y + 1));
         carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -2)); // add that car's destination
     }
@@ -100,20 +101,19 @@ public class ObjectSpawner : MonoBehaviour
         {
           foreach (GameObject car in carDestinations.Keys)
           {
-            Vector3 destination = carDestinations[car];
             Vector3 currPos = car.transform.position;
             // if a car is near any followers, destroy them
             for (int i = 0; i < killed.Count; i++)
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
-                    // DestroySprite(killed[i]);
+                    DestroySprite(killed[i]);
                     killed.RemoveAt(i);
                     i--;
                 }
             }
 
-            Vector3 newPos = Vector2.Lerp(currPos, destination, 10.0f * Time.deltaTime);
+            Vector3 newPos = Vector2.Lerp(currPos, carDestinations[car], 10.0f * Time.deltaTime);
             car.transform.position = newPos;
           }
 
@@ -122,23 +122,23 @@ public class ObjectSpawner : MonoBehaviour
           foreach (GameObject car in carDestinations.Keys)
           {
             animationIsComplete = animationIsComplete &&
-                    (Vector3.Distance(car.transform.position, carDestinations[car]) < 2.0f);
+                    (Vector3.Distance(car.transform.position, carDestinations[car]) < 1.0f);
           }
+
           if (animationIsComplete)
           {
-            // cleanup GameElements destroyed by the car (if they didn't get cleaned up already)
-            foreach (GameElement runOver in killed)
-            {
-              DestroySprite(runOver);
-            }
-            // and destroy car sprites now that they're offscreen
-            foreach (GameObject car in carDestinations.Keys)
-            {
-              Destroy(car);
-            }
+                this.currAnimation = Animation.None; // if so, our animation is set back to None
+                // cleanup GameElements destroyed by the car (if they didn't get cleaned up already)
+                foreach (GameElement runOver in killed)
+                {
+                    DestroySprite(runOver);
+                }
 
-            // and cleanup the car sprites
-            this.currAnimation = Animation.None; // if so, our animation is set back to None
+                // and destroy car sprites now that they're offscreen
+                foreach (GameObject car in carDestinations.Keys)
+                {
+                   Destroy(car);
+                }
           }
           return true;
         };
@@ -150,23 +150,24 @@ public class ObjectSpawner : MonoBehaviour
 
   public void SetMap(List<GameElement> people, List<TileObject> tiles, List<CarTile> cars)
   {
-    foreach (GameElement person in people)
-    {
-      SpawnSprite(person);
-    }
-    foreach (TileObject tile in tiles)
-    {
-      SpawnSprite(tile);
-    }
-    foreach (CarTile car in cars)
-    {
-        SpawnSprite(car);
-    }
-    }
+        foreach (GameElement person in people)
+        {
+          SpawnSprite(person);
+        }
+        foreach (TileObject tile in tiles)
+        {
+          SpawnSprite(tile);
+        }
+        foreach (CarTile car in cars)
+        {
+            SpawnSprite(car);
+        }
+  }
 
   void Update()
   {
-    animationUpdates[this.currAnimation]();
+        Debug.Log(this.currAnimation);
+        animationUpdates[this.currAnimation]();
   }
 
   // Start is called before the first frame update
