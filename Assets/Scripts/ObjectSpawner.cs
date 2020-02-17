@@ -107,6 +107,7 @@ public class ObjectSpawner : MonoBehaviour
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
+                    CameraShake.Shake(0.05f, 0.2f);
                     DestroySprite(killed[i]);
                     killed.RemoveAt(i);
                     i--;
