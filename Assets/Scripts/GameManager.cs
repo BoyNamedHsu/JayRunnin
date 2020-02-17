@@ -12,8 +12,6 @@ public class GameManager : MonoBehaviour
     public static List<Vector2Int> directions;
     public static List<Living> followers;
     public static List<CarTile> cars;
-    // Add enum for object and elements
-
 
     // Start is called before the first frame update
     void Awake()
@@ -94,8 +92,6 @@ public class GameManager : MonoBehaviour
             }
 
         }
-/*        print("Directions " + string.Join(",", directions));
-        print("Followers " + string.Join(",", followers));*/
     }
 
     // Returns the direction Jay has moved, else returns null if an invalid move occurs
