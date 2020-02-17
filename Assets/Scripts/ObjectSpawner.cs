@@ -190,43 +190,52 @@ public class ObjectSpawner : MonoBehaviour
     return new Vector3(res.x + 1, res.y + 1, 0); // 1 cell of padding
   }
 
-  private void SpawnSprite(Living character)
-  {
-    Vector2Int loc = character.position;
-    Debug.Log(loc);
-    GameElement.ElementType characterType = character.eid;
-    Debug.Log(characterType);
-    GameObject newObj;
+      private void SpawnSprite(Living character)
+      {
+            Debug.Log("Cell size: " + tilemap.cellSize);
 
-    switch (character.eid)
-    {
-      case GameElement.ElementType.Jay:
-        newObj = Instantiate(jay_sprite) as GameObject;
-        Debug.Log("j");
-        break;
-      case GameElement.ElementType.Cone:
-        newObj = Instantiate(cone_sprite) as GameObject;
-        break;
-      case GameElement.ElementType.Zebra:
-        newObj = Instantiate(zebra_sprite) as GameObject;
-        break;
-      case GameElement.ElementType.Follower:
-        newObj = Instantiate(follower_sprite) as GameObject;
-        break;
-      default:
-        print("Spawn failed!");
-        return; // This should never occur
-    }
+            Vector2Int loc = character.position;
+            Debug.Log(loc);
+            GameElement.ElementType characterType = character.eid;
+            Debug.Log(characterType);
+            GameObject newObj;
 
-    Debug.Log("new location: " + ConvertCellLoc(loc));
+            switch (character.eid)
+            {
+              case GameElement.ElementType.Jay:
+                newObj = Instantiate(jay_sprite) as GameObject;
+                Debug.Log("j");
+                break;
+              case GameElement.ElementType.Cone:
+                newObj = Instantiate(cone_sprite) as GameObject;
+                break;
+              case GameElement.ElementType.Zebra:
+                newObj = Instantiate(zebra_sprite) as GameObject;
+                break;
+              case GameElement.ElementType.Follower:
+                newObj = Instantiate(follower_sprite) as GameObject;
+                break;
+              default:
+                print("Spawn failed!");
+                return; // This should never occur
+            }
 
-    newObj.transform.position = ConvertCellLoc(loc);
-    spawnedSprites[character] = newObj;
-  }
+            Debug.Log("new location: " + ConvertCellLoc(loc));
+            newObj.transform.position = ConvertCellLoc(loc);
 
-  private void DestroySprite(Living character)
-  {
-    Destroy(spawnedSprites[character]);
-    spawnedSprites.Remove(character);
-  }
+            SpriteRenderer newObjBounds = newObj.GetComponent<SpriteRenderer>();
+
+            Vector3 tilesize = tilemap.cellSize;
+            Vector3 spritesize = newObjBounds.bounds.size;
+            
+            // scale sprite to size of grid
+            newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
+            spawnedSprites[character] = newObj;
+      }
+
+      private void DestroySprite(Living character)
+      {
+        Destroy(spawnedSprites[character]);
+        spawnedSprites.Remove(character);
+      }
 }
