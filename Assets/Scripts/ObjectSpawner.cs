@@ -15,6 +15,7 @@ public class ObjectSpawner : MonoBehaviour
     private Vector2Int blCell;
     private Vector2Int trCell;
     Tilemap tilemap; // And the tilemap those cells exist on
+    Overworld overworld; // And the overworld to get grid height 
 
     // References to each GameObject we instantiate
     private Dictionary<Living, GameObject> spawnedSprites;
@@ -24,15 +25,21 @@ public class ObjectSpawner : MonoBehaviour
 
     private Dictionary<Animation, Func<bool>> animationUpdates;
 
-    // returns true if the renderer is not in an animation, otherwise false
-    public bool IsNotInAnimation() 
+    // returns true if the renderer is in an animation, otherwise false
+    public bool IsInAnimation() 
     {
-        return this.currAnimation == Animation.None;
+        return this.currAnimation != Animation.None;
     }
     
     // Snaps all current GameObjects to their proper locations
     public void MoveSprites()
     {
+        if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
+        {
+            Debug.Log("MoveSprites animation was cancelled");
+            return;
+        }
+
         currAnimation = Animation.MoveSprites;
 
         // when called, this method moves each GameObject closer to its given destination
@@ -67,6 +74,12 @@ public class ObjectSpawner : MonoBehaviour
 
     public void MoveCars(List<Living> killed, List<CarTile> cars)
     {
+        if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
+        {
+            Debug.Log("MoveCars animation was cancelled");
+            return;
+        }
+
         currAnimation = Animation.MoveSprites;
 
         // each car spawned is mapped to its destination, IE a y-pos off-camera
@@ -140,6 +153,7 @@ public class ObjectSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        overworld = GameObject.Find("Overworld").GetComponent<Overworld>();
         tilemap = transform.GetComponent<Tilemap>();
         spawnedSprites = new Dictionary<Living, GameObject>();
 
@@ -159,28 +173,29 @@ public class ObjectSpawner : MonoBehaviour
         trCell.x = trLoc.x;
         trCell.y = trLoc.y;
         Debug.Log("trcell " + trCell.x + ", " + trCell.y);
+    }
 
-        // Testing chain movement
-        Jay player = new Jay(0, 0);
-        List<Living> testChain = new List<Living>();
-        testChain.Add(player);
-        for (int i = 1; i < 5; i++)
-        {
-            testChain.Add(new Follower(0, i, true));
-        }
-
-        SetMap(testChain);
-
-        player.position = new Vector2Int(1, 1);
-
-        MoveSprites();
+    // Converts a grid index to a world coordinate... IE 
+    // a grid coordinate of [2,1] on a 3x3 grid maps to
+    // a coordinate of (1, 0)
+    /* Ex:
+     *  [.][.][.]
+     *  [.][.][.]
+     *  [.][X][.]
+     */ 
+    private Vector2Int ConvertGridIndexToCoordSpace(Vector2Int gridCoords)
+    {
+        return new Vector2Int(overworld.height - gridCoords.y, gridCoords.x);
     }
 
     // converts a given Vector2Int into a location in the world space
     private Vector3 ConvertCellLoc(Vector2Int coords)
     {
+        Vector2Int fixedCoords = ConvertGridIndexToCoordSpace(coords);
+
         // adjust coords over bottom left cell
-        Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
+        Vector3Int adjustedCoords = 
+            new Vector3Int(fixedCoords.x + blCell.x, fixedCoords.y + blCell.y, 0);
         Debug.Log("adjusted to " + adjustedCoords);
 
         Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
