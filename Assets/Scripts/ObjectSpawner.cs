@@ -150,20 +150,18 @@ public class ObjectSpawner : MonoBehaviour
         Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
         blCell.x = blLoc.x;
         blCell.y = blLoc.y;
-        Debug.Log(blCell.x + ", " + blCell.y);
+        Debug.Log("blcell " + blCell.x + ", " + blCell.y);
         
         // tr stands for top right
         Vector3Int trLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(
             new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0)));
         trCell.x = trLoc.x;
         trCell.y = trLoc.y;
-        Debug.Log(trCell.x + ", " + trCell.y);
-        
+        Debug.Log("trcell " + trCell.x + ", " + trCell.y);
+
         // Testing chain movement
-        
-        List<Living> testChain = new List<Living>();
         Jay player = new Jay(0, 0);
-        
+        List<Living> testChain = new List<Living>();
         testChain.Add(player);
         for (int i = 1; i < 5; i++)
         {
@@ -172,13 +170,14 @@ public class ObjectSpawner : MonoBehaviour
 
         SetMap(testChain);
 
-        // Testing car movement
-        /*
-        List<CarTile> cars = new List<CarTile>();
-        cars.Add(new CarTile(1, 0));
-        cars.Add(new CarTile(4, 0));
-        runCar(cars);
-        */
+        Dictionary<Living, Vector2Int> movements = new Dictionary<Living, Vector2Int>();
+        movements[testChain[1]] = new Vector2Int(0, 0);
+        movements[player] = new Vector2Int(1, 0);
+
+        // MoveSprites
+        MoveSprites(movements);
+
+        // Then MoveCar
     }
 
     // converts a given Vector2Int into a location in the world space
@@ -186,8 +185,8 @@ public class ObjectSpawner : MonoBehaviour
     {
         // adjust coords over bottom left cell
         Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
-        Debug.Log(coords.x + ", " + coords.y);
-        Debug.Log(adjustedCoords.x + ", " + adjustedCoords.y);
+        Debug.Log("adjusted to " + adjustedCoords);
+
         Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
 
         return new Vector3(res.x + 1, res.y + 1, 0); // 1 cell of padding
@@ -220,9 +219,10 @@ public class ObjectSpawner : MonoBehaviour
                 print("Spawn failed!");
                 return; // This should never occur
         }
-        newObj.transform.position = ConvertCellLoc(loc);
-        Debug.Log(loc.x + " " + loc.y);
 
+        Debug.Log("new location: " + ConvertCellLoc(loc));
+
+        newObj.transform.position = ConvertCellLoc(loc);
         spawnedSprites[character] = newObj;
     }
 

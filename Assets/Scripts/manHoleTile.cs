@@ -17,14 +17,17 @@ public class manHoleTile : TileObject
 
     }
 
-    /*public checkActivate()
+    /*
+    public void checkActivate()
     {
         switch(ManHoleState)
         {
             case ManHoleState.Unoccupied:
+                
             case ManHoleState.Occupied:
             case ManHoleState.Activated:
         }
-    }*/
+    }
+    */
 
 }
