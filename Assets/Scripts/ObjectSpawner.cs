@@ -22,41 +22,44 @@ public class ObjectSpawner : MonoBehaviour
     // fields for specific animations, we need to hold onto these variables between calls to Update()
     private Animation currAnimation;
 
-    private Dictionary<Animation, Func<void, void>> animationUpdates;
+    private Dictionary<Animation, Func<bool>> animationUpdates;
 
     // returns true if the renderer is not in an animation, otherwise false
     public bool IsNotInAnimation() 
     {
-        return this.currAnimation = Animation.None;
+        return this.currAnimation == Animation.None;
     }
 
     public void MoveSprites(Dictionary<Living, Vector2Int> destinations)
     {
         currAnimation = Animation.MoveSprites;
-        this.destinations = destinations;
 
         // when called, this method moves each GameObject closer to its given destination
-        Func<void, void> MoveSpritesUpdate = () =>
+        Func<bool> MoveSpritesUpdate = () =>
             {
-                foreach (GameObject obj in destinations.Keys)
+                foreach (Living obj in destinations.Keys)
                 {
-                    Vector2 destination = destinations[obj];
-                    Vector2 currPos = obj.transform.position;
+                    Vector3 destination = ConvertCellLoc(destinations[obj]);
+                    GameObject sprite = spawnedSprites[obj];
+                    Vector3 currPos = sprite.transform.position;
 
-                    Vector2 newPos = Vector2.Lerp(currPos, destination, 0.5f * Time.deltaTime);
-                    obj.transform.position = newPos;
+                    Vector3 newPos = Vector3.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+                    sprite.transform.position = newPos;
                 }
 
                 // now check if this animation is completed and update AnimationState if so
                 bool animationIsComplete = true;
-                foreach (GameObject obj in destinations.Keys)
+                foreach (Living obj in destinations.Keys)
                 {
-                    animationIsComplete = animationIsComplete && (obj.transform.position == destinations[obj]);
+                    animationIsComplete = animationIsComplete && 
+                        (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(destinations[obj])) < 0.01f);
                 }
-                if (animationIsComplete){
+                if (animationIsComplete)
+                {
                     this.currAnimation = Animation.None; // if so, our animation is set back to None
                 }
-            }
+                return true;
+            };
         
         animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
     }
@@ -64,10 +67,9 @@ public class ObjectSpawner : MonoBehaviour
     public void MoveCars(List<Living> killed, List<CarTile> cars)
     {
         currAnimation = Animation.MoveSprites;
-        this.destinations = destinations;
 
         // each car spawned is mapped to its destination, IE a y-pos off-camera
-        Dictionary<GameObject, Vector2Int> carDestinations = new List<GameObject>();
+        Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
         foreach (CarTile car in cars)
         {
             if (car.countdown == 0 && !car.gone) // we should just remove cars from the list instead
@@ -79,22 +81,23 @@ public class ObjectSpawner : MonoBehaviour
         }
 
         // when called, this method moves each car down the map, destroy objects in killed they touch along the way
-        Func<void, void> MoveCarsUpdate = () =>
+        Func<bool> MoveCarsUpdate = () =>
             {
-                foreach (GameObject car in carSprites.Keys)
+                foreach (GameObject car in carDestinations.Keys)
                 {
-                    Vector2 destination = carDestinations[car];
-                    Vector2 currPos = car.transform.position;
+                    Vector3 destination = carDestinations[car];
+                    Vector3 currPos = car.transform.position;
 
-                    Vector2 newPos = Vector2.Lerp(currPos, destination, 0.5f * Time.deltaTime);
+                    Vector3 newPos = Vector2.Lerp(currPos, destination, 0.5f * Time.deltaTime);
                     car.transform.position = newPos;
                 }
 
                 // now check if this animation is completed and update AnimationState if so
                 bool animationIsComplete = true;
-                foreach (GameObject car in carSprites.Keys)
+                foreach (GameObject car in carDestinations.Keys)
                 {
-                    animationIsComplete = animationIsComplete && (car.transform.position == carDestinations[car]);
+                    animationIsComplete = animationIsComplete && 
+                        (Vector3.Distance(car.transform.position, carDestinations[car]) < 0.01f);
                 }
                 if (animationIsComplete)
                 {
@@ -104,7 +107,7 @@ public class ObjectSpawner : MonoBehaviour
                         DestroySprite(runOver);
                     }
                     // and destroy car sprites now that they're offscreen
-                    foreach (GameObject car in carSprites.Keys)
+                    foreach (GameObject car in carDestinations.Keys)
                     {
                         Destroy(car);
                     }
@@ -112,7 +115,8 @@ public class ObjectSpawner : MonoBehaviour
                     // and cleanup the car sprites
                     this.currAnimation = Animation.None; // if so, our animation is set back to None
                 }
-            }
+                return true;
+            };
         
         animationUpdates[Animation.MoveCars] = MoveCarsUpdate;
     }
@@ -139,8 +143,8 @@ public class ObjectSpawner : MonoBehaviour
         spawnedSprites = new Dictionary<Living, GameObject>();
 
         currAnimation = Animation.None;
-        animationUpdates = new Dictionary<Animation, Func<void, void>>();
-        AnimationUpdates[Animation.None] = (() => { return; });
+        animationUpdates = new Dictionary<Animation, Func<bool>>();
+        animationUpdates[Animation.None] = (() => { return true; });
 
         // bl stands for bottom left not "boys love"
         Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
@@ -154,8 +158,7 @@ public class ObjectSpawner : MonoBehaviour
         trCell.x = trLoc.x;
         trCell.y = trLoc.y;
         Debug.Log(trCell.x + ", " + trCell.y);
-
-        /*
+        
         // Testing chain movement
         
         List<Living> testChain = new List<Living>();
@@ -167,17 +170,10 @@ public class ObjectSpawner : MonoBehaviour
             testChain.Add(new Follower(0, i, true));
         }
 
-        // now spawn each "chess piece"
-        foreach (Living character in testChain)
-        {
-            spawnObj(character);
-        }
-
-        // finally try moving the chain around
-        MoveFullChain(GameManager.Direction.East, testChain);
-        
+        SetMap(testChain);
 
         // Testing car movement
+        /*
         List<CarTile> cars = new List<CarTile>();
         cars.Add(new CarTile(1, 0));
         cars.Add(new CarTile(4, 0));
@@ -186,7 +182,7 @@ public class ObjectSpawner : MonoBehaviour
     }
 
     // converts a given Vector2Int into a location in the world space
-    private Vector2 ConvertCellLoc(Vector2Int coords)
+    private Vector3 ConvertCellLoc(Vector2Int coords)
     {
         // adjust coords over bottom left cell
         Vector3Int adjustedCoords = new Vector3Int(coords.x + blCell.x, coords.y + blCell.y, 0);
@@ -194,7 +190,7 @@ public class ObjectSpawner : MonoBehaviour
         Debug.Log(adjustedCoords.x + ", " + adjustedCoords.y);
         Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
 
-        return new Vector2(res.x + 1, res.y + 1); // 1 cell of padding
+        return new Vector3(res.x + 1, res.y + 1, 0); // 1 cell of padding
     }
 
     private void SpawnSprite(Living character)
@@ -219,18 +215,15 @@ public class ObjectSpawner : MonoBehaviour
                 break;
             case GameElement.ElementType.Follower:
                 newObj = Instantiate(follower_sprite) as GameObject;
-                Debug.Log("f");
                 break;
             default:
                 print("Spawn failed!");
                 return; // This should never occur
         }
+        newObj.transform.position = ConvertCellLoc(loc);
+        Debug.Log(loc.x + " " + loc.y);
 
-        Vector2 worldLoc = ConvertCellLoc(loc);
-
-        newObj.transform.position = worldLoc;
         spawnedSprites[character] = newObj;
-        destinations[newObj] = worldLoc;
     }
 
     private void DestroySprite(Living character)

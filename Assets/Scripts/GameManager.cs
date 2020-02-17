@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
             new Follower(3, 0, false),
             };
         grid = GameObject.Find("Overworld").GetComponent<Overworld>();
-        render = GameObject.Find("ObjectSpawner").GetComponent<ObjectSpawner>();
-        render.setMap(followers);
+        //render = GameObject.Find("ObjectSpawner").GetComponent<ObjectSpawner>();
+        //render.SetMap(followers);
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
             }
             directions.Add(followers[0].position);
             directions.RemoveAt(0);
-            render.MoveFullChain(moved, followers);
+            //render.MoveFullChain(moved, followers);
 
             bool killed = false;
 
