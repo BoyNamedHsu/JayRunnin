@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
             new Follower(3, 0, false),
             };
         grid = GameObject.Find("Overworld").GetComponent<Overworld>();
-        //render = GameObject.Find("ObjectSpawner").GetComponent<ObjectSpawner>();
-        //render.SetMap(followers);
+        render = GameObject.Find("ObjectSpawner").GetComponent<ObjectSpawner>();
+        render.SetMap(followers);
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
@@ -48,15 +48,13 @@ public class GameManager : MonoBehaviour
             // Test if valid move
             for (int i = 1; i < followers.Count; i++)
             {
-                /* (int x, int y) next = followers[i].Move(directions[directions.Count - i - 1]);*/
-                // don't need to subtract index by 1 because start i at 1
                 grid.Move(followers[i].position, directions[directions.Count - i], GameElement.ElementType.Follower);
                 followers[i].position = directions[directions.Count - i];
+                render.MoveSprites(followers);
 
             }
             directions.Add(followers[0].position);
             directions.RemoveAt(0);
-            //render.MoveFullChain(moved, followers);
 
             bool killed = false;
 
@@ -133,6 +131,23 @@ public class GameManager : MonoBehaviour
             followers[0].position = temp;
         }
         return dir;
+    }
+
+    // moves part of a list of people, starting with the given person in line
+    private void MoveList(Direction dir, List<Living> people, int startPerson)
+    {
+        Vector2Int dest = getDest(dir, people[startPerson].position); // position must be a Vector2Int, change living obj
+        for (int i = startPerson; i < people.Count; i++)
+        {
+            Living curr = people[i];
+            Vector2Int src = curr.position; // current position of living obj
+
+            GameObject currSprite = spawnedSprites[curr];
+            destinations[currSprite] = convertCellLoc(dest); // move to destination
+            dest = src; // next obj moves to this object's previous position
+        }
+
+        ObjectSpawner.MoveSprites();
     }
 
 
