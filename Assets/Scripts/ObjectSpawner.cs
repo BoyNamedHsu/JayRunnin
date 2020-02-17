@@ -175,23 +175,10 @@ public class ObjectSpawner : MonoBehaviour
     Debug.Log("trcell " + trCell.x + ", " + trCell.y);
   }
 
-  // Converts a grid index to a world coordinate... IE 
-  // a grid coordinate of [2,1] on a 3x3 grid maps to
-  // a coordinate of (1, 0)
-  /* Ex:
-   *  [.][.][.]
-   *  [.][.][.]
-   *  [.][X][.]
-   */
-  private Vector2Int ConvertGridIndexToCoordSpace(Vector2Int gridCoords)
-  {
-    return new Vector2Int(overworld.height - gridCoords.y, gridCoords.x);
-  }
-
   // converts a given Vector2Int into a location in the world space
   private Vector3 ConvertCellLoc(Vector2Int coords)
   {
-    Vector2Int fixedCoords = ConvertGridIndexToCoordSpace(coords);
+    Vector2Int fixedCoords = coords; // ConvertGridIndexToCoordSpace(coords);
 
     // adjust coords over bottom left cell
     Vector3Int adjustedCoords =
