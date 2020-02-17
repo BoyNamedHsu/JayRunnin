@@ -18,7 +18,7 @@ public class ObjectSpawner : MonoBehaviour
   Overworld overworld; // And the overworld to get grid height 
 
   // References to each GameObject we instantiate
-  private Dictionary<Living, GameObject> spawnedSprites;
+  private Dictionary<GameElement, GameObject> spawnedSprites;
 
   // fields for specific animations, we need to hold onto these variables between calls to Update()
   private Animation currAnimation;
@@ -137,11 +137,15 @@ public class ObjectSpawner : MonoBehaviour
 
   // SpawnCopSprites (List<Manholes> holes)
 
-  public void SetMap(List<Living> people)
+  public void SetMap(List<Living> people, List<TileObject> tiles)
   {
     foreach (Living person in people)
     {
-      SpawnSprite(person);
+        SpawnSprite(person);
+    }
+    foreach (TileObject tile in tiles)
+    {
+      SpawnSprite(tile);
     }
   }
 
@@ -155,7 +159,7 @@ public class ObjectSpawner : MonoBehaviour
   {
     overworld = GameObject.Find("Overworld").GetComponent<Overworld>();
     tilemap = transform.GetComponent<Tilemap>();
-    spawnedSprites = new Dictionary<Living, GameObject>();
+    spawnedSprites = new Dictionary<GameElement, GameObject>();
 
     currAnimation = Animation.None;
     animationUpdates = new Dictionary<Animation, Func<bool>>();
@@ -190,19 +194,16 @@ public class ObjectSpawner : MonoBehaviour
     return new Vector3(res.x + 1, res.y + 1, 0); // 1 cell of padding
   }
 
-  private void SpawnSprite(Living character)
+  private void SpawnSprite(GameElement character)
   {
     Vector2Int loc = character.position;
-    Debug.Log(loc);
     GameElement.ElementType characterType = character.eid;
-    Debug.Log(characterType);
     GameObject newObj;
 
     switch (character.eid)
     {
       case GameElement.ElementType.Jay:
         newObj = Instantiate(jay_sprite) as GameObject;
-        Debug.Log("j");
         break;
       case GameElement.ElementType.Cone:
         newObj = Instantiate(cone_sprite) as GameObject;

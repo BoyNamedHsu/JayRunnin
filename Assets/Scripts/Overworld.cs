@@ -56,8 +56,8 @@ public class Overworld : MonoBehaviour
     {
         if (TileOccupied(current))
         {
-            lGridworld[prev.x, prev.y].eid = GameElement.ElementType.Default;
             lGridworld[current.x, current.y].eid = character;
+            lGridworld[prev.x, prev.y].eid = GameElement.ElementType.Default;
             return true;
         }
         return false;
@@ -75,17 +75,16 @@ public class Overworld : MonoBehaviour
 
     // Returns whether or not coords is occupied
     public bool TileOccupied(Vector2Int coords)
-    {   
+    {
         // return if tiles are unnocupied
-        return (lGridworld[coords.x, coords.y].eid == GameElement.ElementType.Jay ||
-               lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower) &&
-               !eGridworld[coords.x, coords.y].blocked;
+        return (lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Jay &&
+                lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower) &&
+                !eGridworld[coords.x, coords.y].blocked;
     }
     
     // Spawns a tileobject at a certain coordinate
     public void spawnTile(Vector2Int coords, GameElement.ElementType eType)
     {
-        Debug.Log("hello");
         TileObject newObj = new TileObject(coords.x, coords.y);
         switch (eType)
         {   

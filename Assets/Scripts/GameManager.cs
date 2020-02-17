@@ -7,11 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
-    public ObjectSpawner render;
+    private ObjectSpawner render;
     public static Vector2Int playerStart = new Vector2Int(0, 0);
     public static List<Vector2Int> directions;
     public static List<Living> followers;
     public static List<CarTile> cars;
+    public static List<TileObject> tiles;
     public Tilemap tilemap;
 
     // Start is called before the first frame update
@@ -24,9 +25,19 @@ public class GameManager : MonoBehaviour
             new Follower(2, 0, false),
             new Follower(3, 0, false),
             };
+        // Initialize the gridworld and spawn a tile object in it
         grid = GameObject.Find("Overworld").GetComponent<Overworld>();
+
+        // Kinda sketch here, to have two separate spawns, find a way to work around this.
+        grid.spawnTile(new Vector2Int(2, 2), GameElement.ElementType.Cone);
+        tiles = new List<TileObject>
+        {
+            new ConeTile(2, 2)
+        };
+
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.SetMap(followers);
+        render.SetMap(followers, tiles);
+
         for (int i = followers.Count - 2; i >= 0; i--) {
             directions.Add(followers[i].position);
         }
@@ -36,8 +47,6 @@ public class GameManager : MonoBehaviour
             //new CarTile(3, 5),
             //new CarTile(5, 7)
         };
-
-        grid.spawnTile(new Vector2Int(2,2), GameElement.ElementType.Cone);
     }
 
     // Update is called once per frame
@@ -118,12 +127,12 @@ public class GameManager : MonoBehaviour
             if (moveHorizontal < 0 && temp.x > 0)  // West
             {
                 temp.x--;
-                if (grid.TileOccupied(temp)) dir = Direction.East;
+                if (grid.TileOccupied(temp)) dir = Direction.West;
             }
             else if (moveHorizontal > 0 && temp.x < grid.width - 1)  // East
             {
                 temp.x++;
-                if (grid.TileOccupied(temp)) dir = Direction.West;
+                if (grid.TileOccupied(temp)) dir = Direction.East;
             }
         }
 
