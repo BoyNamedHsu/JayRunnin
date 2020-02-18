@@ -191,7 +191,7 @@ Grid:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 342451376}
   m_Enabled: 1
-  m_CellSize: {x: 1, y: 1, z: 0}
+  m_CellSize: {x: 1.5, y: 1.5, z: 1.5}
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
@@ -431,6 +431,8 @@ MonoBehaviour:
     type: 3}
   follower_sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
     type: 3}
+  car_warning_sprite: {fileID: 3192217740350126512, guid: a3970edc8fa7aa645be500eb64f1f5cb,
+    type: 3}
   car_sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}
 --- !u!1 &1274519851
@@ -462,6 +464,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tilemap: {fileID: 767522280}
+  moveDisabled: 0
 --- !u!4 &1274519853
 Transform:
   m_ObjectHideFlags: 0
