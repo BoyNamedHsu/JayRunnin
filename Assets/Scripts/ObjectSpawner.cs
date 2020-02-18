@@ -147,9 +147,10 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveCars] = MoveCarsUpdate;
   }
 
+  // UpdateSpriteStates (List<Manholes> holes)
   // SpawnCopSprites (List<Manholes> holes)
 
-  public void SetMap(List<GameElement> people, List<TileObject> tiles, List<CarTile> cars)
+    public void SetMap(List<GameElement> people, List<TileObject> tiles, List<CarTile> cars)
   {
         foreach (GameElement person in people)
         {
