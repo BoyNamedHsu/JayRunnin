@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Later this is going to be a subclass of "steppable"
-public class ManHole : TileObject
+public class ManHole : SteppableTile
 {
     public ManHole(int x, int y) : base(x, y)
     {
