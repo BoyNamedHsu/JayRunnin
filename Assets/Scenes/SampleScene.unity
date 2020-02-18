@@ -121,51 +121,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &119840903
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 119840904}
-  - component: {fileID: 119840905}
-  m_Layer: 0
-  m_Name: Overworld
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &119840904
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 119840903}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 234.21413, y: 156.88123, z: -102.408035}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &119840905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 119840903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac9b2c8ddfcf00d43882d0b62c8a1ce8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  height: 10
-  width: 10
 --- !u!1 &342451376
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +163,7 @@ Transform:
   m_Children:
   - {fileID: 767522278}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &388181055
 PrefabInstance:
@@ -505,17 +460,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jay_sprite: {fileID: 9123923525041600882, guid: 0552ae99490781243b3662db0fc7bcf7,
+  Jay_Sprite: {fileID: 9123923525041600882, guid: 0552ae99490781243b3662db0fc7bcf7,
     type: 3}
-  cone_sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
+  Cone_Sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
     type: 3}
-  zebra_sprite: {fileID: 7765461530178617112, guid: f2e873528ad459d4d838e26bb25a2808,
+  Cop_Sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
     type: 3}
-  follower_sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
-    type: 3}
-  car_warning_sprite: {fileID: 3192217740350126512, guid: a3970edc8fa7aa645be500eb64f1f5cb,
-    type: 3}
-  car_sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
+  Car_Sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}
 --- !u!1 &1274519851
 GameObject:
@@ -546,8 +497,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 0
-  width: 0
+  height: 10
+  width: 10
   tilemap: {fileID: 767522280}
   moveDisabled: 0
 --- !u!4 &1274519853
@@ -562,7 +513,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1430502695
 GameObject:
