@@ -1,108 +1,96 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
-public class Overworld : MonoBehaviour
+public class Overworld
 {
-    //There are 2 layers to represent the gridworld:
-    private TileObject[,] eGridworld; // Layer 1 :Environment
-    private Living[,] lGridworld; // Layer 2 : Jay and followers
-    public int height;
-    public int width;
+    // There are 2 layers to represent the gridworld:
+    private TileObject[,] tGridworld; // Layer 1 : Tiles/Environment
+    private LivingObject[,] lGridworld; // Layer 2 : Jay and followers
 
-    // Start is called before the first frame update
-    void Awake()
+    public Overworld(int height, int width)
     {
-        // Generate environment
-        initializeEnvironment();
-
-        // Generate Second layer
-        initializeLiving();
-
-    }
-
-    private void initializeEnvironment()
-    {
-        //Initializing new TileObjects to each index of array
-        eGridworld = new TileObject[height, width];
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                eGridworld[i, j] = new TileObject(i, j);
-    }
-
-    private void initializeLiving()
-    {
-        //Initializing new TileObjects to each index of array
-        lGridworld = new Living[height, width];
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                lGridworld[i, j] = new Living(i, j);
-
-        lGridworld[GameManager.playerStart.x, GameManager.playerStart.y].eid = GameElement.ElementType.Jay; // Set Jay
-
-        // Generate Followers
-        for (int i = 1; i < GameManager.followers.Count(); i++)
-        {
-            lGridworld[GameManager.followers[i].position.x,
-                        GameManager.followers[i].position.y].eid = GameElement.ElementType.Follower;
-        }
-    }
-
-    public bool Move(Vector2Int prev, Vector2Int current, GameElement.ElementType character)
-    {
-        if (TileOccupied(current))
-        {
-            lGridworld[current.x, current.y].eid = character;
-            lGridworld[prev.x, prev.y].eid = GameElement.ElementType.Default;
-            return true;
-        }
-        return false;
-    }
-
-    // **Fix this method**
-    public void kill(int col) {
-        for (int x = 0; x < height; x++) { // check if living too...
-            if (lGridworld[x, col].eid != GameElement.ElementType.Default) {
-                lGridworld[x, col].alive = false;
-                lGridworld[x, col].eid = GameElement.ElementType.Default;
-            }
-        }
+        tGridworld = new TileObject[height, width];
+        lGridworld = new LivingObject[height, width];
     }
 
     // Returns whether or not coords is occupied
-    public bool TileOccupied(Vector2Int coords)
+    public bool IsTileEmpty(Vector2Int coords)
     {
-        // return if tiles are unnocupied
-        return (lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Jay &&
-                lGridworld[coords.x, coords.y].eid != GameElement.ElementType.Follower) &&
-                !eGridworld[coords.x, coords.y].blocked;
+        return lGridworld[coords.x, coords.y] == null;
     }
-    
-    // Spawns a tileobject at a certain coordinate
-    public void spawnTile(Vector2Int coords, GameElement.ElementType eType)
+
+    // Methods for spawning tiles
+    // returns false if the tile was already occupied
+    public bool SpawnTile(TileObject tile)
     {
-        TileObject newObj = new TileObject(coords.x, coords.y);
-        switch (eType)
-        {   
-            case GameElement.ElementType.Cone:
-                eGridworld[coords.x, coords.y] = new ConeTile(coords.x, coords.y);
-                break;
-            case GameElement.ElementType.Zebra:
-                eGridworld[coords.x, coords.y] = new ZebraTile(coords.x, coords.y);
-                break;
-            case GameElement.ElementType.ManHole:
-                //newObj = Instantiate(follower_sprite) as GameObject;
-                eGridworld[coords.x, coords.y] = new ConeTile(coords.x, coords.y);
-                break;
-            default:
-                Debug.Log("Spawn failed!");
-                newObj = new ConeTile(coords.x, coords.y);
-                eGridworld[coords.x, coords.y] = new TileObject(coords.x, coords.y);
-                return;
+        if (this.tGridworld[tile.position.x, tile.position.y] != null){
+            return false;
         }
+        this.tGridworld[tile.position.x, tile.position.y] = tile;
+        return true;
+    }
+
+    // Returns false if the delete failed
+    public bool DeleteTile(TileObject tile)
+    {
+        if (this.tGridworld[tile.position.x, tile.position.y] != tile){
+            return false;
+        }
+        this.tGridworld[tile.position.x, tile.position.y] = null;
+        return true;
+    }
+
+    // Add T/F checks... after?
+    public bool SpawnLiving(LivingObject living)
+    {
+        this.lGridworld[living.position.x, living.position.y] = living;
+        return true;
+    }
+
+    // Returns false if the delete failed
+    public bool DeleteLiving(LivingObject living)
+    {
+        this.lGridworld[living.position.x, living.position.y] = null;
+        return true;
+    }
+
+    // Moves a living object to the given location. Fails if tile is occupied
+    // or if the move failed
+    // Updates the position of the given LivingObject
+    public bool MoveLiving(LivingObject living, Vector2Int newPos)
+    {
+        this.DeleteLiving(living);
+        living.position = newPos;
+        this.SpawnLiving(living);
+        return true;
+    }
+
+    public List<LivingObject> GetAllLiving()
+    {
+        List<LivingObject> allLiving = new List<LivingObject>();
+        for (int x = 0; x < this.lGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.lGridworld.GetLength(1); y++){
+                LivingObject curr = this.lGridworld[x, y];
+                if (curr != null){
+                    allLiving.Add(curr);
+                }
+            }
+        }
+        return allLiving;
+    }
+
+    public List<TileObject> GetAllTiles()
+    {
+        List<TileObject> allTiles = new List<TileObject>();
+        for (int x = 0; x < this.tGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.tGridworld.GetLength(1); y++){
+                TileObject curr = this.tGridworld[x, y];
+                if (curr != null){
+                    allTiles.Add(curr);
+                }
+            }
+        }
+        return allTiles;
     }
 }

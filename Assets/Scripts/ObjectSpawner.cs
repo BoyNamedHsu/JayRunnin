@@ -9,16 +9,14 @@ public class ObjectSpawner : MonoBehaviour
   private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
-  public GameObject jay_sprite, cone_sprite, zebra_sprite, follower_sprite,
-        car_warning_sprite;  // and prefabs for other game ObjectSpawner
+  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite; // need the others too lol
 
-  public GameObject car_sprite; // and prefabs for other game ObjectSpawner
+  public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
 
   // Coordinates (x, y) of the bottom left and top right cells
   private Vector2Int blCell;
   private Vector2Int trCell;
   Tilemap tilemap; // And the tilemap those cells exist on
-  Overworld overworld; // And the overworld to get grid height 
 
   // References to each GameObject we instantiate
   private Dictionary<GameElement, GameObject> spawnedSprites;
@@ -35,6 +33,7 @@ public class ObjectSpawner : MonoBehaviour
   }
 
   // Snaps all current GameObjects to their proper locations
+  // (Requires that the positions of GameElements have been modified)
   public void MoveSprites()
   {
     if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
@@ -75,7 +74,7 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
-  public void MoveCars(List<GameElement> killedOrig, List<int> carColumns)
+  public void MoveCars(List<LivingObject> killedOrig, List<int> carColumns)
   {
     if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
@@ -91,7 +90,7 @@ public class ObjectSpawner : MonoBehaviour
     Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
     foreach (int xPos in carColumns)
     {
-        GameObject carSprite = Instantiate(car_sprite) as GameObject;
+        GameObject carSprite = Instantiate(Car_Sprite) as GameObject;
         carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, trCell.y - blCell.y + 1));
         carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -2)); // add that car's destination
     }
@@ -150,7 +149,7 @@ public class ObjectSpawner : MonoBehaviour
   // UpdateSpriteStates (List<Manholes> holes)
   // SpawnCopSprites (List<Manholes> holes)
 
-    public void SetMap(List<GameElement> people, List<TileObject> tiles, List<CarTile> cars)
+  public void SetMap(List<LivingObject> people, List<TileObject> tiles, List<Car> cars)
   {
         foreach (GameElement person in people)
         {
@@ -160,22 +159,20 @@ public class ObjectSpawner : MonoBehaviour
         {
           SpawnSprite(tile);
         }
-        foreach (CarTile car in cars)
+        foreach (Car car in cars)
         {
-            SpawnSprite(car);
+            // SpawnSprite(car); something else needs to be done here 
         }
   }
 
   void Update()
   {
-        Debug.Log(this.currAnimation);
         animationUpdates[this.currAnimation]();
   }
 
   // Start is called before the first frame update
   void Awake()
   {
-    overworld = GameObject.Find("Overworld").GetComponent<Overworld>();
     tilemap = transform.GetComponent<Tilemap>();
     spawnedSprites = new Dictionary<GameElement, GameObject>();
 
@@ -187,14 +184,12 @@ public class ObjectSpawner : MonoBehaviour
     Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
     blCell.x = blLoc.x;
     blCell.y = blLoc.y;
-    Debug.Log("blcell " + blCell.x + ", " + blCell.y);
 
     // tr stands for top right
     Vector3Int trLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(
         new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0)));
     trCell.x = trLoc.x;
     trCell.y = trLoc.y;
-    Debug.Log("trcell " + trCell.x + ", " + trCell.y);
   }
 
   // converts a given Vector2Int into a location in the world space
@@ -205,7 +200,6 @@ public class ObjectSpawner : MonoBehaviour
     // adjust coords over bottom left cell
     Vector3Int adjustedCoords =
         new Vector3Int(fixedCoords.x + blCell.x, fixedCoords.y + blCell.y, 0);
-    Debug.Log("adjusted to " + adjustedCoords);
 
     Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
 
@@ -214,38 +208,26 @@ public class ObjectSpawner : MonoBehaviour
 
   private void SpawnSprite(GameElement character)
   {
-    Debug.Log("Cell size: " + tilemap.cellSize);
-
     Vector2Int loc = character.position;
-    Debug.Log(loc);
     GameElement.ElementType characterType = character.eid;
-    Debug.Log(characterType);
     GameObject newObj;
 
     switch (character.eid)
     {
       case GameElement.ElementType.Jay:
-        newObj = Instantiate(jay_sprite) as GameObject;
-        Debug.Log("j");
+        newObj = Instantiate(Jay_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Cone:
-        newObj = Instantiate(cone_sprite) as GameObject;
+        newObj = Instantiate(Cone_Sprite) as GameObject;
         break;
-      case GameElement.ElementType.Zebra:
-        newObj = Instantiate(zebra_sprite) as GameObject;
-        break;
-      case GameElement.ElementType.Follower:
-        newObj = Instantiate(follower_sprite) as GameObject;
-        break;
-      case GameElement.ElementType.Car:
-        newObj = Instantiate(car_warning_sprite) as GameObject;
+      case GameElement.ElementType.Cop:
+        newObj = Instantiate(Cop_Sprite) as GameObject;
         break;
       default:
-        print("Spawn failed!");
+        Debug.Log("Spawn failed!");
         return; // This should never occur
     }
 
-    Debug.Log("new location: " + ConvertCellLoc(loc));
     newObj.transform.position = ConvertCellLoc(loc);
 
     SpriteRenderer newObjBounds = newObj.GetComponent<SpriteRenderer>();
@@ -257,6 +239,17 @@ public class ObjectSpawner : MonoBehaviour
     newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
     spawnedSprites[character] = newObj;
   }
+
+/*
+  private void ScaleSprite (GameObject obj){
+    SpriteRenderer objBounds = obj.GetComponent<SpriteRenderer>();
+    Vector3 tilesize = tilemap.cellSize;
+    Vector3 spritesize = newObjBounds.bounds.size;
+
+    // scale sprite to size of grid
+    newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
+  }
+  */
 
   private void DestroySprite(GameElement character)
   {

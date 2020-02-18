@@ -2,36 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Follower : Living
+public class Follower : LivingObject
 {
-    private bool cop;
-
-    public Follower(int x, int y, bool cop) : base(x, y)
-    {
-        this.eid = ElementType.Follower;
-        this.cop = cop;
-        this.alive = true;
-    }
-
-/*    public (int x, int y) Move((int x, int )
-    {
-        (int x, int y) temp = position;
-        if (direction == GameManager.Direction.South)
-        {
-            temp = (position.x + 1, position.y);
-        }
-        else if (direction == GameManager.Direction.North)
-        {
-            temp = (position.x - 1, position.y);
-        }
-        else if (direction == GameManager.Direction.East)
-        {
-            temp = (position.x, position.y + 1);
-        }
-        else 
-        {
-            temp = (position.x, position.y - 1);
-        }
-        return temp;
-    }*/
+    public Follower(int x, int y) : base(x, y){}
 }

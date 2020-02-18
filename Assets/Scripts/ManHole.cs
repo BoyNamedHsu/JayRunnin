@@ -1,9 +1,16 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class manHoleTile : TileObject
+// Later this is going to be a subclass of "steppable"
+public class ManHole : TileObject
 {
+    public ManHole(int x, int y) : base(x, y)
+    {
+        this.eid = ElementType.Zebra;
+    }
+
+    /*
     enum ManHoleState {Unoccupied, Occupied, Activated}
     private ManHoleState state;
     public Follower cop;
@@ -14,20 +21,6 @@ public class manHoleTile : TileObject
         this.eid = ElementType.ManHole; // Empty tile
         state = ManHoleState.Unoccupied;
         cop = null;
-
-    }
-
-    /*
-    public void checkActivate()
-    {
-        switch(ManHoleState)
-        {
-            case ManHoleState.Unoccupied:
-                
-            case ManHoleState.Occupied:
-            case ManHoleState.Activated:
-        }
     }
     */
-
 }

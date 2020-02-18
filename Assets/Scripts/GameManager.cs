@@ -5,49 +5,52 @@ using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
+    public int height, width; // height/width of our grid
+    public static Vector2Int playerStart = new Vector2Int(0, 0);
+
+    // rendering:
+    public Tilemap tilemap;
+    private ObjectSpawner render;
+    public bool moveDisabled; // disable movements while renderer is playing. Hacky :(
+
+    // collisions
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
-    private ObjectSpawner render;
-    public static Vector2Int playerStart = new Vector2Int(0, 0);
-    public static List<Vector2Int> directions;
-    public static List<GameElement> followers;
-    public static List<CarTile> cars;
-    public static List<TileObject> tiles;
-    public Tilemap tilemap;
 
-    public bool moveDisabled; // disable movements while renderer is playing. This is hacky :(
+    // other things needed for each level
+    public static Jay player;
+    public static List<Follower> followers;
+    public static List<Car> cars; // this sucks ugh
 
     // Start is called before the first frame update
     void Awake()
     {
         moveDisabled = false;
-        directions = new List<Vector2Int>();
-        followers = new List<GameElement> {
-            new Jay(playerStart.x, playerStart.y),
-            new Follower(1, 0, false),
-            new Follower(2, 0, false),
-            new Follower(3, 0, false),
-            };
-        // Initialize the gridworld and spawn a tile object in it
-        grid = GameObject.Find("Overworld").GetComponent<Overworld>();
 
-        // Kinda sketch here, to have two separate spawns, find a way to work around this.
-        grid.spawnTile(new Vector2Int(2, 2), GameElement.ElementType.Cone);
-        tiles = new List<TileObject>
-        {
-            new ConeTile(2, 2)
+        player = new Jay(playerStart.x, playerStart.y);
+        followers = new List<Follower> {
+            new Cop(1, 0),
+            new Cop(2, 0),
+            new Cop(3, 0),
         };
-        cars = new List<CarTile>
+
+        // Initialize the gridworld and spawn a tile object in it
+        cars = new List<Car>();
+        cars.Add(new Car(2, 5)); // one car
+
+        grid = new Overworld(height, width);
+
+        grid.SpawnLiving(player);
+
+        foreach (Follower f in followers)
         {
-            new CarTile(1, 5)
-        };
+            grid.SpawnLiving(f);
+        }
+
+        grid.SpawnLiving(new Cone(2, 2));
 
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.SetMap(followers, tiles, cars);
-
-        for (int i = followers.Count - 2; i >= 0; i--) {
-            directions.Add(followers[i].position);
-        }
+        render.SetMap(grid.GetAllLiving(), grid.GetAllTiles(), cars);
     }
 
     // Update is called once per frame
@@ -58,43 +61,50 @@ public class GameManager : MonoBehaviour
             return; // don't listen for key inputs while renderer is animating
         }
 
-        Direction moved = Move();
-        if (moved != Direction.None)
-        {
-            StartCoroutine(UpdateGameState(moved));
+        Vector2Int newPos = Move();
+        if (newPos.x == player.position.x && newPos.y == player.position.y){
+            return;
         }
+        if (!grid.IsTileEmpty(newPos)){
+            Debug.Log("Tile is occupied");
+            return;
+        }
+
+        StartCoroutine(UpdateGameState(newPos));
     }
 
     // updates state of board and waits for animations to play
-    IEnumerator UpdateGameState(Direction moved)
+    // Entering this method assumes that move is valid.
+    IEnumerator UpdateGameState(Vector2Int newPos)
     {
-        moveDisabled = true; // players can't input additional controls while we're processing this one
+        moveDisabled = true; // players can't input additional moves while we're processing this one
 
-        // Entering this method assumes that move is valid.
+        // move jay
+        Vector2Int oldPos = player.position;
+        grid.MoveLiving(player, newPos);
 
-        // Test if valid move
-        for (int i = 1; i < followers.Count; i++)
+        // and each follower
+        newPos = oldPos;
+        foreach (Follower f in followers)
         {
-            grid.Move(followers[i].position, directions[directions.Count - i], GameElement.ElementType.Follower);
-            followers[i].position = directions[directions.Count - i];
+            oldPos = f.position;
+            grid.MoveLiving(f, newPos);
+            newPos = oldPos;
         }
-        directions.Add(followers[0].position);
-        directions.RemoveAt(0);
 
         /*--Animate those changes--*/
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
-
+        
         List<int> carColumns = new List<int>();
-        List<GameElement> killed = new List<GameElement>();
+        List<LivingObject> killed = new List<LivingObject>();
 
-        foreach (CarTile car in cars)
+        foreach (Car car in cars)
         {
-            car.countDown();
-            if (car.gone && car.countdown == 0) // countdown hits 0 when iterates count times
+            if (car.countDown()) // if countdown returns true
             {
                 carColumns.Add(car.xPos);
-                foreach (GameElement follower in followers)
+                foreach (Follower follower in followers)
                 {
                     if (follower.position.x == car.xPos)
                         killed.Add(follower);
@@ -103,24 +113,30 @@ public class GameManager : MonoBehaviour
         }
 
         /*--Animate those changes--*/
-        render.MoveCars(killed, carColumns); // This animation gets hung.... yikes
+        render.MoveCars(killed, carColumns);
         yield return new WaitUntil(() => !render.IsInAnimation());
+        
 
         // if any were killed we need to tighten
         if (killed.Count > 0)
         {
-            for (int i = followers.Count - 1; i > 0; i--) // We can't elim Jay!
+            for (int i = followers.Count - 1; i >= 0; i--)
             {
                 if (killed.Contains(followers[i]))
                 {
-                    for (int j = followers.Count - 1; j > i; j--)
+                    newPos = followers[i].position;
+                    grid.DeleteLiving(followers[i]);
+
+                    for (int j = i + 1; j < followers.Count; j++)
                     {
-                        followers[j].position = followers[j - 1].position;
+                        oldPos = followers[j].position;
+                        grid.MoveLiving(followers[j], newPos);
+                        newPos = oldPos;
                     }
                     followers.RemoveAt(i);
                 }
-
-                /*--Animate those changes--*/
+                
+                // Animate those changes
                 render.MoveSprites(); // ugh, I don't like de-sync potential here
                 yield return new WaitUntil(() => !render.IsInAnimation());
             }
@@ -130,46 +146,37 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    private 
-
-    // Returns the direction Jay has moved, else returns null if an invalid move occurs
-    Direction Move()
+    // Returns the tile Jay will move to, else returns the same position as Jay
+    Vector2Int Move()
     {
-        Direction dir = Direction.None;
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-        Vector2Int temp = followers[0].position;  // Jay's position
+
+        // Jay's position
+        Vector2Int newPos = new Vector2Int(player.position.x, player.position.y);
+        
         if (Input.GetButtonDown("Vertical"))
         {
-            if (moveVertical < 0 && temp.y > 0)  // South
+            if (moveVertical < 0 && newPos.y > 0)  // South
             {
-                temp.y--;
-                if (grid.TileOccupied(temp)) dir = Direction.South;
+                newPos.y--;
             }
-            else if (moveVertical > 0 && temp.y < grid.height - 1)  // North
+            else if (moveVertical > 0 && newPos.y < height - 1)  // North
             {
-                temp.y++;
-                if (grid.TileOccupied(temp)) dir = Direction.North;
+                newPos.y++;
             }
         }
         else if (Input.GetButtonDown("Horizontal"))
         {
-            if (moveHorizontal < 0 && temp.x > 0)  // West
+            if (moveHorizontal < 0 && newPos.x > 0)  // West
             {
-                temp.x--;
-                if (grid.TileOccupied(temp)) dir = Direction.West;
+                newPos.x--;
             }
-            else if (moveHorizontal > 0 && temp.x < grid.width - 1)  // East
+            else if (moveHorizontal > 0 && newPos.x < width - 1)  // East
             {
-                temp.x++;
-                if (grid.TileOccupied(temp)) dir = Direction.East;
+                newPos.x++;
             }
         }
-
-        if (grid.Move(followers[0].position, temp, GameElement.ElementType.Jay))
-        {
-            followers[0].position = temp;
-        }
-        return dir;
+        return newPos;
     }
 }
