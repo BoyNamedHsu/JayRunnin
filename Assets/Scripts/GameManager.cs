@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
             new Cop(1, 0),
             new Cop(2, 0),
             new Cop(3, 0),
+            new Cop(4, 0)
         };
 
         // Initialize the gridworld and spawn a tile object in it
@@ -61,10 +62,11 @@ public class GameManager : MonoBehaviour
             return; // don't listen for key inputs while renderer is animating
         }
 
-        Vector2Int newPos = Move();
-        if (newPos.x == player.position.x && newPos.y == player.position.y){
+        Direction dir = Move();
+        if (dir == Direction.None){
             return;
         }
+        Vector2Int newPos = ApplyDir(player.position, dir);
         if (!grid.IsTileEmpty(newPos)){
             Debug.Log("Tile is occupied");
             return;
@@ -79,35 +81,80 @@ public class GameManager : MonoBehaviour
     {
         moveDisabled = true; // players can't input additional moves while we're processing this one
 
-        // move jay
+        // Move Jay
+        yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
+
+        // Check for cars/send them in
+        yield return StartCoroutine(SendCars());
+
+        moveDisabled = false;
+        yield return null;
+    }
+
+    /*
+    ALL HELPERS FOR UPDATE GAME STATE:
+    (This is basically all GameManager does, so there are a LOT)
+    */
+
+    // Moves Jay and the chain behind him
+    private IEnumerator MoveJay(Vector2Int newPos)
+    {
         Vector2Int oldPos = player.position;
         grid.MoveLiving(player, newPos);
+        yield return StartCoroutine(MoveChain(oldPos, 0));
+    }
 
-        // and each follower
-        newPos = oldPos;
-        foreach (Follower f in followers)
+    // Moves a portion chain of followers to the given coords, starting from index *head*
+    private IEnumerator MoveChain(Vector2Int newPos, int head)
+    {
+        Vector2Int oldPos;
+        for (int i = head; i < followers.Count; i++)
         {
-            oldPos = f.position;
-            grid.MoveLiving(f, newPos);
+            oldPos = followers[i].position;
+            grid.MoveLiving(followers[i], newPos);
             newPos = oldPos;
         }
-
-        /*--Animate those changes--*/
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
-        
+
+        // then maybe do some tile checks hmmm
+    }
+
+    private IEnumerator UpdateTiles()
+    {
+        foreach (TileObject tile in grid.GetAllTiles())
+        {
+            
+        }
+    }
+
+    private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
+    {
+        int i = followers.IndexOf(f); // if this is slow, we can pass in int directly 
+
+        Vector2Int dest = followers[i].position;
+        grid.DeleteLiving(followers[i]);
+        followers.RemoveAt(i);
+
+        yield return StartCoroutine(MoveChain(dest, i));
+    }
+
+    // Animates cars running over living objects, populates killed with runover living
+    private IEnumerator SendCars()
+    {
+        List<Follower> killed = new List<Follower>();
         List<int> carColumns = new List<int>();
-        List<LivingObject> killed = new List<LivingObject>();
 
         foreach (Car car in cars)
         {
             if (car.countDown()) // if countdown returns true
             {
                 carColumns.Add(car.xPos);
-                foreach (Follower follower in followers)
+                // kinda jank way of doing this... can be cleaned up
+                foreach (Follower f in followers)
                 {
-                    if (follower.position.x == car.xPos)
-                        killed.Add(follower);
+                    if (f.position.x == car.xPos)
+                        killed.Add(f);
                 }
             }
         }
@@ -115,68 +162,63 @@ public class GameManager : MonoBehaviour
         /*--Animate those changes--*/
         render.MoveCars(killed, carColumns);
         yield return new WaitUntil(() => !render.IsInAnimation());
-        
 
-        // if any were killed we need to tighten
-        if (killed.Count > 0)
+        // Then delete followers who were killed
+        foreach (Follower f in killed)
         {
-            for (int i = followers.Count - 1; i >= 0; i--)
-            {
-                if (killed.Contains(followers[i]))
-                {
-                    newPos = followers[i].position;
-                    grid.DeleteLiving(followers[i]);
-
-                    for (int j = i + 1; j < followers.Count; j++)
-                    {
-                        oldPos = followers[j].position;
-                        grid.MoveLiving(followers[j], newPos);
-                        newPos = oldPos;
-                    }
-                    followers.RemoveAt(i);
-                }
-                
-                // Animate those changes
-                render.MoveSprites(); // ugh, I don't like de-sync potential here
-                yield return new WaitUntil(() => !render.IsInAnimation());
-            }
+            yield return StartCoroutine(KillFollower(f));
         }
-
-        moveDisabled = false;
         yield return null;
     }
 
     // Returns the tile Jay will move to, else returns the same position as Jay
-    Vector2Int Move()
+    private Direction Move()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
-        // Jay's position
-        Vector2Int newPos = new Vector2Int(player.position.x, player.position.y);
-        
         if (Input.GetButtonDown("Vertical"))
         {
-            if (moveVertical < 0 && newPos.y > 0)  // South
+            if (moveVertical < 0 && player.position.y > 0)  // South
             {
-                newPos.y--;
+                return Direction.South;
             }
-            else if (moveVertical > 0 && newPos.y < height - 1)  // North
+            else if (moveVertical > 0 && player.position.y < height - 1)  // North
             {
-                newPos.y++;
+                return Direction.North;
             }
         }
         else if (Input.GetButtonDown("Horizontal"))
         {
-            if (moveHorizontal < 0 && newPos.x > 0)  // West
+            if (moveHorizontal < 0 && player.position.x > 0)  // West
             {
-                newPos.x--;
+                return Direction.West;
             }
-            else if (moveHorizontal > 0 && newPos.x < width - 1)  // East
+            else if (moveHorizontal > 0 && player.position.x < width - 1)  // East
             {
-                newPos.x++;
+                return Direction.East;
             }
         }
-        return newPos;
+        return Direction.None;
+    }
+
+    // Returns coordinates 1 step in the given direction from the original coords
+    private Vector2Int ApplyDir(Vector2Int orig, Direction dir)
+    {
+        switch (dir)
+        {
+        case Direction.South:
+            return new Vector2Int(orig.x, orig.y - 1);
+        case Direction.North:
+            return new Vector2Int(orig.x, orig.y + 1);
+        case Direction.West:
+            return new Vector2Int(orig.x - 1, orig.y);
+        case Direction.East:
+            return new Vector2Int(orig.x + 1, orig.y);
+        case Direction.None:
+            return new Vector2Int(orig.x, orig.y);
+        default: // This should never occur
+            return new Vector2Int(orig.x, orig.y);
+        }
     }
 }
