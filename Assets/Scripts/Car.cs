@@ -20,7 +20,7 @@ public class Car
     {
         countdown--;
         if (countdown == 0) {
-            Debug.Log("vroom");         
+            // Debug.Log("vroom");         
         }
         return countdown == 0;
     }

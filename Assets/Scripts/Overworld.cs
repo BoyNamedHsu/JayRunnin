@@ -20,6 +20,12 @@ public class Overworld
         return lGridworld[coords.x, coords.y] == null;
     }
 
+    // Returns the occupant of the given tile
+    public LivingObject GetOccupant(TileObject tile)
+    {
+        return lGridworld[tile.position.x, tile.position.y];
+    }
+
     // Methods for spawning tiles
     // returns false if the tile was already occupied
     public bool SpawnTile(TileObject tile)

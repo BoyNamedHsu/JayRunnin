@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -41,8 +42,8 @@ public class GameManager : MonoBehaviour
 
         grid = new Overworld(height, width);
 
+        grid.SpawnTile(new ManHole(3, 3, grid));
         grid.SpawnLiving(player);
-
         foreach (Follower f in followers)
         {
             grid.SpawnLiving(f);
@@ -102,6 +103,9 @@ public class GameManager : MonoBehaviour
         Vector2Int oldPos = player.position;
         grid.MoveLiving(player, newPos);
         yield return StartCoroutine(MoveChain(oldPos, 0));
+
+        // then check if any tiles were triggered by movement
+        yield return StartCoroutine(UpdateTiles());
     }
 
     // Moves a portion chain of followers to the given coords, starting from index *head*
@@ -116,16 +120,6 @@ public class GameManager : MonoBehaviour
         }
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
-
-        // then maybe do some tile checks hmmm
-    }
-
-    private IEnumerator UpdateTiles()
-    {
-        foreach (TileObject tile in grid.GetAllTiles())
-        {
-            
-        }
     }
 
     private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
@@ -168,6 +162,26 @@ public class GameManager : MonoBehaviour
         {
             yield return StartCoroutine(KillFollower(f));
         }
+        // then check if any tiles were triggered by movement
+        yield return StartCoroutine(UpdateTiles());
+    }
+
+    private IEnumerator UpdateTiles()
+    {
+        List<GameElement> spawns = new List<GameElement>(); 
+        List<GameElement> despawns = new List<GameElement>();
+
+        foreach (TileObject tile in grid.GetAllTiles())
+        {
+            tile.TileUpdate(grid.GetOccupant(tile));
+        }
+
+        if (spawns.Count > 0){
+            Debug.Log("spawns " + spawns);
+        }
+
+        render.SpawnSprites(spawns);
+        render.DespawnSprites(spawns);
         yield return null;
     }
 

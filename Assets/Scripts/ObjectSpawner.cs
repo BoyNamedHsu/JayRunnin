@@ -9,7 +9,7 @@ public class ObjectSpawner : MonoBehaviour
   private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
-  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite; // need the others too lol
+  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
 
@@ -24,6 +24,7 @@ public class ObjectSpawner : MonoBehaviour
   // fields for specific animations, we need to hold onto these variables between calls to Update()
   private Animation currAnimation;
 
+  // Kinda weird, but the dictionary of different animations we're in
   private Dictionary<Animation, Func<bool>> animationUpdates;
 
   // returns true if the renderer is in an animation, otherwise false
@@ -155,7 +156,7 @@ public class ObjectSpawner : MonoBehaviour
         {
           SpawnSprite(person);
         }
-        foreach (TileObject tile in tiles)
+        foreach (GameElement tile in tiles)
         {
           SpawnSprite(tile);
         }
@@ -163,6 +164,20 @@ public class ObjectSpawner : MonoBehaviour
         {
             // SpawnSprite(car); something else needs to be done here 
         }
+  }
+
+  public void SpawnSprites(List<GameElement> spawns){
+    foreach (GameElement obj in spawns)
+    {
+      SpawnSprite(obj);
+    }
+  }
+
+  public void DespawnSprites(List<GameElement> despawns){
+    foreach (GameElement obj in despawns)
+    {
+      DestroySprite(obj);
+    }
   }
 
   void Update()
@@ -222,6 +237,9 @@ public class ObjectSpawner : MonoBehaviour
         break;
       case GameElement.ElementType.Cop:
         newObj = Instantiate(Cop_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.ManHole:
+        newObj = Instantiate(ManHole_Sprite) as GameObject;
         break;
       default:
         Debug.Log("Spawn failed!");

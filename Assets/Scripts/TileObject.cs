@@ -2,8 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileObject : GameElement
+public abstract class TileObject : GameElement
 {
-    // Start is called before the first frame update
-    public TileObject(int x, int y) : base (x, y){}
+    // there HAS to be a better way to do this but... I give up lmao
+    public Overworld grid;
+
+    // TileUpdate is run each turn
+    public abstract void TileUpdate(LivingObject occupant);
+
+    public TileObject(int x, int y, Overworld grid) : base (x, y)
+    {
+        this.grid = grid;
+    }
 }
