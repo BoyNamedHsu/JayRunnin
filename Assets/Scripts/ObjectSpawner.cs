@@ -63,7 +63,7 @@ public class ObjectSpawner : MonoBehaviour
       foreach (GameElement obj in spawnedSprites.Keys)
       {
         animationIsComplete = animationIsComplete &&
-                (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.01f);
+                (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.1f);
       }
       if (animationIsComplete)
       {
@@ -92,6 +92,7 @@ public class ObjectSpawner : MonoBehaviour
     foreach (int xPos in carColumns)
     {
         GameObject carSprite = Instantiate(Car_Sprite) as GameObject;
+        ScaleSprite(carSprite);
         carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, trCell.y - blCell.y + 1));
         carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -2)); // add that car's destination
     }
@@ -108,7 +109,8 @@ public class ObjectSpawner : MonoBehaviour
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
                     CameraShake.Shake(0.05f, 0.2f);
-                    DestroySprite(killed[i]);
+                    // hide sprites that get runover
+                    spawnedSprites[killed[i]].GetComponent<Renderer>().enabled = false;
                     killed.RemoveAt(i);
                     i--;
                 }
@@ -129,11 +131,6 @@ public class ObjectSpawner : MonoBehaviour
           if (animationIsComplete)
           {
                 this.currAnimation = Animation.None; // if so, our animation is set back to None
-                // cleanup GameElements destroyed by the car (if they didn't get cleaned up already)
-                foreach (GameElement runOver in killed)
-                {
-                    DestroySprite(runOver);
-                }
 
                 // and destroy car sprites now that they're offscreen
                 foreach (GameObject car in carDestinations.Keys)
@@ -147,36 +144,29 @@ public class ObjectSpawner : MonoBehaviour
     animationUpdates[Animation.MoveCars] = MoveCarsUpdate;
   }
 
-  // UpdateSpriteStates (List<Manholes> holes)
-  // SpawnCopSprites (List<Manholes> holes)
+  // Spawns in missing objects from a grid
+  // Despawns objects that no longer exist in grid
 
-  public void SetMap(List<LivingObject> people, List<TileObject> tiles, List<Car> cars)
-  {
-        foreach (GameElement person in people)
-        {
-          SpawnSprite(person);
-        }
-        foreach (GameElement tile in tiles)
-        {
-          SpawnSprite(tile);
-        }
-        foreach (Car car in cars)
-        {
-            // SpawnSprite(car); something else needs to be done here 
-        }
-  }
+  // this is bugggy 
+  public void SyncSprites(Overworld grid){
+    HashSet<GameElement> gridElements = grid.GetAllObjects();
 
-  public void SpawnSprites(List<GameElement> spawns){
-    foreach (GameElement obj in spawns)
-    {
-      SpawnSprite(obj);
+    // despawn no longer existing sprites
+    HashSet<GameElement> toRemove = new HashSet<GameElement>();
+    foreach (GameElement obj in spawnedSprites.Keys){
+      if (!gridElements.Contains(obj)){
+        toRemove.Add(obj);
+      }
     }
-  }
-
-  public void DespawnSprites(List<GameElement> despawns){
-    foreach (GameElement obj in despawns)
-    {
+    foreach (GameElement obj in toRemove){
       DestroySprite(obj);
+    }
+
+    // spawn missing sprites
+    foreach (GameElement obj in gridElements){
+      if (!spawnedSprites.ContainsKey(obj)){
+        SpawnSprite(obj);
+      }
     }
   }
 
@@ -248,26 +238,19 @@ public class ObjectSpawner : MonoBehaviour
 
     newObj.transform.position = ConvertCellLoc(loc);
 
-    SpriteRenderer newObjBounds = newObj.GetComponent<SpriteRenderer>();
-
-    Vector3 tilesize = tilemap.cellSize;
-    Vector3 spritesize = newObjBounds.bounds.size;
-
     // scale sprite to size of grid
-    newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
+    ScaleSprite(newObj);
     spawnedSprites[character] = newObj;
   }
 
-/*
   private void ScaleSprite (GameObject obj){
     SpriteRenderer objBounds = obj.GetComponent<SpriteRenderer>();
     Vector3 tilesize = tilemap.cellSize;
-    Vector3 spritesize = newObjBounds.bounds.size;
+    Vector3 spritesize = objBounds.bounds.size;
 
     // scale sprite to size of grid
-    newObj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
+    obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
   }
-  */
 
   private void DestroySprite(GameElement character)
   {

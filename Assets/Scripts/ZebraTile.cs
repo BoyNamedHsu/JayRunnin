@@ -8,5 +8,5 @@ public class ZebraTile : TileObject
         return;
     }
 
-    public ZebraTile(int x, int y, Overworld grid) : base (x, y, grid){}
+    public ZebraTile(int x, int y) : base (x, y){}
 }

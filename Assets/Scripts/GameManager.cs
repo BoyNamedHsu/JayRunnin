@@ -23,6 +23,20 @@ public class GameManager : MonoBehaviour
     public static List<Follower> followers;
     public static List<Car> cars; // this sucks ugh
 
+    // Late-night garbage code to get manholes working
+    private Func<TileObject, bool> TileNoop = (TileObject tile) => {
+        return true;
+    };
+    private Func<TileObject, bool> GetCopSpawner(Overworld gridRef) {
+        return (TileObject tile) => {
+            Follower cop = new Cop(tile.position.x, tile.position.y);
+            gridRef.DeleteTile(tile);
+            gridRef.SpawnLiving(cop);
+            followers.Add(cop);
+            return true;
+        };
+    }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -33,16 +47,19 @@ public class GameManager : MonoBehaviour
             new Cop(1, 0),
             new Cop(2, 0),
             new Cop(3, 0),
-            new Cop(4, 0)
+            new Cop(4, 0),
+            new Cop(5, 0)
         };
 
         // Initialize the gridworld and spawn a tile object in it
         cars = new List<Car>();
-        cars.Add(new Car(2, 5)); // one car
+        cars.Add(new Car(3, 10)); 
+        cars.Add(new Car(4, 10));
+        cars.Add(new Car(6, 10));
 
         grid = new Overworld(height, width);
 
-        grid.SpawnTile(new ManHole(3, 3, grid));
+        grid.SpawnTile(new ManHole(2, 3, GetCopSpawner(grid), TileNoop));
         grid.SpawnLiving(player);
         foreach (Follower f in followers)
         {
@@ -52,9 +69,9 @@ public class GameManager : MonoBehaviour
         grid.SpawnLiving(new Cone(2, 2));
 
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.SetMap(grid.GetAllLiving(), grid.GetAllTiles(), cars);
+        render.SyncSprites(grid);
 
-        Debug.Log(grid.GameStateToString());
+        // Debug.Log(grid.GameStateToString());
     }
 
     // Update is called once per frame
@@ -105,9 +122,6 @@ public class GameManager : MonoBehaviour
         Vector2Int oldPos = player.position;
         grid.MoveLiving(player, newPos);
         yield return StartCoroutine(MoveChain(oldPos, 0));
-
-        // then check if any tiles were triggered by movement
-        yield return StartCoroutine(UpdateTiles());
     }
 
     // Moves a portion chain of followers to the given coords, starting from index *head*
@@ -120,8 +134,12 @@ public class GameManager : MonoBehaviour
             grid.MoveLiving(followers[i], newPos);
             newPos = oldPos;
         }
+
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
+
+        // then check if any tiles were triggered by movement
+        yield return StartCoroutine(UpdateTiles());
     }
 
     private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
@@ -131,6 +149,7 @@ public class GameManager : MonoBehaviour
         Vector2Int dest = followers[i].position;
         grid.DeleteLiving(followers[i]);
         followers.RemoveAt(i);
+        render.SyncSprites(grid); // sync, since we just deleted a sprite
 
         yield return StartCoroutine(MoveChain(dest, i));
     }
@@ -164,8 +183,7 @@ public class GameManager : MonoBehaviour
         {
             yield return StartCoroutine(KillFollower(f));
         }
-        // then check if any tiles were triggered by movement
-        yield return StartCoroutine(UpdateTiles());
+        yield return null;
     }
 
     private IEnumerator UpdateTiles()
@@ -177,13 +195,7 @@ public class GameManager : MonoBehaviour
         {
             tile.TileUpdate(grid.GetOccupant(tile));
         }
-
-        if (spawns.Count > 0){
-            Debug.Log("spawns " + spawns);
-        }
-
-        render.SpawnSprites(spawns);
-        render.DespawnSprites(spawns);
+        render.SyncSprites(grid);
         yield return null;
     }
 

@@ -3,26 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class PressurePlate : TileObject
+public class PressurePlate : TileObject
 {
     public bool isTriggered;
 
-    public abstract void OffStep();
-    public abstract void OnStep();
+    private Func<TileObject, bool> OffStep;
+    private Func<TileObject, bool> OnStep;
 
-    public PressurePlate(int x, int y, Overworld grid) 
-        : base (x, y, grid){}
+    public PressurePlate(int x, int y, Func<TileObject, bool> OffStep, Func<TileObject, bool> OnStep) 
+        : base (x, y){
+            this.OffStep = OffStep;
+            this.OnStep = OnStep;
+        }
 
     public override void TileUpdate (LivingObject occupant) {
         // Someone stepped off the steppabletile
         if (occupant == null && isTriggered)
         {
             isTriggered = false;
-            OffStep();
+            OffStep(this);
         } else if (occupant != null && !isTriggered)
         {
             isTriggered = true;
-            OnStep();
+            OnStep(this);
         }
     }
 }

@@ -100,6 +100,18 @@ public class Overworld
         return allTiles;
     }
 
+    public HashSet<GameElement> GetAllObjects()
+    {
+        HashSet<GameElement> res = new HashSet<GameElement>();
+        foreach (LivingObject l in this.GetAllLiving()){
+            res.Add(l);
+        }
+        foreach (TileObject t in this.GetAllTiles()){
+            res.Add(t);
+        }
+        return res;
+    }
+
     public string GameStateToString()
     {
         string res = "Tiles:\n";
