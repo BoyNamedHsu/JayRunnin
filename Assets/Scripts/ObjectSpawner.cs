@@ -10,7 +10,7 @@ public class ObjectSpawner : MonoBehaviour
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
   public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, 
-    Zebra_Sprite;
+    Zebra_Sprite, Flagpole_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
 
@@ -234,6 +234,9 @@ public class ObjectSpawner : MonoBehaviour
         break;
       case GameElement.ElementType.Zebra:
         newObj = Instantiate(Zebra_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Flagpole:
+        newObj = Instantiate(Flagpole_Sprite) as GameObject;
         break;
       default:
         Debug.Log("Spawn failed!");

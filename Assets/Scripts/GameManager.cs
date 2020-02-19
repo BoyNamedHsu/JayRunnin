@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
         grid.SpawnTile(CreateZebraTile(2, 1));
         grid.SpawnTile(CreateZebraTile(3, 1));
 
+        grid.SpawnTile(CreateFlagpole(5, 4));
+
         grid.SpawnLiving(player);
         foreach (Follower f in followers)
         {
@@ -94,7 +96,7 @@ public class GameManager : MonoBehaviour
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
 
-        Debug.Log(grid.turnCount);
+        // Debug.Log(grid.turnCount);
 
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
@@ -275,5 +277,17 @@ public class GameManager : MonoBehaviour
 
         return new PressurePlate(x, y, TileNoop, DecrementTurn, 
             GameElement.ElementType.Zebra);
-    }    
+    }
+
+    private PressurePlate CreateFlagpole(int x, int y)
+    {
+        Func<TileObject, bool> Win = (TileObject tile) => {
+            Debug.Log("You won!");
+            grid.Clear();
+            return true;
+        };
+
+        return new PressurePlate(x, y, TileNoop, Win, 
+            GameElement.ElementType.Flagpole);
+    }
 }

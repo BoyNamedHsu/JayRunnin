@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameElement
 {
-    public enum ElementType { Default, Cone, Zebra, Car, Jay, ManHole, Fan, Cop };
+    public enum ElementType 
+        { Default, Cone, Zebra, Car, Jay, ManHole, Fan, Cop, Flagpole};
     public ElementType eid = ElementType.Default;
     public Vector2Int position;
 
