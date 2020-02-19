@@ -8,10 +8,21 @@ public class Overworld
     private TileObject[,] tGridworld; // Layer 1 : Tiles/Environment
     private LivingObject[,] lGridworld; // Layer 2 : Jay and followers
 
+    // And a turn count is used to figure out when cars drive
+    public int turnCount;
+    public List<Car> cars;
+
     public Overworld(int height, int width)
     {
         tGridworld = new TileObject[height, width];
         lGridworld = new LivingObject[height, width];
+        turnCount = 0;
+        this.cars = new List<Car>();
+    }
+
+    // Adds the given car to this grid
+    public void SpawnCar(Car car){
+        this.cars.Add(car);
     }
 
     // Returns whether or not coords is occupied
@@ -26,50 +37,37 @@ public class Overworld
         return lGridworld[tile.position.x, tile.position.y];
     }
 
-    // Methods for spawning tiles
-    // returns false if the tile was already occupied
-    public bool SpawnTile(TileObject tile)
+    // Note - This can overwrite other TileObjects
+    public void SpawnTile(TileObject tile)
     {
-        if (this.tGridworld[tile.position.x, tile.position.y] != null){
-            return false;
-        }
         this.tGridworld[tile.position.x, tile.position.y] = tile;
-        return true;
     }
 
-    // Returns false if the delete failed
-    public bool DeleteTile(TileObject tile)
+    // Note - Can fail if tile is not on Grid
+    public void DeleteTile(TileObject tile)
     {
-        if (this.tGridworld[tile.position.x, tile.position.y] != tile){
-            return false;
-        }
         this.tGridworld[tile.position.x, tile.position.y] = null;
-        return true;
     }
 
-    // Add T/F checks... after?
-    public bool SpawnLiving(LivingObject living)
+    // Note - This can overwrite other Living
+    public void SpawnLiving(LivingObject living)
     {
         this.lGridworld[living.position.x, living.position.y] = living;
-        return true;
     }
 
-    // Returns false if the delete failed
-    public bool DeleteLiving(LivingObject living)
+    // Note - Can fail if living is not on Grid
+    public void DeleteLiving(LivingObject living)
     {
         this.lGridworld[living.position.x, living.position.y] = null;
-        return true;
     }
 
-    // Moves a living object to the given location. Fails if tile is occupied
-    // or if the move failed
-    // Updates the position of the given LivingObject
-    public bool MoveLiving(LivingObject living, Vector2Int newPos)
+    // Moves a living object to the given location.
+    // Unsafe - Can overwrite objects
+    public void MoveLiving(LivingObject living, Vector2Int newPos)
     {
         this.DeleteLiving(living);
         living.position = newPos;
         this.SpawnLiving(living);
-        return true;
     }
 
     public List<LivingObject> GetAllLiving()

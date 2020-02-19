@@ -4,24 +4,12 @@ using UnityEngine;
 
 public class Car
 {
-    public int countdown;
-    public int xPos; // col that car starts at, must be >= 0
+    public readonly int triggerTurn; // turn this car drives
+    public readonly int xPos; // col that car starts at, must be >= 0
 
-    // Start is called before the first frame update
-    public Car(int x, int count)
+    public Car(int x, int triggerTurn)
     {
-        this.countdown = count;
+        this.triggerTurn = triggerTurn;
         this.xPos = x;
-    }
-
-    // tics the countDown of the current car
-    // returns true if the car just triggered
-    public bool countDown()
-    {
-        countdown--;
-        if (countdown == 0) {
-            // Debug.Log("vroom");         
-        }
-        return countdown == 0;
     }
 }

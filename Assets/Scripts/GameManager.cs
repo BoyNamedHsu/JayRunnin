@@ -23,20 +23,6 @@ public class GameManager : MonoBehaviour
     public static List<Follower> followers;
     public static List<Car> cars; // this sucks ugh
 
-    // Late-night garbage code to get manholes working
-    private Func<TileObject, bool> TileNoop = (TileObject tile) => {
-        return true;
-    };
-    private Func<TileObject, bool> GetCopSpawner(Overworld gridRef) {
-        return (TileObject tile) => {
-            Follower cop = new Cop(tile.position.x, tile.position.y);
-            gridRef.DeleteTile(tile);
-            gridRef.SpawnLiving(cop);
-            followers.Add(cop);
-            return true;
-        };
-    }
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -52,14 +38,15 @@ public class GameManager : MonoBehaviour
         };
 
         // Initialize the gridworld and spawn a tile object in it
-        cars = new List<Car>();
-        cars.Add(new Car(3, 10)); 
-        cars.Add(new Car(4, 10));
-        cars.Add(new Car(6, 10));
-
         grid = new Overworld(height, width);
 
-        grid.SpawnTile(new ManHole(2, 3, GetCopSpawner(grid), TileNoop));
+        grid.SpawnTile(CreateManhole(2, 3));
+        grid.SpawnTile(CreateManhole(1, 3));
+
+        grid.SpawnTile(CreateZebraTile(1, 1));
+        grid.SpawnTile(CreateZebraTile(2, 1));
+        grid.SpawnTile(CreateZebraTile(3, 1));
+
         grid.SpawnLiving(player);
         foreach (Follower f in followers)
         {
@@ -68,10 +55,12 @@ public class GameManager : MonoBehaviour
 
         grid.SpawnLiving(new Cone(2, 2));
 
+        grid.SpawnCar(new Car(3, 5));
+        grid.SpawnCar(new Car(4, 5));
+        grid.SpawnCar(new Car(6, 5));
+
         render = tilemap.GetComponent<ObjectSpawner>();
         render.SyncSprites(grid);
-
-        // Debug.Log(grid.GameStateToString());
     }
 
     // Update is called once per frame
@@ -100,9 +89,12 @@ public class GameManager : MonoBehaviour
     IEnumerator UpdateGameState(Vector2Int newPos)
     {
         moveDisabled = true; // players can't input additional moves while we're processing this one
+        grid.turnCount++;
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
+
+        Debug.Log(grid.turnCount);
 
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
@@ -112,7 +104,7 @@ public class GameManager : MonoBehaviour
     }
 
     /*
-    ALL HELPERS FOR UPDATE GAME STATE:
+    ALL HELPERS FOR UPDATE GAME STATE BELOW:
     (This is basically all GameManager does, so there are a LOT)
     */
 
@@ -149,7 +141,7 @@ public class GameManager : MonoBehaviour
         Vector2Int dest = followers[i].position;
         grid.DeleteLiving(followers[i]);
         followers.RemoveAt(i);
-        render.SyncSprites(grid); // sync, since we just deleted a sprite
+        render.SyncSprites(grid); // sync, since we just deleted it
 
         yield return StartCoroutine(MoveChain(dest, i));
     }
@@ -160,9 +152,12 @@ public class GameManager : MonoBehaviour
         List<Follower> killed = new List<Follower>();
         List<int> carColumns = new List<int>();
 
-        foreach (Car car in cars)
-        {
-            if (car.countDown()) // if countdown returns true
+        List<Car> cars = grid.cars;
+
+        for (int i = cars.Count - 1; i >= 0; i--){
+            Car car = cars[i];
+
+            if (car.triggerTurn == grid.turnCount)
             {
                 carColumns.Add(car.xPos);
                 // kinda jank way of doing this... can be cleaned up
@@ -171,6 +166,7 @@ public class GameManager : MonoBehaviour
                     if (f.position.x == car.xPos)
                         killed.Add(f);
                 }
+                cars.RemoveAt(i); // then consume that car
             }
         }
 
@@ -249,4 +245,35 @@ public class GameManager : MonoBehaviour
             return new Vector2Int(orig.x, orig.y);
         }
     }
+
+    /*
+    I'm gonna put helpers here that generate different types of plates
+    This is janky, but uhhhh it kinda works lmao
+    */
+    Func<TileObject, bool> TileNoop = (TileObject tile) => {return true;};
+
+    private PressurePlate CreateManhole(int x, int y)
+    {
+        Func<TileObject, bool> CopSpawner = (TileObject tile) => {
+            Follower cop = new Cop(tile.position.x, tile.position.y);
+            grid.DeleteTile(tile);
+            grid.SpawnLiving(cop);
+            followers.Add(cop);
+            return true;
+        };
+
+        return new PressurePlate(x, y, CopSpawner, TileNoop, 
+            GameElement.ElementType.ManHole);
+    }
+
+    private PressurePlate CreateZebraTile(int x, int y)
+    {
+        Func<TileObject, bool> DecrementTurn = (TileObject tile) => {
+            grid.turnCount--;
+            return true;
+        };
+
+        return new PressurePlate(x, y, TileNoop, DecrementTurn, 
+            GameElement.ElementType.Zebra);
+    }    
 }

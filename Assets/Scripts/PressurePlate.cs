@@ -10,10 +10,12 @@ public class PressurePlate : TileObject
     private Func<TileObject, bool> OffStep;
     private Func<TileObject, bool> OnStep;
 
-    public PressurePlate(int x, int y, Func<TileObject, bool> OffStep, Func<TileObject, bool> OnStep) 
-        : base (x, y){
+    public PressurePlate(int x, int y, Func<TileObject, bool> OffStep, 
+        Func<TileObject, bool> OnStep, ElementType eid) : base (x, y)
+        {
             this.OffStep = OffStep;
             this.OnStep = OnStep;
+            this.eid = eid;
         }
 
     public override void TileUpdate (LivingObject occupant) {
