@@ -53,6 +53,8 @@ public class GameManager : MonoBehaviour
 
         render = tilemap.GetComponent<ObjectSpawner>();
         render.SetMap(grid.GetAllLiving(), grid.GetAllTiles(), cars);
+
+        Debug.Log(grid.GameStateToString());
     }
 
     // Update is called once per frame

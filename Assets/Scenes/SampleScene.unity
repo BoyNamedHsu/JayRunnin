@@ -232,6 +232,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SceneFader
       objectReference: {fileID: 0}
+    - target: {fileID: 7325483633579988234, guid: 7222f4d0fb8f5fc40867355db73b7042,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7222f4d0fb8f5fc40867355db73b7042, type: 3}
 --- !u!1 &519420028
@@ -465,6 +470,8 @@ MonoBehaviour:
   Cone_Sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
     type: 3}
   Cop_Sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
+    type: 3}
+  ManHole_Sprite: {fileID: 7765461530178617112, guid: f2e873528ad459d4d838e26bb25a2808,
     type: 3}
   Car_Sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}

@@ -99,4 +99,36 @@ public class Overworld
         }
         return allTiles;
     }
+
+    public string GameStateToString()
+    {
+        string res = "Tiles:\n";
+        for (int x = 0; x < this.tGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.tGridworld.GetLength(1); y++){
+                TileObject t = this.tGridworld[x, y];
+                if (t != null){
+                    res += t.eid;
+                } else {
+                    res += "_";
+                }
+                res += ", ";
+            }
+            res += "\n";
+        }
+
+        res += "\nLiving:\n";
+        for (int x = 0; x < this.lGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.lGridworld.GetLength(1); y++){
+                LivingObject l = this.lGridworld[x, y];
+                if (l != null){
+                    res += l.eid;
+                } else {
+                    res += "_";
+                }
+                res += ", ";
+            }
+            res += "\n";
+        }
+        return res;
+    }
 }
