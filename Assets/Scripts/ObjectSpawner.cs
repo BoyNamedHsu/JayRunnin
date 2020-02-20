@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using TMPro;
+using UnityEngine.UI;
 
 public class ObjectSpawner : MonoBehaviour
 {
@@ -82,6 +82,7 @@ public class ObjectSpawner : MonoBehaviour
   // To do: remove the UI elements when countdown is zero, place them in the according column position
   public void UpdateCarCount(List<Car> cars, int turn, int height)
   {
+    GameObject canvas = GameObject.Find("Canvas");
     foreach (Car car in cars)
     {
       if (car.triggerTurn <= turn){
@@ -93,12 +94,14 @@ public class ObjectSpawner : MonoBehaviour
         if (!CarWarnings.ContainsKey(car))
         {
           GameObject newWarning = GameObject.Instantiate(Warning);
-          newWarning.transform.position = new Vector3(-1000, -1000, -1000);
-          //ConvertCellLoc(new Vector2Int(car.xPos, height - 1)), 
+          newWarning.transform.localScale = new Vector3(0.03f, 0.03f, 1);
+          newWarning.transform.SetParent(canvas.transform);
+
+          newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, height - 1));
           CarWarnings[car] = newWarning;
         }
         int countdown = car.triggerTurn - turn;
-        CarWarnings[car].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
+        CarWarnings[car].GetComponentInChildren<Text>().text = "" + countdown;
       }
     }
   }
