@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
         grid.SpawnCar(new Car(7, 0));
 
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.UpdateCarCount(grid.cars, grid.turnCount);
+        render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
         render.SyncSprites(grid);
     }
 
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
-        render.UpdateCarCount(grid.cars, grid.turnCount);
+        render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
 
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());

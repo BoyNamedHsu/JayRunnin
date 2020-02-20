@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using TMPro;
+using UnityEngine.UI;
 
 public class ObjectSpawner : MonoBehaviour
 {
@@ -28,7 +28,7 @@ public class ObjectSpawner : MonoBehaviour
   private Dictionary<Animation, Func<bool>> animationUpdates;
 
   // List of the car warning UI elements with the timer countdown
-  private List<GameObject> CarWarnings = new List<GameObject>();
+  private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
 
   // returns true if the renderer is in an animation, otherwise false
   public bool IsInAnimation()
@@ -80,23 +80,30 @@ public class ObjectSpawner : MonoBehaviour
 
   // Updates cars UI countdown on screen given the current turn the user is on
   // To do: remove the UI elements when countdown is zero, place them in the according column position
-  public void UpdateCarCount(List<Car> cars, int turn)
+  public void UpdateCarCount(List<Car> cars, int turn, int height)
   {
-        int warningSigns = CarWarnings.Count;
-        for (int i = 0; i < cars.Count - warningSigns; i++)
-        {
-            CarWarnings.Add(GameObject.Instantiate(Warning));
+    GameObject canvas = GameObject.Find("Canvas");
+    foreach (Car car in cars)
+    {
+      if (car.triggerTurn <= turn){
+        if (CarWarnings.ContainsKey(car)){
+          Destroy(CarWarnings[car]);
+          CarWarnings.Remove(car);
         }
-        
-        for (int i = 0; i < cars.Count; i++)
+      } else {
+        if (!CarWarnings.ContainsKey(car))
         {
-            int countdown = cars[i].triggerTurn - turn;
-            if (countdown <= 0)
-                UnityEngine.Object.Destroy(CarWarnings[i]);
-            else
-                CarWarnings[i].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
-        }
+          GameObject newWarning = GameObject.Instantiate(Warning);
+          newWarning.transform.localScale = new Vector3(0.03f, 0.03f, 1);
+          newWarning.transform.SetParent(canvas.transform);
 
+          newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, height - 1));
+          CarWarnings[car] = newWarning;
+        }
+        int countdown = car.triggerTurn - turn;
+        CarWarnings[car].GetComponentInChildren<Text>().text = "" + countdown;
+      }
+    }
   }
 
   public void MoveCars(List<Follower> killedOrig, List<int> carColumns, Overworld grid)
@@ -170,8 +177,6 @@ public class ObjectSpawner : MonoBehaviour
 
   // Spawns in missing objects from a grid
   // Despawns objects that no longer exist in grid
-
-  // this is bugggy 
   public void SyncSprites(Overworld grid){
     HashSet<GameElement> gridElements = grid.GetAllObjects();
 
@@ -204,6 +209,7 @@ public class ObjectSpawner : MonoBehaviour
   {
     tilemap = transform.GetComponent<Tilemap>();
     spawnedSprites = new Dictionary<GameElement, GameObject>();
+    CarWarnings = new Dictionary<Car, GameObject>();
 
     currAnimation = Animation.None;
     animationUpdates = new Dictionary<Animation, Func<bool>>();
