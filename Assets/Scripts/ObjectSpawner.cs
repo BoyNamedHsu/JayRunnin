@@ -16,9 +16,6 @@ public class ObjectSpawner : MonoBehaviour
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
   public GameObject Warning; // prefab for warning object
 
-  // Coordinates (x, y) of the bottom left and top right cells
-  private Vector2Int blCell;
-  private Vector2Int trCell;
   Tilemap tilemap; // And the tilemap those cells exist on
 
   // References to each GameObject we instantiate
@@ -102,7 +99,7 @@ public class ObjectSpawner : MonoBehaviour
 
   }
 
-  public void MoveCars(List<Follower> killedOrig, List<int> carColumns)
+  public void MoveCars(List<Follower> killedOrig, List<int> carColumns, Overworld grid)
   {
     if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
@@ -120,8 +117,8 @@ public class ObjectSpawner : MonoBehaviour
     {
         GameObject carSprite = Instantiate(Car_Sprite) as GameObject;
         ScaleSprite(carSprite);
-        carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, trCell.y - blCell.y + 1));
-        carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -2)); // add that car's destination
+        carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, grid.height + 1));
+        carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -1));
     }
 
     // when called, this method moves each car down the map, destroy objects in killed they touch along the way
@@ -211,31 +208,15 @@ public class ObjectSpawner : MonoBehaviour
     currAnimation = Animation.None;
     animationUpdates = new Dictionary<Animation, Func<bool>>();
     animationUpdates[Animation.None] = (() => { return true; });
-
-    // bl stands for bottom left not "boys love"
-    Vector3Int blLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Vector3.zero));
-    blCell.x = blLoc.x;
-    blCell.y = blLoc.y;
-
-    // tr stands for top right
-    Vector3Int trLoc = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(
-        new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0)));
-    trCell.x = trLoc.x;
-    trCell.y = trLoc.y;
   }
 
   // converts a given Vector2Int into a location in the world space
   private Vector3 ConvertCellLoc(Vector2Int coords)
   {
-    Vector2Int fixedCoords = coords; // ConvertGridIndexToCoordSpace(coords);
+    Vector3 res = tilemap.GetCellCenterLocal(new Vector3Int(coords.x, coords.y, 0));
 
-    // adjust coords over bottom left cell
-    Vector3Int adjustedCoords =
-        new Vector3Int(fixedCoords.x /* + blCell.x */, fixedCoords.y /* + blCell.y */, 0);
-
-    Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
-
-    return new Vector3(res.x + 1, res.y + 1, 0); // 1 cell of padding
+    // then center on those tiles
+    return new Vector3(res.x + (tilemap.cellSize.x / 2f), res.y + (tilemap.cellSize.y / 2f), 0);
   }
 
   private void SpawnSprite(GameElement character)

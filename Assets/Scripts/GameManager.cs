@@ -97,8 +97,6 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
         render.UpdateCarCount(grid.cars, grid.turnCount);
 
-        // Debug.Log(grid.turnCount);
-
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
 
@@ -174,7 +172,7 @@ public class GameManager : MonoBehaviour
         }
 
         /*--Animate those changes--*/
-        render.MoveCars(killed, carColumns);
+        render.MoveCars(killed, carColumns, grid);
         yield return new WaitUntil(() => !render.IsInAnimation());
 
         // Then delete followers who were killed

@@ -7,7 +7,7 @@ public class Overworld
     // There are 2 layers to represent the gridworld:
     private TileObject[,] tGridworld; // Layer 1 : Tiles/Environment
     private LivingObject[,] lGridworld; // Layer 2 : Jay and followers
-    private int height, width;
+    public readonly int height, width;
 
     // And a turn count is used to figure out when cars drive
     public int turnCount;
