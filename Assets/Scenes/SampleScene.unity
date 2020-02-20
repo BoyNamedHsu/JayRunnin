@@ -472,7 +472,7 @@ MonoBehaviour:
     type: 3}
   Cone_Sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
     type: 3}
-  Cop_Sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
+  Cop_Sprite: {fileID: 6757901678645378020, guid: 98902840fe7320846a4d1aeb604882e1,
     type: 3}
   ManHole_Sprite: {fileID: 3263587508200025830, guid: 3407e88b4e3522947aed1ab0ab17358a,
     type: 3}
@@ -515,7 +515,6 @@ MonoBehaviour:
   height: 10
   width: 10
   tilemap: {fileID: 767522280}
-  moveDisabled: 0
 --- !u!4 &1274519853
 Transform:
   m_ObjectHideFlags: 0

@@ -7,12 +7,13 @@ using UnityEngine.Tilemaps;
 public class GameManager : MonoBehaviour
 {
     public int height, width; // height/width of our grid
-    public static Vector2Int playerStart = new Vector2Int(0, 0);
+    public static Vector2Int playerStart = new Vector2Int(0, 4);
 
     // rendering:
     public Tilemap tilemap;
     private ObjectSpawner render;
-    public bool moveDisabled; // disable movements while renderer is playing. Hacky :(
+    private bool moveDisabled; // disable movements while renderer is playing
+    private bool alive; // checks if the player is alive
 
     // collisions
     public enum Direction {North, East, South, West, None};
@@ -21,48 +22,48 @@ public class GameManager : MonoBehaviour
     // other things needed for each level
     public static Jay player;
     public static List<Follower> followers;
-    public static List<Car> cars; // this sucks ugh
 
     // Start is called before the first frame update
     void Awake()
     {
-        moveDisabled = false;
+        moveDisabled = true;
+        LoadLevel(4);
+    }
+
+    public void LoadLevel(int lvlNum)
+    {
         player = new Jay(playerStart.x, playerStart.y);
-        followers = new List<Follower> {
-            new Cop(1, 0),
-            new Cop(2, 0),
-            new Cop(3, 0),
-            new Cop(4, 0),
-            new Cop(5, 0)
-        };
+        followers = new List<Follower>();
 
         // Initialize the gridworld and spawn a tile object in it
         grid = new Overworld(height, width);
-
-        grid.SpawnTile(CreateManhole(2, 3));
-        grid.SpawnTile(CreateManhole(1, 3));
-
-        grid.SpawnTile(CreateZebraTile(1, 1));
-        grid.SpawnTile(CreateZebraTile(2, 1));
-        grid.SpawnTile(CreateZebraTile(3, 1));
-
-        grid.SpawnTile(CreateFlagpole(5, 4));
-
         grid.SpawnLiving(player);
-        foreach (Follower f in followers)
-        {
-            grid.SpawnLiving(f);
+
+        // This code is AWFUL and will be reworked
+        switch (lvlNum){
+            case 1:
+                LoadLvl1();
+                break;
+            case 2:
+                LoadLvl2();
+                break;
+            case 3:
+                LoadLvl3();
+                break;
+            case 4:
+                LoadLvl4();
+                break;
+            default: // Invalid Lvl number
+                return;
         }
-
-        grid.SpawnLiving(new Cone(2, 2));
-
-        grid.SpawnCar(new Car(3, 5));
-        grid.SpawnCar(new Car(4, 5));
-        grid.SpawnCar(new Car(6, 5));
 
         render = tilemap.GetComponent<ObjectSpawner>();
         render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
         render.SyncSprites(grid);
+
+        // Level should be ready now!
+        alive = true;
+        moveDisabled = false;
     }
 
     // Update is called once per frame
@@ -100,7 +101,9 @@ public class GameManager : MonoBehaviour
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
 
-        moveDisabled = false;
+        if (alive){
+            moveDisabled = false;
+        }
         yield return null;
     }
 
@@ -175,12 +178,17 @@ public class GameManager : MonoBehaviour
         render.MoveCars(killed, carColumns, grid);
         yield return new WaitUntil(() => !render.IsInAnimation());
 
-        // Then delete followers who were killed
-        foreach (Follower f in killed)
-        {
-            yield return StartCoroutine(KillFollower(f));
+        // Check if the car killed the player
+        if (carColumns.Contains(player.position.x)){
+            LoseLvl(); // This is still glitchy
+            yield return null;
+        } else {
+            // Then delete followers who were killed
+            foreach (Follower f in killed)
+            {
+                yield return StartCoroutine(KillFollower(f));
+            }
         }
-        yield return null;
     }
 
     private IEnumerator UpdateTiles()
@@ -281,12 +289,127 @@ public class GameManager : MonoBehaviour
     private PressurePlate CreateFlagpole(int x, int y)
     {
         Func<TileObject, bool> Win = (TileObject tile) => {
-            Debug.Log("You won!");
-            grid.Clear();
+            WinLvl();
             return true;
         };
 
         return new PressurePlate(x, y, TileNoop, Win, 
             GameElement.ElementType.Flagpole);
     }
+
+    /*
+    Level Loaders: This is a short-term solution rn
+    */
+    private void WinLvl()
+    {
+        Debug.Log("You won!");
+        grid.Clear();
+        render.SyncSprites(grid);
+        alive = false;
+    }
+
+    private void LoseLvl()
+    {
+        Debug.Log("You died");
+        grid.Clear();
+        render.SyncSprites(grid);
+        alive = false;
+    }
+
+    private void LoadLvl1()
+    {
+        grid.SpawnCar(new Car(5, 4));
+        grid.SpawnCar(new Car(7, 7));
+        grid.SpawnTile(CreateFlagpole(8, 4));
+    }
+
+    private void LoadLvl2()
+    {
+        grid.SpawnLiving(new Cone(0, 5));
+        grid.SpawnLiving(new Cone(0, 3));
+        grid.SpawnLiving(new Cone(1, 3));
+        grid.SpawnLiving(new Cone(2, 4));
+        grid.SpawnLiving(new Cone(4, 5));
+
+        grid.SpawnCar(new Car(3, 5));
+        grid.SpawnCar(new Car(5, 9));
+        grid.SpawnTile(CreateFlagpole(8, 4));
+    }
+
+    private void LoadLvl3()
+    {
+        grid.SpawnLiving(new Cone(0, 5));
+        grid.SpawnLiving(new Cone(0, 3));
+        grid.SpawnLiving(new Cone(1, 5));
+        grid.SpawnLiving(new Cone(1, 3));
+        grid.SpawnLiving(new Cone(2, 5));
+        grid.SpawnLiving(new Cone(2, 3));
+        grid.SpawnLiving(new Cone(3, 5));
+        grid.SpawnLiving(new Cone(3, 3));
+        grid.SpawnLiving(new Cone(4, 5));
+        grid.SpawnLiving(new Cone(4, 3));
+
+        grid.SpawnTile(CreateManhole(1, 4));
+        grid.SpawnCar(new Car(5, 6));
+
+        grid.SpawnTile(CreateFlagpole(8, 4));
+    }
+
+    private void LoadLvl4()
+    {
+        grid.SpawnLiving(new Cone(0, 7));
+        grid.SpawnLiving(new Cone(0, 6));
+        grid.SpawnLiving(new Cone(0, 5));
+        grid.SpawnLiving(new Cone(0, 3));
+        grid.SpawnLiving(new Cone(0, 2));
+        grid.SpawnLiving(new Cone(0, 1));
+        grid.SpawnLiving(new Cone(0, 0));
+        grid.SpawnLiving(new Cone(0, 1));
+        grid.SpawnLiving(new Cone(7, 3));
+        grid.SpawnLiving(new Cone(7, 4));
+
+        grid.SpawnTile(CreateZebraTile(1, 2));
+        grid.SpawnTile(CreateZebraTile(2, 2));
+        grid.SpawnTile(CreateZebraTile(3, 2));
+        grid.SpawnTile(CreateManhole(4, 2));
+        grid.SpawnTile(CreateZebraTile(5, 2));
+        grid.SpawnTile(CreateZebraTile(6, 2));
+        grid.SpawnTile(CreateZebraTile(6, 5));
+
+        grid.SpawnCar(new Car(1, 5));
+        grid.SpawnCar(new Car(2, 5));
+        grid.SpawnCar(new Car(3, 5));
+        grid.SpawnCar(new Car(4, 5));
+        grid.SpawnCar(new Car(5, 4));
+        grid.SpawnCar(new Car(6, 7));
+        grid.SpawnCar(new Car(7, 7));
+
+        grid.SpawnTile(CreateFlagpole(8, 4));
+    }
+
+    /*
+    private void LoadLvl3()
+    {
+        grid.SpawnTile(CreateManhole(2, 3));
+        grid.SpawnTile(CreateManhole(1, 3));
+
+        grid.SpawnTile(CreateZebraTile(1, 1));
+        grid.SpawnTile(CreateZebraTile(2, 1));
+        grid.SpawnTile(CreateZebraTile(3, 1));
+
+        grid.SpawnTile(CreateFlagpole(5, 4));
+
+        grid.SpawnLiving(player);
+        foreach (Follower f in followers)
+        {
+            grid.SpawnLiving(f);
+        }
+
+        grid.SpawnLiving(new Cone(2, 2));
+
+        grid.SpawnCar(new Car(3, 5));
+        grid.SpawnCar(new Car(4, 4));
+        grid.SpawnCar(new Car(6, 7));
+    }
+    */
 }
