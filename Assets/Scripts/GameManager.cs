@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         moveDisabled = false;
-
         player = new Jay(playerStart.x, playerStart.y);
         followers = new List<Follower> {
             new Cop(1, 0),
@@ -62,6 +61,7 @@ public class GameManager : MonoBehaviour
         grid.SpawnCar(new Car(6, 5));
 
         render = tilemap.GetComponent<ObjectSpawner>();
+        render.UpdateCarCount(grid.cars, grid.turnCount);
         render.SyncSprites(grid);
     }
 
@@ -92,6 +92,7 @@ public class GameManager : MonoBehaviour
     {
         moveDisabled = true; // players can't input additional moves while we're processing this one
         grid.turnCount++;
+        render.UpdateCarCount(grid.cars, grid.turnCount);
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
@@ -128,7 +129,7 @@ public class GameManager : MonoBehaviour
             grid.MoveLiving(followers[i], newPos);
             newPos = oldPos;
         }
-
+        
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
 

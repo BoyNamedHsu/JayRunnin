@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class ObjectSpawner : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class ObjectSpawner : MonoBehaviour
     Zebra_Sprite, Flagpole_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
+  public GameObject Warning; // prefab for warning object
 
   // Coordinates (x, y) of the bottom left and top right cells
   private Vector2Int blCell;
@@ -27,6 +29,9 @@ public class ObjectSpawner : MonoBehaviour
 
   // Kinda weird, but the dictionary of different animations we're in
   private Dictionary<Animation, Func<bool>> animationUpdates;
+
+  // List of the car warning UI elements with the timer countdown
+  private List<GameObject> CarWarnings = new List<GameObject>();
 
   // returns true if the renderer is in an animation, otherwise false
   public bool IsInAnimation()
@@ -74,6 +79,28 @@ public class ObjectSpawner : MonoBehaviour
     };
 
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
+  }
+
+  // Updates cars UI countdown on screen given the current turn the user is on
+  // To do: remove the UI elements when countdown is zero, place them in the according column position
+  public void UpdateCarCount(List<Car> cars, int turn)
+  {
+        if (cars.Count > CarWarnings.Count)
+        {
+            for (int i = cars.Count - 1; i >= 0; i--)
+            {
+                CarWarnings.Add(GameObject.Instantiate(Warning));
+            }
+        }
+        for (int i = cars.Count - 1; i >= 0; i--)
+        {
+            int countdown = cars[i].triggerTurn - turn;
+            if (countdown < 0)
+                CarWarnings.RemoveAt(i);
+            else
+                CarWarnings[i].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
+        }
+
   }
 
   public void MoveCars(List<Follower> killedOrig, List<int> carColumns)
