@@ -85,18 +85,17 @@ public class ObjectSpawner : MonoBehaviour
   // To do: remove the UI elements when countdown is zero, place them in the according column position
   public void UpdateCarCount(List<Car> cars, int turn)
   {
-        if (cars.Count > CarWarnings.Count)
+        int warningSigns = CarWarnings.Count;
+        for (int i = 0; i < cars.Count - warningSigns; i++)
         {
-            for (int i = cars.Count - 1; i >= 0; i--)
-            {
-                CarWarnings.Add(GameObject.Instantiate(Warning));
-            }
+            CarWarnings.Add(GameObject.Instantiate(Warning));
         }
-        for (int i = cars.Count - 1; i >= 0; i--)
+        
+        for (int i = 0; i < cars.Count; i++)
         {
             int countdown = cars[i].triggerTurn - turn;
-            if (countdown < 0)
-                CarWarnings.RemoveAt(i);
+            if (countdown <= 0)
+                UnityEngine.Object.Destroy(CarWarnings[i]);
             else
                 CarWarnings[i].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
         }
