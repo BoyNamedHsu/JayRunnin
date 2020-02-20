@@ -231,7 +231,7 @@ public class ObjectSpawner : MonoBehaviour
 
     // adjust coords over bottom left cell
     Vector3Int adjustedCoords =
-        new Vector3Int(fixedCoords.x + blCell.x, fixedCoords.y + blCell.y, 0);
+        new Vector3Int(fixedCoords.x /* + blCell.x */, fixedCoords.y /* + blCell.y */, 0);
 
     Vector3 res = tilemap.GetCellCenterLocal(adjustedCoords);
 

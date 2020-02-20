@@ -92,10 +92,10 @@ public class GameManager : MonoBehaviour
     {
         moveDisabled = true; // players can't input additional moves while we're processing this one
         grid.turnCount++;
-        render.UpdateCarCount(grid.cars, grid.turnCount);
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
+        render.UpdateCarCount(grid.cars, grid.turnCount);
 
         // Debug.Log(grid.turnCount);
 
