@@ -512,7 +512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 8
+  height: 10
   width: 10
   tilemap: {fileID: 767522280}
   moveDisabled: 0

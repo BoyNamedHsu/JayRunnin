@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class GameManager : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
     public int height, width; // height/width of our grid
-    public static Vector2Int playerStart = new Vector2Int(0, 4);
+    public static Vector2Int playerStart = new Vector2Int(0, 0);
 
     // rendering:
     public Tilemap tilemap;
@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     // collisions
     public enum Direction {North, East, South, West, None};
-    private Overworld grid;
+    public Overworld grid;
 
     // other things needed for each level
     public static Jay player;
@@ -27,14 +27,27 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         moveDisabled = false;
+
         player = new Jay(playerStart.x, playerStart.y);
-        followers = new List<Follower> {
-        };
-
-        // Initialize the gridworld and spawn a tile object in it
         grid = new Overworld(height, width);
+        
+        
+        /*followers = new List<Follower> {
+            new Cop(1, 0),
+            new Cop(2, 0),
+            new Cop(3, 0),
+            new Cop(4, 0),
+            new Cop(5, 0)
+        };
+        
+        grid.SpawnTile(CreateManhole(2, 3));
+        grid.SpawnTile(CreateManhole(1, 3));
 
-        grid.SpawnTile(CreateFlagpole(9, 4));
+        grid.SpawnTile(CreateZebraTile(1, 1));
+        grid.SpawnTile(CreateZebraTile(2, 1));
+        grid.SpawnTile(CreateZebraTile(3, 1));
+
+        grid.SpawnTile(CreateFlagpole(5, 4));
 
         grid.SpawnLiving(player);
         foreach (Follower f in followers)
@@ -42,10 +55,32 @@ public class GameManager : MonoBehaviour
             grid.SpawnLiving(f);
         }
 
-        grid.SpawnCar(new Car(7, 0));
+        grid.SpawnLiving(new Cone(2, 2));
+        
+
+        // Initialize the gridworld and spawn a tile object in it
+        
+
+        String[,] map = 
+        {
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 1
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 2
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 3 
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 4 
+            {"j", "0", "0", "0", "0", "0", "0", "0", "0", "w"} , // ROW 5
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 6
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"} , // ROW 7
+            {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"}   // ROW 8
+        };
+
+        AsciiToGrid(map);
+
+        foreach (Follower f in followers)
+        {
+            grid.SpawnLiving(f);
+        }*/
 
         render = tilemap.GetComponent<ObjectSpawner>();
-        render.UpdateCarCount(grid.cars, grid.turnCount);
         render.SyncSprites(grid);
     }
 
@@ -79,7 +114,8 @@ public class GameManager : MonoBehaviour
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
-        render.UpdateCarCount(grid.cars, grid.turnCount);
+
+        // Debug.Log(grid.turnCount);
 
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
@@ -111,7 +147,7 @@ public class GameManager : MonoBehaviour
             grid.MoveLiving(followers[i], newPos);
             newPos = oldPos;
         }
-        
+
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
 
@@ -273,4 +309,52 @@ public class GameManager : MonoBehaviour
         return new PressurePlate(x, y, TileNoop, Win, 
             GameElement.ElementType.Flagpole);
     }
+
+    /*public void AsciiToGrid(String[,] map) {
+        Debug.Log(map[4,0]);
+        Debug.Log(map.GetLength(1));
+       
+        for(int yi = map.GetLength(0) - 1; yi >= 0; yi--) {
+             String row ="";
+             int y = 0;
+            for(int x = 0; x < map.GetLength(1); x++) {
+                row += map[yi,x];
+                String curTile = map[yi,x];
+                switch (curTile) {
+                    // empty tile
+                    case "0" :
+                        break;
+                    case "j" :
+                    // Jay
+                         grid.SpawnLiving(player);
+                         break;
+                    // Fan
+                    case "f" :
+                        followers.Add(new Fan(x, y));
+                        break;
+                    // Cop
+                    case "c" :
+                        followers.Add(new Cop(x, y));
+                        break;
+                    // Cone
+                    case "k" :
+                        grid.SpawnLiving(new Cone(x, y));
+                        break;
+                    // Manhole
+                    case "m" :
+                        grid.SpawnTile(CreateManhole(x, y));
+                        break;
+                    case "w" :
+                        grid.SpawnTile(CreateFlagpole(x, y));
+                        break;
+                    case "z" :
+                        grid.SpawnTile(CreateZebraTile(x, y));
+                        break;
+                }
+                y++;
+            }
+            Debug.Log(row);
+        }
+        Debug.Log(grid.GameStateToString());
+    }*/
 }
