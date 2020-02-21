@@ -465,7 +465,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 767522277}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
+  m_Script: {fileID: 11500000, guid: c8e8858707dafe547a519d6183a4f5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Jay_Sprite: {fileID: 9123923525041600882, guid: 0552ae99490781243b3662db0fc7bcf7,
@@ -494,7 +494,7 @@ GameObject:
   - component: {fileID: 1274519853}
   - component: {fileID: 1274519852}
   m_Layer: 0
-  m_Name: Game Manager
+  m_Name: LevelManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -509,7 +509,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1274519851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
+  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   height: 10

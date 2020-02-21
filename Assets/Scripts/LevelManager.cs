@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class GameManager : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
     public int height, width; // height/width of our grid
     public static Vector2Int playerStart = new Vector2Int(0, 4);
 
     // rendering:
     public Tilemap tilemap;
-    private ObjectSpawner render;
+    private OverworldRenderer render;
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         moveDisabled = true;
-        LoadLevel(4);
+        LoadLevel(1);
     }
 
     public void LoadLevel(int lvlNum)
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
                 return;
         }
 
-        render = tilemap.GetComponent<ObjectSpawner>();
+        render = tilemap.GetComponent<OverworldRenderer>();
         render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
         render.SyncSprites(grid);
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Overworld
 {
-    // There are 2 layers to represent the gridworld:
+    // There are 2 layers to represent the overworld:
     private TileObject[,] tGridworld; // Layer 1 : Tiles/Environment
     private LivingObject[,] lGridworld; // Layer 2 : Jay and followers
     public readonly int height, width;
