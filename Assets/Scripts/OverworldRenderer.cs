@@ -276,15 +276,13 @@ public class OverworldRenderer : MonoBehaviour
     obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
   }
 
-/*
-  private void ScaleCamera(){
+  public void ScaleCamera(Tilemap board, int height, int width){
     Vector3 cellSize = board.cellSize;
     Camera.main.orthographicSize = cellSize.y * height / 2;
 
     Transform tmp = Camera.main.GetComponent<Transform>();
     tmp.position = new Vector3(width * cellSize.x / 2f, height * cellSize.y / 2f, -10);
   }
-  */
 
   private void DestroySprite(GameElement character)
   {

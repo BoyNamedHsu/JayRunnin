@@ -288,7 +288,7 @@ public class LevelManager : MonoBehaviour
             world.SpawnTile(portalTiles.Item2);
         }
 
-        if (!grid.TileIsEmpty(JayPos)){
+        if (!world.TileIsEmpty(JayPos)){
             Debug.Log("Invalid Level");
             return; // Jay needs a valid start position
         }
@@ -300,6 +300,7 @@ public class LevelManager : MonoBehaviour
         grid = world;
 
         render = tilemap.GetComponent<OverworldRenderer>();
+        render.ScaleCamera(tilemap, height, width);
         render.SyncSprites(grid);
 
         moveDisabled = false;
