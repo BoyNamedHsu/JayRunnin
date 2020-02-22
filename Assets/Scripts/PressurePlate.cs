@@ -7,11 +7,11 @@ public class PressurePlate : TileObject
 {
     public bool isTriggered;
 
-    private Func<TileObject, bool> OffStep;
-    private Func<TileObject, bool> OnStep;
+    private Func<TileObject, LivingObject, bool> OffStep;
+    private Func<TileObject, LivingObject, bool> OnStep;
 
-    public PressurePlate(int x, int y, Func<TileObject, bool> OffStep, 
-        Func<TileObject, bool> OnStep, ElementType eid) : base (x, y)
+    public PressurePlate(int x, int y, Func<TileObject, LivingObject, bool> OffStep, 
+        Func<TileObject, LivingObject, bool> OnStep, ElementType eid) : base (x, y)
         {
             this.OffStep = OffStep;
             this.OnStep = OnStep;
@@ -23,11 +23,11 @@ public class PressurePlate : TileObject
         if (occupant == null && isTriggered)
         {
             isTriggered = false;
-            OffStep(this);
+            OffStep(this, occupant);
         } else if (occupant != null && !isTriggered)
         {
             isTriggered = true;
-            OnStep(this);
+            OnStep(this, occupant);
         }
     }
 }

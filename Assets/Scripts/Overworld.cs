@@ -35,7 +35,7 @@ public class Overworld
     }
 
     // Returns whether or not coords is occupied
-    public bool IsTileEmpty(Vector2Int coords)
+    public bool TileIsEmpty(Vector2Int coords)
     {
         return lGridworld[coords.x, coords.y] == null;
     }

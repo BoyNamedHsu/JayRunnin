@@ -79,7 +79,7 @@ public class LevelManager : MonoBehaviour
             return;
         }
         Vector2Int newPos = ApplyDir(player.position, dir);
-        if (!grid.IsTileEmpty(newPos)){
+        if (!grid.TileIsEmpty(newPos)){
             Debug.Log("Tile is occupied");
             return;
         }
@@ -200,8 +200,10 @@ public class LevelManager : MonoBehaviour
         {
             tile.TileUpdate(grid.GetOccupant(tile));
         }
+        // render changes if any living were moved by tiles
         render.SyncSprites(grid);
-        yield return null;
+        render.MoveSprites();
+        yield return new WaitUntil(() => !render.IsInAnimation());
     }
 
     // Returns the tile Jay will move to, else returns the same position as Jay
@@ -259,11 +261,11 @@ public class LevelManager : MonoBehaviour
     I'm gonna put helpers here that generate different types of plates
     This is janky, but uhhhh it kinda works lmao
     */
-    Func<TileObject, bool> TileNoop = (TileObject tile) => {return true;};
+    Func<TileObject, LivingObject, bool> TileNoop = (TileObject _1, LivingObject _2) => {return true;};
 
     private PressurePlate CreateManhole(int x, int y)
     {
-        Func<TileObject, bool> CopSpawner = (TileObject tile) => {
+        Func<TileObject, LivingObject, bool> CopSpawner = (TileObject tile, LivingObject _) => {
             Follower cop = new Cop(tile.position.x, tile.position.y);
             grid.DeleteTile(tile);
             grid.SpawnLiving(cop);
@@ -277,7 +279,7 @@ public class LevelManager : MonoBehaviour
 
     private PressurePlate CreateZebraTile(int x, int y)
     {
-        Func<TileObject, bool> DecrementTurn = (TileObject tile) => {
+        Func<TileObject, LivingObject, bool> DecrementTurn = (TileObject _1, LivingObject _2) => {
             grid.turnCount--;
             return true;
         };
@@ -288,13 +290,41 @@ public class LevelManager : MonoBehaviour
 
     private PressurePlate CreateFlagpole(int x, int y)
     {
-        Func<TileObject, bool> Win = (TileObject tile) => {
+        Func<TileObject, LivingObject, bool> Win = (TileObject _1, LivingObject _2) => {
             WinLvl();
             return true;
         };
 
         return new PressurePlate(x, y, TileNoop, Win, 
             GameElement.ElementType.Flagpole);
+    }
+
+    private (PressurePlate, PressurePlate) CreatePortals(int x1, int y1, int x2, int y2)
+    {
+        int lastTurnUsed = -1; // prevents infinite loops
+        Vector2Int entrance = new Vector2Int(x1, y1);
+        Vector2Int exit = new Vector2Int(x2, y2);
+
+        Func<TileObject, LivingObject, bool> SendToExit = (TileObject _, LivingObject occupant) => {
+            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(exit) || occupant != player){
+                return true;
+            }
+            lastTurnUsed = grid.turnCount;
+            grid.MoveLiving(occupant, exit);
+            return true;
+        };
+
+        Func<TileObject, LivingObject, bool> SendToEntrance = (TileObject _, LivingObject occupant) => {
+            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(entrance) || occupant != player){
+                return true;
+            }
+            lastTurnUsed = grid.turnCount;
+            grid.MoveLiving(occupant, entrance);
+            return true;
+        };
+
+        return (new PressurePlate(x1, y1, TileNoop, SendToExit, GameElement.ElementType.Zebra),
+                new PressurePlate(x2, y2, TileNoop, SendToEntrance, GameElement.ElementType.Zebra));
     }
 
     /*
