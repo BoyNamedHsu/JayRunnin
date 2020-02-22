@@ -197,6 +197,8 @@ public class OverworldRenderer : MonoBehaviour
         SpawnSprite(obj);
       }
     }
+
+    UpdateCarCount(grid.cars, grid.turnCount, grid.height);
   }
 
   void Update()
@@ -268,9 +270,21 @@ public class OverworldRenderer : MonoBehaviour
     Vector3 tilesize = tilemap.cellSize;
     Vector3 spritesize = objBounds.bounds.size;
 
+    Debug.Log(spritesize);
+
     // scale sprite to size of grid
     obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
   }
+
+/*
+  private void ScaleCamera(){
+    Vector3 cellSize = board.cellSize;
+    Camera.main.orthographicSize = cellSize.y * height / 2;
+
+    Transform tmp = Camera.main.GetComponent<Transform>();
+    tmp.position = new Vector3(width * cellSize.x / 2f, height * cellSize.y / 2f, -10);
+  }
+  */
 
   private void DestroySprite(GameElement character)
   {

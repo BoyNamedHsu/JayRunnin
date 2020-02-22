@@ -37,6 +37,10 @@ public class Overworld
     // Returns whether or not coords is occupied
     public bool TileIsEmpty(Vector2Int coords)
     {
+        if (coords.x < 0 || coords.x > lGridworld.GetLength(0) 
+            || coords.y < 0 || coords.y > lGridworld.GetLength(1)){
+            return false; // invalid indexes are occupied
+        }
         return lGridworld[coords.x, coords.y] == null;
     }
 

@@ -12,6 +12,7 @@ public class CameraShake : MonoBehaviour
 
     void Awake()
     {
+        // move this into an OverworldRenderer method
         Vector3 cellSize = board.cellSize;
         Camera.main.orthographicSize = cellSize.y * height / 2;
 

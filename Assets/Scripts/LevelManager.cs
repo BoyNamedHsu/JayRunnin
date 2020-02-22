@@ -6,12 +6,10 @@ using UnityEngine.Tilemaps;
 
 public class LevelManager : MonoBehaviour
 {
-    public int height, width; // height/width of our grid
-    public static Vector2Int playerStart = new Vector2Int(0, 4);
-
     // rendering:
     public Tilemap tilemap;
     private OverworldRenderer render;
+
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
@@ -20,50 +18,26 @@ public class LevelManager : MonoBehaviour
     private Overworld grid;
 
     // other things needed for each level
-    public static Jay player;
-    public static List<Follower> followers;
+    private Jay player;
+    private List<Follower> followers;
 
     // Start is called before the first frame update
     void Awake()
     {
         moveDisabled = true;
-        LoadLevel(1);
-    }
 
-    public void LoadLevel(int lvlNum)
-    {
-        player = new Jay(playerStart.x, playerStart.y);
-        followers = new List<Follower>();
+        Vector2Int jayPos = new Vector2Int(0, 0);
+        GameElement.ElementType?[,] objects = {
+            {null, GameElement.ElementType.ManHole, null},
+            {null, null, null},
+            {null, null, null}
+        };
+        List<Vector2Int> cars = new List<Vector2Int>();
+        cars.Add(new Vector2Int(1, 4));
 
-        // Initialize the gridworld and spawn a tile object in it
-        grid = new Overworld(height, width);
-        grid.SpawnLiving(player);
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        // This code is AWFUL and will be reworked
-        switch (lvlNum){
-            case 1:
-                LoadLvl1();
-                break;
-            case 2:
-                LoadLvl2();
-                break;
-            case 3:
-                LoadLvl3();
-                break;
-            case 4:
-                LoadLvl4();
-                break;
-            default: // Invalid Lvl number
-                return;
-        }
-
-        render = tilemap.GetComponent<OverworldRenderer>();
-        render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
-        render.SyncSprites(grid);
-
-        // Level should be ready now!
-        alive = true;
-        moveDisabled = false;
+        LoadLevel(jayPos, objects, cars, portals);
     }
 
     // Update is called once per frame
@@ -74,7 +48,7 @@ public class LevelManager : MonoBehaviour
             return; // don't listen for key inputs while renderer is animating
         }
 
-        Direction dir = Move();
+        Direction dir = GetKeyboardDir();
         if (dir == Direction.None){
             return;
         }
@@ -96,7 +70,6 @@ public class LevelManager : MonoBehaviour
 
         // Move Jay
         yield return StartCoroutine(MoveJay(newPos)); // then move the chain/animate
-        render.UpdateCarCount(grid.cars, grid.turnCount, grid.height);
 
         // Check for cars/send them in
         yield return StartCoroutine(SendCars());
@@ -105,6 +78,23 @@ public class LevelManager : MonoBehaviour
             moveDisabled = false;
         }
         yield return null;
+    }
+
+    // These aren't used rn, but they're probably useful right lmao
+    private void WinLvl()
+    {
+        Debug.Log("You won!");
+        grid.Clear();
+        render.SyncSprites(grid);
+        alive = false;
+    }
+
+    private void LoseLvl()
+    {
+        Debug.Log("You died");
+        grid.Clear();
+        render.SyncSprites(grid);
+        alive = false;
     }
 
     /*
@@ -207,32 +197,17 @@ public class LevelManager : MonoBehaviour
     }
 
     // Returns the tile Jay will move to, else returns the same position as Jay
-    private Direction Move()
+    private Direction GetKeyboardDir()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
         if (Input.GetButtonDown("Vertical"))
         {
-            if (moveVertical < 0 && player.position.y > 0)  // South
-            {
-                return Direction.South;
-            }
-            else if (moveVertical > 0 && player.position.y < height - 1)  // North
-            {
-                return Direction.North;
-            }
+            float moveVertical = Input.GetAxis("Vertical");
+            return moveVertical < 0 ? Direction.South : Direction.North;
         }
         else if (Input.GetButtonDown("Horizontal"))
         {
-            if (moveHorizontal < 0 && player.position.x > 0)  // West
-            {
-                return Direction.West;
-            }
-            else if (moveHorizontal > 0 && player.position.x < width - 1)  // East
-            {
-                return Direction.East;
-            }
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            return moveHorizontal < 0 ? Direction.West : Direction.East;
         }
         return Direction.None;
     }
@@ -258,8 +233,85 @@ public class LevelManager : MonoBehaviour
     }
 
     /*
+    ~Level Loader~:
+    (It's aight)
+    */
+    private void LoadLevel(Vector2Int JayPos,
+                        GameElement.ElementType?[, ] objects,  
+                        List<Vector2Int> cars, // misuse of Vector2Int
+                        List<(Vector2Int, Vector2Int)> portals){
+        int height, width;
+        height = objects.GetLength(1);
+        width = objects.GetLength(0);
+
+        Overworld world = new Overworld(height, width);
+
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){ 
+                if (objects[x, y] != null){
+                    GameElement.ElementType curr = objects[x, y].Value;
+                    switch (objects[x, y])
+                    {
+                        case GameElement.ElementType.Cone:
+                            world.SpawnLiving(new Cone(x, y));
+                            break;
+                        case GameElement.ElementType.Zebra:
+                            world.SpawnTile(CreateZebraTile(x, y));
+                            break;
+                        case GameElement.ElementType.ManHole:
+                            world.SpawnTile(CreateManhole(x, y));
+                            break;
+                        case GameElement.ElementType.Flagpole:
+                            world.SpawnTile(CreateFlagpole(x, y));
+                            break;
+                        default: // Any other ID's don't really make sense
+                            Debug.Log("Invalid Level");
+                            return;
+                    }
+                }
+            }
+        }
+
+        foreach (Vector2Int carPos in cars){
+            world.SpawnCar(new Car(carPos.x, carPos.y));
+        }
+
+        foreach ((Vector2Int, Vector2Int) portalPair in portals){
+            Vector2Int p1 = portalPair.Item1;
+            Vector2Int p2 = portalPair.Item2;
+            if (objects[p1.x, p1.y] != null || objects[p2.x, p2.y] != null){
+                Debug.Log("Invalid Level");
+                return; // portals can't overlap with world
+            }
+            (PressurePlate, PressurePlate) portalTiles = CreatePortals(p1.x, p1.y, p2.x, p2.y);
+            world.SpawnTile(portalTiles.Item1);
+            world.SpawnTile(portalTiles.Item2);
+        }
+
+        if (!grid.TileIsEmpty(JayPos)){
+            Debug.Log("Invalid Level");
+            return; // Jay needs a valid start position
+        }
+
+        player = new Jay(JayPos.x, JayPos.y);
+        followers = new List<Follower>();
+        world.SpawnLiving(player);
+
+        grid = world;
+
+        render = tilemap.GetComponent<OverworldRenderer>();
+        render.SyncSprites(grid);
+
+        moveDisabled = false;
+        alive = true;
+    }
+
+
+    /*
     I'm gonna put helpers here that generate different types of plates
     This is janky, but uhhhh it kinda works lmao
+    
+    This is really likely to be refactored out
     */
     Func<TileObject, LivingObject, bool> TileNoop = (TileObject _1, LivingObject _2) => {return true;};
 
@@ -326,120 +378,4 @@ public class LevelManager : MonoBehaviour
         return (new PressurePlate(x1, y1, TileNoop, SendToExit, GameElement.ElementType.Zebra),
                 new PressurePlate(x2, y2, TileNoop, SendToEntrance, GameElement.ElementType.Zebra));
     }
-
-    /*
-    Level Loaders: This is a short-term solution rn
-    */
-    private void WinLvl()
-    {
-        Debug.Log("You won!");
-        grid.Clear();
-        render.SyncSprites(grid);
-        alive = false;
-    }
-
-    private void LoseLvl()
-    {
-        Debug.Log("You died");
-        grid.Clear();
-        render.SyncSprites(grid);
-        alive = false;
-    }
-
-    private void LoadLvl1()
-    {
-        grid.SpawnCar(new Car(5, 4));
-        grid.SpawnCar(new Car(7, 7));
-        grid.SpawnTile(CreateFlagpole(8, 4));
-    }
-
-    private void LoadLvl2()
-    {
-        grid.SpawnLiving(new Cone(0, 5));
-        grid.SpawnLiving(new Cone(0, 3));
-        grid.SpawnLiving(new Cone(1, 3));
-        grid.SpawnLiving(new Cone(2, 4));
-        grid.SpawnLiving(new Cone(4, 5));
-
-        grid.SpawnCar(new Car(3, 5));
-        grid.SpawnCar(new Car(5, 9));
-        grid.SpawnTile(CreateFlagpole(8, 4));
-    }
-
-    private void LoadLvl3()
-    {
-        grid.SpawnLiving(new Cone(0, 5));
-        grid.SpawnLiving(new Cone(0, 3));
-        grid.SpawnLiving(new Cone(1, 5));
-        grid.SpawnLiving(new Cone(1, 3));
-        grid.SpawnLiving(new Cone(2, 5));
-        grid.SpawnLiving(new Cone(2, 3));
-        grid.SpawnLiving(new Cone(3, 5));
-        grid.SpawnLiving(new Cone(3, 3));
-        grid.SpawnLiving(new Cone(4, 5));
-        grid.SpawnLiving(new Cone(4, 3));
-
-        grid.SpawnTile(CreateManhole(1, 4));
-        grid.SpawnCar(new Car(5, 6));
-
-        grid.SpawnTile(CreateFlagpole(8, 4));
-    }
-
-    private void LoadLvl4()
-    {
-        grid.SpawnLiving(new Cone(0, 7));
-        grid.SpawnLiving(new Cone(0, 6));
-        grid.SpawnLiving(new Cone(0, 5));
-        grid.SpawnLiving(new Cone(0, 3));
-        grid.SpawnLiving(new Cone(0, 2));
-        grid.SpawnLiving(new Cone(0, 1));
-        grid.SpawnLiving(new Cone(0, 0));
-        grid.SpawnLiving(new Cone(0, 1));
-        grid.SpawnLiving(new Cone(7, 3));
-        grid.SpawnLiving(new Cone(7, 4));
-
-        grid.SpawnTile(CreateZebraTile(1, 2));
-        grid.SpawnTile(CreateZebraTile(2, 2));
-        grid.SpawnTile(CreateZebraTile(3, 2));
-        grid.SpawnTile(CreateManhole(4, 2));
-        grid.SpawnTile(CreateZebraTile(5, 2));
-        grid.SpawnTile(CreateZebraTile(6, 2));
-        grid.SpawnTile(CreateZebraTile(6, 5));
-
-        grid.SpawnCar(new Car(1, 5));
-        grid.SpawnCar(new Car(2, 5));
-        grid.SpawnCar(new Car(3, 5));
-        grid.SpawnCar(new Car(4, 5));
-        grid.SpawnCar(new Car(5, 4));
-        grid.SpawnCar(new Car(6, 7));
-        grid.SpawnCar(new Car(7, 7));
-
-        grid.SpawnTile(CreateFlagpole(8, 4));
-    }
-
-    /*
-    private void LoadLvl3()
-    {
-        grid.SpawnTile(CreateManhole(2, 3));
-        grid.SpawnTile(CreateManhole(1, 3));
-
-        grid.SpawnTile(CreateZebraTile(1, 1));
-        grid.SpawnTile(CreateZebraTile(2, 1));
-        grid.SpawnTile(CreateZebraTile(3, 1));
-
-        grid.SpawnTile(CreateFlagpole(5, 4));
-
-        grid.SpawnLiving(player);
-        foreach (Follower f in followers)
-        {
-            grid.SpawnLiving(f);
-        }
-
-        grid.SpawnLiving(new Cone(2, 2));
-
-        grid.SpawnCar(new Car(3, 5));
-        grid.SpawnCar(new Car(4, 4));
-        grid.SpawnCar(new Car(6, 7));
-    }
-    */
 }
