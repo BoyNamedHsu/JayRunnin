@@ -465,14 +465,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 767522277}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
+  m_Script: {fileID: 11500000, guid: c8e8858707dafe547a519d6183a4f5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Jay_Sprite: {fileID: 9123923525041600882, guid: 0552ae99490781243b3662db0fc7bcf7,
     type: 3}
   Cone_Sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
     type: 3}
-  Cop_Sprite: {fileID: 6757901678645378020, guid: 98902840fe7320846a4d1aeb604882e1,
+  Cop_Sprite: {fileID: 7220626561207765875, guid: 63825b479c916dd4eb9aac98f013b845,
     type: 3}
   ManHole_Sprite: {fileID: 3263587508200025830, guid: 3407e88b4e3522947aed1ab0ab17358a,
     type: 3}
@@ -494,7 +494,7 @@ GameObject:
   - component: {fileID: 1274519853}
   - component: {fileID: 1274519852}
   m_Layer: 0
-  m_Name: Game Manager
+  m_Name: LevelManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -509,7 +509,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1274519851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
+  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   height: 10

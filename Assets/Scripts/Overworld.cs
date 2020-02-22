@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Overworld
 {
-    // There are 2 layers to represent the gridworld:
+    // There are 2 layers to represent the overworld:
     private TileObject[,] tGridworld; // Layer 1 : Tiles/Environment
     private LivingObject[,] lGridworld; // Layer 2 : Jay and followers
     public readonly int height, width;
@@ -35,8 +35,12 @@ public class Overworld
     }
 
     // Returns whether or not coords is occupied
-    public bool IsTileEmpty(Vector2Int coords)
+    public bool TileIsEmpty(Vector2Int coords)
     {
+        if (coords.x < 0 || coords.x > lGridworld.GetLength(0) 
+            || coords.y < 0 || coords.y > lGridworld.GetLength(1)){
+            return false; // invalid indexes are occupied
+        }
         return lGridworld[coords.x, coords.y] == null;
     }
 
