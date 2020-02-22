@@ -482,7 +482,7 @@ MonoBehaviour:
     type: 3}
   Car_Sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}
-  Warning: {fileID: 0}
+  Warning: {fileID: 1511276191562055917, guid: 429fbc232b848bb45a15314c089332b4, type: 3}
 --- !u!1 &1274519851
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,13 +509,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1274519851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
+  m_Script: {fileID: 11500000, guid: 59eebd861c6bcae47a54f1c2b1f288ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   height: 10
   width: 10
   tilemap: {fileID: 767522280}
-  moveDisabled: 0
 --- !u!4 &1274519853
 Transform:
   m_ObjectHideFlags: 0
