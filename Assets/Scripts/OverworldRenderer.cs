@@ -93,12 +93,13 @@ public class OverworldRenderer : MonoBehaviour
       } else {
         if (!CarWarnings.ContainsKey(car))
         {
-          GameObject newWarning = GameObject.Instantiate(Warning);
-          newWarning.transform.localScale = new Vector3(0.03f, 0.03f, 1);
-          newWarning.transform.SetParent(canvas.transform);
+            // these transformations are sus lmao
+            GameObject newWarning = GameObject.Instantiate(Warning);
+            newWarning.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+            newWarning.transform.SetParent(canvas.transform);
 
-          newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, height - 1));
-          CarWarnings[car] = newWarning;
+            newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, height));
+            CarWarnings[car] = newWarning;
         }
         int countdown = car.triggerTurn - turn;
         CarWarnings[car].GetComponentInChildren<Text>().text = "" + countdown;
@@ -139,7 +140,8 @@ public class OverworldRenderer : MonoBehaviour
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
-                    CameraShake.Shake(0.05f, 0.2f);
+                    // shake is scaled to cellsize
+                    CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
                     // hide sprites that get runover
                     spawnedSprites[killed[i]].GetComponent<Renderer>().enabled = false;
                     killed.RemoveAt(i);
@@ -276,12 +278,12 @@ public class OverworldRenderer : MonoBehaviour
     obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
   }
 
-  public void ScaleCamera(Tilemap board, int height, int width){
-    Vector3 cellSize = board.cellSize;
-    Camera.main.orthographicSize = cellSize.y * height / 2;
-
+  // scales the camera to fit the given width/height of cells
+  public void ScaleCamera(int height, int width){
+    Vector3 cellSize = tilemap.cellSize;
+    Camera.main.orthographicSize = cellSize.y * height / 2f;
     Transform tmp = Camera.main.GetComponent<Transform>();
-    tmp.position = new Vector3(width * cellSize.x / 2f, height * cellSize.y / 2f, -10);
+    tmp.position = new Vector3(cellSize.y * width / 2f, cellSize.y * height / 2f, -10);
   }
 
   private void DestroySprite(GameElement character)

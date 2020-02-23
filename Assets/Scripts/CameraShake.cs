@@ -5,34 +5,33 @@ using UnityEngine.Tilemaps;
 
 public class CameraShake : MonoBehaviour
 {
-    private Vector3 _originalPos;
-    public static CameraShake _instance;
+    public static CameraShake instance;
 
     void Awake()
     {
-        _originalPos = transform.localPosition;
-        _instance = this;
+        instance = this;
     }
 
     public static void Shake(float duration, float amount)
     {
-        _instance.StopAllCoroutines();
-        _instance.StartCoroutine(_instance.cShake(duration, amount));
+        instance.StopAllCoroutines();
+        instance.StartCoroutine(instance.cShake(duration, amount));
     }
 
     public IEnumerator cShake(float duration, float amount)
     {
+        Vector3 originalPos = transform.localPosition;
         float endTime = Time.time + duration;
 
         while (Time.time < endTime)
         {
-            transform.localPosition = _originalPos + Random.insideUnitSphere * amount;
+            transform.localPosition = originalPos + Random.insideUnitSphere * amount;
 
             duration -= Time.deltaTime;
 
             yield return null;
         }
 
-        transform.localPosition = _originalPos;
+        transform.localPosition = originalPos;
     }
 }

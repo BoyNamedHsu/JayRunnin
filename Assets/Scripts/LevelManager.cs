@@ -25,19 +25,6 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         moveDisabled = true;
-
-        Vector2Int jayPos = new Vector2Int(0, 0);
-        GameElement.ElementType?[,] objects = {
-            {null, GameElement.ElementType.ManHole, null},
-            {null, null, null},
-            {null, null, null}
-        };
-        List<Vector2Int> cars = new List<Vector2Int>();
-        cars.Add(new Vector2Int(1, 4));
-
-        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
-        LoadLevel(jayPos, objects, cars, portals);
     }
 
     // Update is called once per frame
@@ -234,23 +221,28 @@ public class LevelManager : MonoBehaviour
 
     /*
     ~Level Loader~:
-    (It's aight)
+    
+    NOTE: IT WILL FLIP YOUR LEVELS 90deg b/c 2D arrays are janky
     */
-    private void LoadLevel(Vector2Int JayPos,
+    public void LoadLevel(Vector2Int JayPos,
                         GameElement.ElementType?[, ] objects,  
                         List<Vector2Int> cars, // misuse of Vector2Int
                         List<(Vector2Int, Vector2Int)> portals){
         int height, width;
-        height = objects.GetLength(1);
+        
         width = objects.GetLength(0);
+        height = objects.GetLength(1);
 
-        Overworld world = new Overworld(height, width);
+        Debug.Log("height " + height);
+        Debug.Log("width " + width);
 
-        for (int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++){ 
+        Overworld world = new Overworld(width, height);
+
+        for (int x = 0; x < objects.GetLength(0); x++){
+            for (int y = 0; y < objects.GetLength(1); y++){ 
                 if (objects[x, y] != null){
                     GameElement.ElementType curr = objects[x, y].Value;
-                    switch (objects[x, y])
+                    switch (curr)
                     {
                         case GameElement.ElementType.Cone:
                             world.SpawnLiving(new Cone(x, y));
@@ -300,7 +292,7 @@ public class LevelManager : MonoBehaviour
         grid = world;
 
         render = tilemap.GetComponent<OverworldRenderer>();
-        render.ScaleCamera(tilemap, height, width);
+        render.ScaleCamera(height, width);
         render.SyncSprites(grid);
 
         moveDisabled = false;
@@ -309,10 +301,9 @@ public class LevelManager : MonoBehaviour
 
 
     /*
-    I'm gonna put helpers here that generate different types of plates
-    This is janky, but uhhhh it kinda works lmao
-    
-    This is really likely to be refactored out
+
+    I really don't think this should be in manager class, but uh these functions generate tiles
+
     */
     Func<TileObject, LivingObject, bool> TileNoop = (TileObject _1, LivingObject _2) => {return true;};
 

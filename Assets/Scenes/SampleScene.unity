@@ -146,7 +146,7 @@ Grid:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 342451376}
   m_Enabled: 1
-  m_CellSize: {x: 3, y: 3, z: 3}
+  m_CellSize: {x: 1, y: 1, z: 1}
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
@@ -278,9 +278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5bf5f654402824ba57aa83bb524a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 767522280}
-  height: 10
-  width: 10
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -493,8 +490,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1274519853}
   - component: {fileID: 1274519852}
+  - component: {fileID: 1274519854}
   m_Layer: 0
-  m_Name: LevelManager
+  m_Name: LevelLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -512,8 +510,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 10
-  width: 10
   tilemap: {fileID: 767522280}
 --- !u!4 &1274519853
 Transform:
@@ -529,6 +525,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1274519854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274519851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879f7c527da1d1b4c800753f60053185, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 1274519852}
 --- !u!1 &1361256331
 GameObject:
   m_ObjectHideFlags: 0
