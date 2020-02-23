@@ -278,9 +278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e5bf5f654402824ba57aa83bb524a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 767522280}
-  height: 10
-  width: 10
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -465,14 +462,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 767522277}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
+  m_Script: {fileID: 11500000, guid: c8e8858707dafe547a519d6183a4f5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Jay_Sprite: {fileID: 9123923525041600882, guid: 0552ae99490781243b3662db0fc7bcf7,
     type: 3}
   Cone_Sprite: {fileID: 3566864618637712331, guid: 55f14d7ad2e547f4bb80c8ef857543f5,
     type: 3}
-  Cop_Sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
+  Cop_Sprite: {fileID: 7220626561207765875, guid: 63825b479c916dd4eb9aac98f013b845,
     type: 3}
   ManHole_Sprite: {fileID: 3263587508200025830, guid: 3407e88b4e3522947aed1ab0ab17358a,
     type: 3}
@@ -482,7 +479,7 @@ MonoBehaviour:
     type: 3}
   Car_Sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}
-  Warning: {fileID: 0}
+  Warning: {fileID: 1511276191562055917, guid: 429fbc232b848bb45a15314c089332b4, type: 3}
 --- !u!1 &1274519851
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,13 +506,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1274519851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa557cf55084fbd4a89464f3e50aadb0, type: 3}
+  m_Script: {fileID: 11500000, guid: bc91901596475894f980437ba9ace9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 10
-  width: 10
-  tilemap: {fileID: 767522280}
-  moveDisabled: 0
+  tilemap: {fileID: 0}
+  render: {fileID: 0}
 --- !u!4 &1274519853
 Transform:
   m_ObjectHideFlags: 0

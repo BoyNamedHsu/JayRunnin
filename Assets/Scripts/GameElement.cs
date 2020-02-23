@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameElement
 {
     public enum ElementType 
-        { Cop, Fan, Cone, Zebra, ManHole, Flagpole, Portal, Car, Jay, Default };
+        { Cop, Fan, Cone, Zebra, ManHole, Flagpole, Portal, Car, Jay, Default, Sidewalk};
         // Portal and Default aren't spawnable
 
     public ElementType eid = ElementType.Default;

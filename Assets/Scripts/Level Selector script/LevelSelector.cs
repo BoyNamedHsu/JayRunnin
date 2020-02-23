@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelSelector : MonoBehaviour
+public class LevelSelector
 {
-    public LevelChanger fader;
+    public static int levelChosen;
 
-    public void Select(int levelIndex)
+    public LevelSelector()
     {
-        fader.FadeToLevel(levelIndex);
+
     }
 }

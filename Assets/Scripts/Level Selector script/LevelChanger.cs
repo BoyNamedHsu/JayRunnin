@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class LevelChanger : MonoBehaviour
 {
     public Animator animator;
-    private int levelToLoad; 
+    public int levelToLoad;
 
     void Update()
     {
@@ -15,6 +15,12 @@ public class LevelChanger : MonoBehaviour
     {
         levelToLoad = levelIndex;
         animator.SetTrigger("FadeOut");
+    }
+
+    public void ChooseLevel(int level)
+    {
+        LevelSelector.levelChosen = level;
+        SceneManager.LoadScene("Level");
     }
 
     public void OnFadeComplete()

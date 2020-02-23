@@ -247,6 +247,9 @@ public class LevelManager : MonoBehaviour
                         case GameElement.ElementType.Cone:
                             world.SpawnLiving(new Cone(x, y));
                             break;
+                        case GameElement.ElementType.Sidewalk:
+                            world.SpawnTile(CreateSidewalk(x, y));
+                            break;
                         case GameElement.ElementType.Zebra:
                             world.SpawnTile(CreateZebraTile(x, y));
                             break;
@@ -306,6 +309,12 @@ public class LevelManager : MonoBehaviour
 
     */
     Func<TileObject, LivingObject, bool> TileNoop = (TileObject _1, LivingObject _2) => {return true;};
+
+    private PressurePlate CreateSidewalk(int x, int y)
+    {
+        return new PressurePlate(x, y, null, TileNoop,
+            GameElement.ElementType.Sidewalk);
+    }
 
     private PressurePlate CreateManhole(int x, int y)
     {
