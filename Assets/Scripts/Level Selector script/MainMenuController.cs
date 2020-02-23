@@ -15,12 +15,12 @@ public class MainMenuController : MonoBehaviour
 
     public void Play()
     {
-        fader.FadeToLevel(1);
+        fader.FadeToLevel("World_1");
     }
 
     public void Settings()
     {
-        fader.FadeToLevel(2);
+        fader.FadeToLevel("Settings");
     }
 
     public void Quit()

@@ -4,16 +4,16 @@ using UnityEngine.SceneManagement;
 public class LevelChanger : MonoBehaviour
 {
     public Animator animator;
-    public int levelToLoad;
+    private string levelToLoad;
 
     void Update()
     {
     }
 
     // Takes index of level and fades into that level
-    public void FadeToLevel (int levelIndex)
+    public void FadeToLevel (string level)
     {
-        levelToLoad = levelIndex;
+        levelToLoad = level;
         animator.SetTrigger("FadeOut");
     }
 

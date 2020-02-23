@@ -5,9 +5,4 @@ using UnityEngine;
 public class LevelSelector
 {
     public static int levelChosen;
-
-    public LevelSelector()
-    {
-
-    }
 }
