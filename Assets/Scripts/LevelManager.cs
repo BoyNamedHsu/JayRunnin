@@ -14,7 +14,8 @@ public class LevelManager : MonoBehaviour
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
-    private int copsLeft;
+    private int copsGoal; // the amount of cops to be defeated in this level
+    private int copsDefeated; // the amount of cops we've defeated so far
 
     // collisions
     public enum Direction {North, East, South, West, None};
@@ -77,7 +78,7 @@ public class LevelManager : MonoBehaviour
     private void FinishLvl()
     {
         grid.Clear();
-        render.SyncSprites(grid, copsLeft);
+        render.SyncSprites(grid, copsGoal, copsDefeated);
         alive = false;
     }
 
@@ -135,7 +136,7 @@ public class LevelManager : MonoBehaviour
         Vector2Int dest = followers[i].position;
         grid.DeleteLiving(followers[i]);
         followers.RemoveAt(i);
-        render.SyncSprites(grid, copsLeft); // sync, since we just deleted it
+        render.SyncSprites(grid, copsGoal, copsDefeated); // sync, since we just deleted it
 
         yield return StartCoroutine(MoveChain(dest, i));
     }
@@ -160,7 +161,7 @@ public class LevelManager : MonoBehaviour
                     if (f.position.x == car.xPos){
                         killed.Add(f);
                         if (f.eid == GameElement.ElementType.Cop)
-                            copsLeft--;
+                            copsDefeated++;
                     }
                 }
                 cars.RemoveAt(i); // then consume that car
@@ -202,7 +203,7 @@ public class LevelManager : MonoBehaviour
             tile.TileUpdate(grid.GetOccupant(tile));
         }
         // render changes if any living were moved by tiles
-        render.SyncSprites(grid, copsLeft);
+        render.SyncSprites(grid, copsGoal, copsDefeated);
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
     }
@@ -250,7 +251,7 @@ public class LevelManager : MonoBehaviour
                         GameElement.ElementType?[, ] objects,  
                         List<Vector2Int> cars, // misuse of Vector2Int
                         List<(Vector2Int, Vector2Int)> portals,
-                        int copsLeft){
+                        int copsGoal){
         int height, width;
         
         width = objects.GetLength(0);
@@ -327,11 +328,12 @@ public class LevelManager : MonoBehaviour
         world.SpawnLiving(player);
 
         grid = world;
-        this.copsLeft = copsLeft;
+        this.copsGoal = copsGoal;
+        this.copsDefeated = 0;
 
         render = tilemap.GetComponent<OverworldRenderer>();
         render.ScaleCamera(height, width);
-        render.SyncSprites(grid, copsLeft);
+        render.SyncSprites(grid, copsGoal, copsDefeated);
 
         moveDisabled = false;
         alive = true;
@@ -393,7 +395,7 @@ public class LevelManager : MonoBehaviour
     private PressurePlate CreateFlagpole(int x, int y)
     {
         Func<TileObject, LivingObject, bool> Win = (TileObject _1, LivingObject _2) => {
-            if (copsLeft <= 0){
+            if (copsDefeated >= copsGoal){
                 WinLvl();
             } else {
                 Debug.Log("More cops to kill still");

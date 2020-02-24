@@ -180,7 +180,7 @@ public class OverworldRenderer : MonoBehaviour
 
   // Spawns in missing objects from a grid
   // Despawns objects that no longer exist in grid
-  public void SyncSprites(Overworld grid, int copsLeft){
+  public void SyncSprites(Overworld grid, int copsGoal, int copsDefeated){
     HashSet<GameElement> gridElements = grid.GetAllObjects();
 
     // despawn no longer existing sprites
@@ -209,8 +209,8 @@ public class OverworldRenderer : MonoBehaviour
       CopCounter.transform.SetParent(canvas.transform);
       CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
     }
-    if (copsLeft > 0){
-      CopCounter.GetComponentInChildren<Text>().text = copsLeft + " cop" + (copsLeft == 1 ? "" : "s") + " left";
+    if (copsDefeated <= copsGoal){
+      CopCounter.GetComponentInChildren<Text>().text = copsDefeated + "/" + copsGoal;
     } else {
       Destroy(CopCounter);
       CopCounter = null;

@@ -21,7 +21,6 @@ public class LevelChanger : MonoBehaviour
     {
         LevelSelector.levelChosen = level;
         SceneManager.LoadScene("Level");
-        // this.FadeToLevel("Level");
     }
 
     public void OnFadeComplete()
