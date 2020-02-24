@@ -433,7 +433,7 @@ public class LevelManager : MonoBehaviour
             return true;
         };
 
-        return (new PressurePlate(x1, y1, TileNoop, SendToExit, GameElement.ElementType.Zebra),
-                new PressurePlate(x2, y2, TileNoop, SendToEntrance, GameElement.ElementType.Zebra));
+        return (new PressurePlate(x1, y1, TileNoop, SendToExit, GameElement.ElementType.Portal),
+                new PressurePlate(x2, y2, TileNoop, SendToEntrance, GameElement.ElementType.Portal));
     }
 }
