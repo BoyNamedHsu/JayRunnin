@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
+using cse481.logging;
 
 public class LevelManager : MonoBehaviour
 {
@@ -22,9 +23,13 @@ public class LevelManager : MonoBehaviour
     private Overworld grid;
     private List<Overworld> prevStates;
 
+    public CapstoneLogger logger;
     // Start is called before the first frame update
     void Awake()
     {
+        logger = LoggerController.LOGGER;
+        StartCoroutine(logger.LogLevelStart(1, "SLevel_1_" + LevelSelector.levelChosen));
+        //StartCoroutine(logger.LogLevelStart(1, "SLevel : 1_" + LevelSelector.levelChosen));
         moveDisabled = true;
     }
 
@@ -84,14 +89,18 @@ public class LevelManager : MonoBehaviour
     private void WinLvl()
     {
         Debug.Log("You won!");
+        logger.LogLevelAction(2,LevelSelector.levelChosen+  " Win Move count: " + grid.turnCount); // 2 is for move count on win
+        logger.LogLevelEnd("ELevel : 1_" + LevelSelector.levelChosen);
         FinishLvl();
         LevelSelector.levelChosen++;
+        LoggerController.LOGGER.LogLevelAction(6, "Beat level : " + LevelSelector.levelChosen);
         SceneManager.LoadScene("Level");
     }
 
     private void LoseLvl()
     {
         Debug.Log("You died");
+        logger.LogLevelAction(1, LevelSelector.levelChosen + " Move count: " + grid.turnCount); // 1 is for move count on losses
         FinishLvl();
         SceneManager.LoadScene("Level");
     }
