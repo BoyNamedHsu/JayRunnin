@@ -473,6 +473,8 @@ MonoBehaviour:
     type: 3}
   ManHole_Sprite: {fileID: 3263587508200025830, guid: 3407e88b4e3522947aed1ab0ab17358a,
     type: 3}
+  Fan_Sprite: {fileID: 7220626561207765875, guid: e884b7de648b8904894a08f9a11ed69f,
+    type: 3}
   Zebra_Sprite: {fileID: 7765461530178617112, guid: f2e873528ad459d4d838e26bb25a2808,
     type: 3}
   Flagpole_Sprite: {fileID: 5184761601372242393, guid: cb062cbbe3878e24ca9bf076fceed4ad,

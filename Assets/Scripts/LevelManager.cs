@@ -38,13 +38,17 @@ public class LevelManager : MonoBehaviour
             return; // don't listen for key inputs while renderer is animating
         }
 
+        if (Input.GetKeyDown("r")){
+            LoseLvl();
+            return;
+        } 
+
         Direction dir = GetKeyboardDir();
         if (dir == Direction.None){
             return;
         }
         Vector2Int newPos = ApplyDir(player.position, dir);
         if (!grid.TileIsEmpty(newPos)){
-            // Debug.Log("Tile is occupied");
             return;
         }
 
@@ -169,9 +173,17 @@ public class LevelManager : MonoBehaviour
 
         // Check if the car killed the player
         if (carColumns.Contains(player.position.x)){
-            LoseLvl(); // This is still glitchy
+            LoseLvl();
             yield return null;
         } else {
+            foreach (Follower f in killed)
+            {
+                if (f.eid == GameElement.ElementType.Fan){
+                    LoseLvl();
+                    yield return null;
+                } 
+            }
+
             // Then delete followers who were killed
             foreach (Follower f in killed)
             {
@@ -269,6 +281,9 @@ public class LevelManager : MonoBehaviour
                         case GameElement.ElementType.ManHole:
                             world.SpawnTile(CreateManhole(x, y));
                             break;
+                        case GameElement.ElementType.FanSpawner:
+                            world.SpawnTile(CreateFanSpawner(x, y));
+                            break;
                         case GameElement.ElementType.Flagpole:
                             world.SpawnTile(CreateFlagpole(x, y));
                             break;
@@ -347,6 +362,20 @@ public class LevelManager : MonoBehaviour
         };
 
         return new PressurePlate(x, y, CopSpawner, TileNoop, 
+            GameElement.ElementType.ManHole);
+    }
+
+    private PressurePlate CreateFanSpawner(int x, int y)
+    {
+        Func<TileObject, LivingObject, bool> FanSpanwer = (TileObject tile, LivingObject _) => {
+            Follower fan = new Fan(tile.position.x, tile.position.y);
+            grid.DeleteTile(tile);
+            grid.SpawnLiving(fan);
+            followers.Add(fan);
+            return true;
+        };
+
+        return new PressurePlate(x, y, FanSpanwer, TileNoop, 
             GameElement.ElementType.ManHole);
     }
 
