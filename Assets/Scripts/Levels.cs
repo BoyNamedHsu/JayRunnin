@@ -20,45 +20,52 @@ public class Levels : MonoBehaviour
 
     private void LoadLevel1() 
     {
-        Vector2Int jayPos = new Vector2Int(0, 3);
+        Vector2Int jayPos = new Vector2Int(0, 4);
+
+        int width, height;
+        width = 10;
+        height = 8;
 
         // NOTE: This array is rotated 90d counterclockwise before being loaded in
         // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[7,10];
-        for (int i = 0; i < 7; i++)
-        {
-            objects[i, 9] = GameElement.ElementType.Flagpole;
-            objects[i, 0] = GameElement.ElementType.Sidewalk;
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++){
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
-        objects[4, 4] = GameElement.ElementType.ManHole;
-        objects[4, 5] = GameElement.ElementType.ManHole;
+
+        objects[2,3] = GameElement.ElementType.FanHole;
 
         List<Vector2Int> cars = new List<Vector2Int>();
-        for (int i = 2; i < 9; i++)
-            cars.Add(new Vector2Int(i, i * 2));
-        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        cars.Add(new Vector2Int(3, 2));
+        cars.Add(new Vector2Int(6, 6));
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 2);
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        manager.LoadLevel(jayPos, objects, cars, portals, 0);
     }
 
     private void LoadLevel2()
     {
-        Vector2Int jayPos = new Vector2Int(0, 3);
+        Vector2Int jayPos = new Vector2Int(0, 4);
+
+        int width, height;
+        width = 10;
+        height = 8;
 
         // NOTE: This array is rotated 90d counterclockwise before being loaded in
         // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[7, 10];
-        for (int i = 0; i < 7; i++)
-        {
-            objects[i, 9] = GameElement.ElementType.Flagpole;
-            objects[i, 0] = GameElement.ElementType.Sidewalk;
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++){
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
+
         List<Vector2Int> cars = new List<Vector2Int>();
         for (int i = 2; i < 9; i++)
             cars.Add(new Vector2Int(i, i - 1));
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 0);
     }
 
     private void LoadLevel3()

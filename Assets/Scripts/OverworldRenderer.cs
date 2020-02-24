@@ -10,7 +10,7 @@ public class OverworldRenderer : MonoBehaviour
   private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
-  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite,
+  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite, FanHole_Sprite,
     Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
@@ -283,6 +283,9 @@ public class OverworldRenderer : MonoBehaviour
         break;
       case GameElement.ElementType.InvisibleWall:
         newObj = Instantiate(Invisible_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.FanHole:
+        newObj = Instantiate(FanHole_Sprite) as GameObject;
         break;
       default:
         Debug.Log("Spawn failed!");

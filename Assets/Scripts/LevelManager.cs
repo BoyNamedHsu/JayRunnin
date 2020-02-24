@@ -284,8 +284,8 @@ public class LevelManager : MonoBehaviour
                         case GameElement.ElementType.ManHole:
                             world.SpawnTile(CreateManhole(x, y));
                             break;
-                        case GameElement.ElementType.FanSpawner:
-                            world.SpawnTile(CreateFanSpawner(x, y));
+                        case GameElement.ElementType.FanHole:
+                            world.SpawnTile(CreateFanHole(x, y));
                             break;
                         case GameElement.ElementType.Flagpole:
                             world.SpawnTile(CreateFlagpole(x, y));
@@ -369,7 +369,7 @@ public class LevelManager : MonoBehaviour
             GameElement.ElementType.ManHole);
     }
 
-    private PressurePlate CreateFanSpawner(int x, int y)
+    private PressurePlate CreateFanHole(int x, int y)
     {
         Func<TileObject, LivingObject, bool> FanSpanwer = (TileObject tile, LivingObject _) => {
             Follower fan = new Fan(tile.position.x, tile.position.y);
@@ -380,7 +380,7 @@ public class LevelManager : MonoBehaviour
         };
 
         return new PressurePlate(x, y, FanSpanwer, TileNoop, 
-            GameElement.ElementType.ManHole);
+            GameElement.ElementType.FanHole);
     }
 
     private PressurePlate CreateZebraTile(int x, int y)
