@@ -210,7 +210,7 @@ public class OverworldRenderer : MonoBehaviour
       CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
     }
     if (copsLeft > 0){
-      CopCounter.GetComponentInChildren<Text>().text = copsLeft + " Cop Left";
+      CopCounter.GetComponentInChildren<Text>().text = copsLeft + " cop" + (copsLeft == 1 ? "" : "s") + " left";
     } else {
       Destroy(CopCounter);
       CopCounter = null;

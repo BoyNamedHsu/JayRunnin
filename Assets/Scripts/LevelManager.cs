@@ -364,7 +364,11 @@ public class LevelManager : MonoBehaviour
     private PressurePlate CreateFlagpole(int x, int y)
     {
         Func<TileObject, LivingObject, bool> Win = (TileObject _1, LivingObject _2) => {
-            WinLvl();
+            if (copsLeft <= 0){
+                WinLvl();
+            } else {
+                Debug.Log("More cops to kill still");
+            }
             return true;
         };
 
