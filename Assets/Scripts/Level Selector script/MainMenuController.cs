@@ -7,11 +7,6 @@ using UnityEngine.SceneManagement;
 public class MainMenuController : MonoBehaviour
 {
     public LevelChanger fader;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     public void Play()
     {
@@ -21,6 +16,14 @@ public class MainMenuController : MonoBehaviour
     public void Settings()
     {
         fader.FadeToLevel("Settings");
+    }
+    public void Menu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+    public void Mute()
+    {
+        AudioListener.volume = AudioListener.volume > 0 ? 0 : 1;
     }
 
     public void Quit()
