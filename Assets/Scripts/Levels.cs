@@ -24,8 +24,8 @@ public class Levels : MonoBehaviour
 
         // NOTE: This array is rotated 90d counterclockwise before being loaded in
         // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[7,10];
-        for (int i = 0; i < 7; i++)
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[6,10];
+        for (int i = 0; i < objects.GetLength(0); i++)
         {
             objects[i, 9] = GameElement.ElementType.Flagpole;
             objects[i, 0] = GameElement.ElementType.Sidewalk;
@@ -48,8 +48,8 @@ public class Levels : MonoBehaviour
 
         // NOTE: This array is rotated 90d counterclockwise before being loaded in
         // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[7, 10];
-        for (int i = 0; i < 7; i++)
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[6, 10];
+        for (int i = 0; i < objects.GetLength(0); i++)
         {
             objects[i, 9] = GameElement.ElementType.Flagpole;
             objects[i, 0] = GameElement.ElementType.Sidewalk;
@@ -68,8 +68,8 @@ public class Levels : MonoBehaviour
 
         // NOTE: This array is rotated 90d counterclockwise before being loaded in
         // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[7, 10];
-        for (int i = 0; i < 7; i++)
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[6, 10];
+        for (int i = 0; i < objects.GetLength(0); i++)
         {
             objects[i, 9] = GameElement.ElementType.Flagpole;
             objects[i, 0] = GameElement.ElementType.Sidewalk;
