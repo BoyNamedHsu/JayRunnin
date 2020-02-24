@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static GameElement;
+using cse481.logging;
 
 public class Levels : MonoBehaviour
 {
     public LevelManager manager;
+    public CapstoneLogger logger;
 
     // Start is called before the first frame update
     void Awake()
     {
+        logger = LoggerController.LOGGER;
         Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
     }
 
     private void LoadLevel1()
     {
+        StartCoroutine(logger.LogLevelStart(1, "SLevel_1_1"));
         Vector2Int jayPos = new Vector2Int(0, 3);
 
         int width, height;
@@ -36,6 +40,7 @@ public class Levels : MonoBehaviour
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
         manager.LoadLevel(jayPos, objects, cars, portals, 0);
+        logger.LogLevelEnd("ELevel_1_1");
     }
 
     private void LoadLevel2()

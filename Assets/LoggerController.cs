@@ -27,13 +27,25 @@ public class LoggerController : MonoBehaviour
 
     void Start()
     {
+
         string skey = "1f16a6c017f12c1539c4947e234de78a";
         int gameId = 202009;
         string gameName = "jayswalkin";
         int cid = 1;
+        // 0 Debug and Maintenance
+        // 1 First test run
+        // 2 Second test run
+        // n nth test run
         CapstoneLogger logger = new CapstoneLogger(gameId, gameName, skey, 0);
 
-        string userId = logger.GenerateUuid();
+
+        string userId = logger.GetSavedUserId();
+        if (userId == null)
+        {
+            userId = logger.GenerateUuid();
+            logger.SetSavedUserId(userId);
+        }
+
         StartCoroutine(logger.StartNewSession(userId));
         LoggerController.LOGGER = logger;
     }
@@ -46,8 +58,7 @@ public class LoggerController : MonoBehaviour
 
     public void Play()
     {
-        LoggerController.LOGGER.LogActionWithNoLevel(199, "press play");
-        //SceneManager.LoadScene("Level", LoadSceneMode.Single);
-        Debug.Log("PLAYED");
+        //LoggerController.LOGGER.LogActionWithNoLevel(199, "press play");
+
     }
 }
