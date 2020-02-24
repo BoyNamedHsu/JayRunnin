@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -67,21 +68,27 @@ public class LevelManager : MonoBehaviour
         yield return null;
     }
 
-    // These aren't used rn, but they're probably useful right lmao
-    private void WinLvl()
+    private void FinishLvl()
     {
-        Debug.Log("You won!");
         grid.Clear();
         render.SyncSprites(grid);
         alive = false;
     }
 
+    // Might be worth considering a coroutine instead of coupling this with flags but this works
+    private void WinLvl()
+    {
+        Debug.Log("You won!");
+        FinishLvl();
+        LevelSelector.levelChosen++;
+        SceneManager.LoadScene("Level");
+    }
+
     private void LoseLvl()
     {
         Debug.Log("You died");
-        grid.Clear();
-        render.SyncSprites(grid);
-        alive = false;
+        FinishLvl();
+        SceneManager.LoadScene("Level");
     }
 
     /*
@@ -178,6 +185,8 @@ public class LevelManager : MonoBehaviour
             tile.TileUpdate(grid.GetOccupant(tile));
         }
         // render changes if any living were moved by tiles
+        Debug.Log("grid height: "  + grid.height);
+
         render.SyncSprites(grid);
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
@@ -221,8 +230,6 @@ public class LevelManager : MonoBehaviour
 
     /*
     ~Level Loader~:
-    
-    NOTE: IT WILL FLIP YOUR LEVELS 90deg b/c 2D arrays are janky
     */
     public void LoadLevel(Vector2Int JayPos,
                         GameElement.ElementType?[, ] objects,  
@@ -232,9 +239,6 @@ public class LevelManager : MonoBehaviour
         
         width = objects.GetLength(0);
         height = objects.GetLength(1);
-
-        Debug.Log("height " + height);
-        Debug.Log("width " + width);
 
         Overworld world = new Overworld(width, height);
 

@@ -200,7 +200,7 @@ public class OverworldRenderer : MonoBehaviour
       }
     }
 
-    UpdateCarCount(grid.cars, grid.turnCount, grid.height);
+    UpdateCarCount(grid.cars, grid.turnCount, grid.height - 1);
   }
 
   void Update()
@@ -274,8 +274,6 @@ public class OverworldRenderer : MonoBehaviour
     SpriteRenderer objBounds = obj.GetComponent<SpriteRenderer>();
     Vector3 tilesize = tilemap.cellSize;
     Vector3 spritesize = objBounds.bounds.size;
-
-    Debug.Log(spritesize);
 
     // scale sprite to size of grid
     obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);

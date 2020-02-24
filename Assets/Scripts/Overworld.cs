@@ -13,18 +13,18 @@ public class Overworld
     public int turnCount;
     public List<Car> cars;
 
-    public Overworld(int height, int width)
+    public Overworld(int width, int height)
     {
-        this.height = height;
         this.width = width;
+        this.height = height;
         this.Clear();
     }
 
     // Resets the grid
     public void Clear()
     {
-        tGridworld = new TileObject[this.height, this.width];
-        lGridworld = new LivingObject[this.height, this.width];
+        tGridworld = new TileObject[this.width, this.height];
+        lGridworld = new LivingObject[this.width, this.height];
         turnCount = 0;
         this.cars = new List<Car>();
     }
