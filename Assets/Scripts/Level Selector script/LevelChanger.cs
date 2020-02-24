@@ -20,6 +20,7 @@ public class LevelChanger : MonoBehaviour
     public void ChooseLevel(int level)
     {
         LevelSelector.levelChosen = level;
+        LoggerController.LOGGER.LogActionWithNoLevel(199, "test");
         SceneManager.LoadScene("Level");
         // this.FadeToLevel("Level");
     }
