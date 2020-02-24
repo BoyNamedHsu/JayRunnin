@@ -20,10 +20,7 @@ public class LevelManager : MonoBehaviour
     // collisions
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
-
-    // other things needed for each level
-    private Jay player;
-    private List<Follower> followers;
+    private List<Overworld> prevStates;
 
     // Start is called before the first frame update
     void Awake()
@@ -48,11 +45,12 @@ public class LevelManager : MonoBehaviour
         if (dir == Direction.None){
             return;
         }
-        Vector2Int newPos = ApplyDir(player.position, dir);
+        Vector2Int newPos = ApplyDir(grid.player.position, dir);
         if (!grid.TileIsEmpty(newPos)){
             return;
         }
 
+        
         StartCoroutine(UpdateGameState(newPos));
     }
 
@@ -106,8 +104,8 @@ public class LevelManager : MonoBehaviour
     // Moves Jay and the chain behind him
     private IEnumerator MoveJay(Vector2Int newPos)
     {
-        Vector2Int oldPos = player.position;
-        grid.MoveLiving(player, newPos);
+        Vector2Int oldPos = grid.player.position;
+        grid.MoveLiving(grid.player, newPos);
         yield return StartCoroutine(MoveChain(oldPos, 0));
     }
 
@@ -115,10 +113,10 @@ public class LevelManager : MonoBehaviour
     private IEnumerator MoveChain(Vector2Int newPos, int head)
     {
         Vector2Int oldPos;
-        for (int i = head; i < followers.Count; i++)
+        for (int i = head; i < grid.followers.Count; i++)
         {
-            oldPos = followers[i].position;
-            grid.MoveLiving(followers[i], newPos);
+            oldPos = grid.followers[i].position;
+            grid.MoveLiving(grid.followers[i], newPos);
             newPos = oldPos;
         }
         
@@ -131,11 +129,11 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
     {
-        int i = followers.IndexOf(f); // if this is slow, we can pass in int directly 
+        int i = grid.followers.IndexOf(f); // if this is slow, we can pass in int directly 
 
-        Vector2Int dest = followers[i].position;
-        grid.DeleteLiving(followers[i]);
-        followers.RemoveAt(i);
+        Vector2Int dest = grid.followers[i].position;
+        grid.DeleteLiving(grid.followers[i]);
+        grid.followers.RemoveAt(i);
         render.SyncSprites(grid, copsGoal, copsDefeated); // sync, since we just deleted it
 
         yield return StartCoroutine(MoveChain(dest, i));
@@ -156,7 +154,7 @@ public class LevelManager : MonoBehaviour
             {
                 carColumns.Add(car.xPos);
                 // kinda jank way of doing this... can be cleaned up
-                foreach (Follower f in followers)
+                foreach (Follower f in grid.followers)
                 {
                     if (f.position.x == car.xPos){
                         killed.Add(f);
@@ -164,8 +162,8 @@ public class LevelManager : MonoBehaviour
                             copsDefeated++;
                     }
                 }
-                if (player.position.x == car.xPos)
-                    killed.Add(player);
+                if (grid.player.position.x == car.xPos)
+                    killed.Add(grid.player);
                 cars.RemoveAt(i); // then consume that car
             }
         }
@@ -175,7 +173,7 @@ public class LevelManager : MonoBehaviour
         yield return new WaitUntil(() => !render.IsInAnimation());
 
         // Check if the car killed the player
-        if (killed.Contains(player)){
+        if (killed.Contains(grid.player)){
             LoseLvl();
             yield return null;
         } else {
@@ -290,6 +288,10 @@ public class LevelManager : MonoBehaviour
                         case GameElement.ElementType.Flagpole:
                             world.SpawnTile(CreateFlagpole(x, y));
                             break;
+                        case GameElement.ElementType.ConeWalk:
+                            world.SpawnTile(CreateSidewalk(x, y));
+                            world.SpawnLiving(new Cone(x, y));
+                            break;
                         default: // Any other ID's don't really make sense
                             Debug.Log("Invalid Level");
                             return;
@@ -325,13 +327,16 @@ public class LevelManager : MonoBehaviour
             return; // Jay needs a valid start position
         }
 
-        player = new Jay(JayPos.x, JayPos.y);
-        followers = new List<Follower>();
-        world.SpawnLiving(player);
+        world.player = new Jay(JayPos.x, JayPos.y);
+        world.followers = new List<Follower>();
+        world.SpawnLiving(world.player);
 
         grid = world;
         this.copsGoal = copsGoal;
         this.copsDefeated = 0;
+
+        prevStates = new List<Overworld>();
+        prevStates.Add(grid);
 
         render = tilemap.GetComponent<OverworldRenderer>();
         render.ScaleCamera(height, width);
@@ -361,7 +366,7 @@ public class LevelManager : MonoBehaviour
             Follower cop = new Cop(tile.position.x, tile.position.y);
             grid.DeleteTile(tile);
             grid.SpawnLiving(cop);
-            followers.Add(cop);
+            grid.followers.Add(cop);
             return true;
         };
 
@@ -375,7 +380,7 @@ public class LevelManager : MonoBehaviour
             Follower fan = new Fan(tile.position.x, tile.position.y);
             grid.DeleteTile(tile);
             grid.SpawnLiving(fan);
-            followers.Add(fan);
+            grid.followers.Add(fan);
             return true;
         };
 
@@ -416,7 +421,7 @@ public class LevelManager : MonoBehaviour
         Vector2Int exit = new Vector2Int(x2, y2);
 
         Func<TileObject, LivingObject, bool> SendToExit = (TileObject _, LivingObject occupant) => {
-            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(exit) || occupant != player){
+            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(exit) || occupant != grid.player){
                 return true;
             }
             lastTurnUsed = grid.turnCount;
@@ -425,7 +430,7 @@ public class LevelManager : MonoBehaviour
         };
 
         Func<TileObject, LivingObject, bool> SendToEntrance = (TileObject _, LivingObject occupant) => {
-            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(entrance) || occupant != player){
+            if (lastTurnUsed == grid.turnCount || !grid.TileIsEmpty(entrance) || occupant != grid.player){
                 return true;
             }
             lastTurnUsed = grid.turnCount;

@@ -12,12 +12,28 @@ public class Overworld
     // And a turn count is used to figure out when cars drive
     public int turnCount;
     public List<Car> cars;
+    public List<Follower> followers;
+    public Jay player;
 
     public Overworld(int width, int height)
     {
         this.width = width;
         this.height = height;
         this.Clear();
+    }
+
+    // Clone constructor of a given overworld
+    public Overworld(Overworld orig)
+    {
+        this.width = orig.width;
+        this.height = orig.height;
+        tGridworld = orig.tGridworld.Clone() as TileObject[,];
+        lGridworld = orig.lGridworld.Clone() as LivingObject[,];
+        this.turnCount = orig.turnCount;
+
+        this.cars = new List<Car>(orig.cars);
+        this.followers = new List<Follower>(orig.followers);
+        this.player = orig.player;
     }
 
     // Resets the grid
