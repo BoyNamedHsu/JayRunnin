@@ -153,10 +153,11 @@ public class LevelManager : MonoBehaviour
                 // kinda jank way of doing this... can be cleaned up
                 foreach (Follower f in followers)
                 {
-                    if (f.position.x == car.xPos)
+                    if (f.position.x == car.xPos){
                         killed.Add(f);
-                    if (f.eid == GameElement.ElementType.Cop)
-                        copsLeft--;
+                        if (f.eid == GameElement.ElementType.Cop)
+                            copsLeft--;
+                    }
                 }
                 cars.RemoveAt(i); // then consume that car
             }

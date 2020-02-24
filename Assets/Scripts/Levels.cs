@@ -36,10 +36,10 @@ public class Levels : MonoBehaviour
 
         List<Vector2Int> cars = new List<Vector2Int>();
         for (int i = 2; i < 9; i++)
-            cars.Add(new Vector2Int(i, i - 1));
+            cars.Add(new Vector2Int(i, i + 1));
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 0);
+        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 2);
     }
 
     private void LoadLevel2()

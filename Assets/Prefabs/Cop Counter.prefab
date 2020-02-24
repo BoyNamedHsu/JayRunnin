@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5087570403528739794}
   m_Layer: 0
-  m_Name: Car Warning Movable
+  m_Name: Cop Counter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1c996eead9eb2e744b13b26b2d057ace, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ed25906eac18f2041a8baa43e56d3e85, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -209,7 +209,12 @@ public class OverworldRenderer : MonoBehaviour
       CopCounter.transform.SetParent(canvas.transform);
       CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
     }
-    CopCounter.GetComponentInChildren<Text>().text = copsLeft + "/3";
+    if (copsLeft > 0){
+      CopCounter.GetComponentInChildren<Text>().text = copsLeft + " Cop Left";
+    } else {
+      Destroy(CopCounter);
+      CopCounter = null;
+    }
 
     UpdateCarCount(grid.cars, grid.turnCount, grid.height - 1);
   }
