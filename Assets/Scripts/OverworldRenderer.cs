@@ -14,7 +14,7 @@ public class OverworldRenderer : MonoBehaviour
     Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
-  public GameObject Warning; // prefab for warning object
+  public GameObject Warning, Cop_Counter_Sprite; // prefab for warning object
 
   Tilemap tilemap; // And the tilemap those cells exist on
 
@@ -29,6 +29,7 @@ public class OverworldRenderer : MonoBehaviour
 
   // List of the car warning UI elements with the timer countdown
   private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
+  private GameObject CopCounter;
 
   // returns true if the renderer is in an animation, otherwise false
   public bool IsInAnimation()
@@ -179,7 +180,7 @@ public class OverworldRenderer : MonoBehaviour
 
   // Spawns in missing objects from a grid
   // Despawns objects that no longer exist in grid
-  public void SyncSprites(Overworld grid){
+  public void SyncSprites(Overworld grid, int copsLeft){
     HashSet<GameElement> gridElements = grid.GetAllObjects();
 
     // despawn no longer existing sprites
@@ -199,6 +200,16 @@ public class OverworldRenderer : MonoBehaviour
         SpawnSprite(obj);
       }
     }
+
+    if (CopCounter == null){
+      // these transformations are sus lmao
+      GameObject canvas = GameObject.Find("Canvas");
+      CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
+      CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+      CopCounter.transform.SetParent(canvas.transform);
+      CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
+    }
+    CopCounter.GetComponentInChildren<Text>().text = copsLeft + "/3";
 
     UpdateCarCount(grid.cars, grid.turnCount, grid.height - 1);
   }

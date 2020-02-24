@@ -14,6 +14,8 @@ public class LevelManager : MonoBehaviour
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
+    private int copsLeft;
+
     // collisions
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
@@ -71,7 +73,7 @@ public class LevelManager : MonoBehaviour
     private void FinishLvl()
     {
         grid.Clear();
-        render.SyncSprites(grid);
+        render.SyncSprites(grid, copsLeft);
         alive = false;
     }
 
@@ -129,7 +131,7 @@ public class LevelManager : MonoBehaviour
         Vector2Int dest = followers[i].position;
         grid.DeleteLiving(followers[i]);
         followers.RemoveAt(i);
-        render.SyncSprites(grid); // sync, since we just deleted it
+        render.SyncSprites(grid, copsLeft); // sync, since we just deleted it
 
         yield return StartCoroutine(MoveChain(dest, i));
     }
@@ -153,6 +155,8 @@ public class LevelManager : MonoBehaviour
                 {
                     if (f.position.x == car.xPos)
                         killed.Add(f);
+                    if (f.eid == GameElement.ElementType.Cop)
+                        copsLeft--;
                 }
                 cars.RemoveAt(i); // then consume that car
             }
@@ -185,7 +189,7 @@ public class LevelManager : MonoBehaviour
             tile.TileUpdate(grid.GetOccupant(tile));
         }
         // render changes if any living were moved by tiles
-        render.SyncSprites(grid);
+        render.SyncSprites(grid, copsLeft);
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
     }
@@ -232,7 +236,8 @@ public class LevelManager : MonoBehaviour
     public void LoadLevel(Vector2Int JayPos,
                         GameElement.ElementType?[, ] objects,  
                         List<Vector2Int> cars, // misuse of Vector2Int
-                        List<(Vector2Int, Vector2Int)> portals){
+                        List<(Vector2Int, Vector2Int)> portals,
+                        int copsLeft){
         int height, width;
         
         width = objects.GetLength(0);
@@ -306,10 +311,11 @@ public class LevelManager : MonoBehaviour
         world.SpawnLiving(player);
 
         grid = world;
+        this.copsLeft = copsLeft;
 
         render = tilemap.GetComponent<OverworldRenderer>();
         render.ScaleCamera(height, width);
-        render.SyncSprites(grid);
+        render.SyncSprites(grid, copsLeft);
 
         moveDisabled = false;
         alive = true;

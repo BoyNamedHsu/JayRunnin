@@ -39,7 +39,7 @@ public class Levels : MonoBehaviour
             cars.Add(new Vector2Int(i, i - 1));
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals);
+        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 0);
     }
 
     private void LoadLevel2()
@@ -59,7 +59,7 @@ public class Levels : MonoBehaviour
             cars.Add(new Vector2Int(i, i - 1));
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals);
+        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 0);
     }
 
     private void LoadLevel3()
@@ -82,7 +82,7 @@ public class Levels : MonoBehaviour
         }
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, Transpose(objects), cars, portals);
+        manager.LoadLevel(jayPos, Transpose(objects), cars, portals, 0);
     }
 
     // A quick, inefficent way to solve the rotated 90d rotation bugs
