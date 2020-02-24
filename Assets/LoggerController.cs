@@ -43,8 +43,9 @@ public class LoggerController : MonoBehaviour
         if (userId == null)
         {
             userId = logger.GenerateUuid();
-            logger.SetSavedUserId(userId);
         }
+
+        logger.SetSavedUserId(userId);
 
         StartCoroutine(logger.StartNewSession(userId));
         LoggerController.LOGGER = logger;
