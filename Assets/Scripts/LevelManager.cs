@@ -144,7 +144,7 @@ public class LevelManager : MonoBehaviour
     // Animates cars running over living objects, populates killed with runover living
     private IEnumerator SendCars()
     {
-        List<Follower> killed = new List<Follower>();
+        List<LivingObject> killed = new List<LivingObject>();
         List<int> carColumns = new List<int>();
 
         List<Car> cars = grid.cars;
@@ -164,6 +164,8 @@ public class LevelManager : MonoBehaviour
                             copsDefeated++;
                     }
                 }
+                if (player.position.x == car.xPos)
+                    killed.Add(player);
                 cars.RemoveAt(i); // then consume that car
             }
         }
@@ -173,7 +175,7 @@ public class LevelManager : MonoBehaviour
         yield return new WaitUntil(() => !render.IsInAnimation());
 
         // Check if the car killed the player
-        if (carColumns.Contains(player.position.x)){
+        if (killed.Contains(player)){
             LoseLvl();
             yield return null;
         } else {

@@ -108,7 +108,7 @@ public class OverworldRenderer : MonoBehaviour
     }
   }
 
-  public void MoveCars(List<Follower> killedOrig, List<int> carColumns, Overworld grid)
+  public void MoveCars(List<LivingObject> killedOrig, List<int> carColumns, Overworld grid)
   {
     if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
@@ -118,7 +118,7 @@ public class OverworldRenderer : MonoBehaviour
 
     currAnimation = Animation.MoveCars;
 
-    List<Follower> killed = new List<Follower>(killedOrig);
+    List<LivingObject> killed = new List<LivingObject>(killedOrig);
 
     // each car spawned is mapped to its destination, IE a y-pos off-camera
     Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
