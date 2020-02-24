@@ -201,17 +201,21 @@ public class OverworldRenderer : MonoBehaviour
       }
     }
 
-    if (CopCounter == null){
-      // these transformations are sus lmao
-      GameObject canvas = GameObject.Find("Canvas");
-      CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
-      CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
-      CopCounter.transform.SetParent(canvas.transform);
-      CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
-    }
-    if (copsDefeated <= copsGoal){
-      CopCounter.GetComponentInChildren<Text>().text = copsDefeated + "/" + copsGoal;
-    } else {
+    if (copsGoal > 0){
+      if (CopCounter == null){
+        // these transformations are sus lmao
+        GameObject canvas = GameObject.Find("Canvas");
+        CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
+        CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+        CopCounter.transform.SetParent(canvas.transform);
+        CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
+      }
+      TMPro.TextMeshProUGUI counter = CopCounter.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+      counter.text = copsDefeated + "/" + copsGoal;
+      if (copsDefeated >= copsGoal){
+        counter.color = new Color32(0, 255, 0, 255);
+      }
+    } else if (CopCounter != null){
       Destroy(CopCounter);
       CopCounter = null;
     }

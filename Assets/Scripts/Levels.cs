@@ -30,8 +30,8 @@ public class Levels : MonoBehaviour
             objects[i, 9] = GameElement.ElementType.Flagpole;
             objects[i, 0] = GameElement.ElementType.Sidewalk;
         }
-        objects[4, 4] = GameElement.ElementType.FanSpawner;
-        objects[4, 5] = GameElement.ElementType.FanSpawner;
+        objects[4, 4] = GameElement.ElementType.ManHole;
+        objects[4, 5] = GameElement.ElementType.ManHole;
 
         List<Vector2Int> cars = new List<Vector2Int>();
         for (int i = 2; i < 9; i++)
