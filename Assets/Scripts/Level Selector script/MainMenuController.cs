@@ -10,7 +10,7 @@ public class MainMenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DontDestroyOnLoad(GameObject.Find("funky tunes"));
+        
     }
 
     public void Play()
