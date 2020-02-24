@@ -238,6 +238,8 @@ public class LevelManager : MonoBehaviour
         width = objects.GetLength(0);
         height = objects.GetLength(1);
 
+        height++; // make rooom for an invisible wall on the top
+
         Overworld world = new Overworld(width, height);
 
         for (int x = 0; x < objects.GetLength(0); x++){
@@ -270,6 +272,12 @@ public class LevelManager : MonoBehaviour
                     }
                 }
             }
+        }
+
+        world.SpawnTile(CreateSidewalk(0, height - 1));
+        world.SpawnTile(CreateSidewalk(width - 1, height - 1));
+        for (int x = 0; x < objects.GetLength(0); x++){
+            world.SpawnLiving(new InvisibleWall(x, height - 1)); 
         }
 
         foreach (Vector2Int carPos in cars){
@@ -317,7 +325,7 @@ public class LevelManager : MonoBehaviour
 
     private PressurePlate CreateSidewalk(int x, int y)
     {
-        return new PressurePlate(x, y, null, TileNoop,
+        return new PressurePlate(x, y, TileNoop, TileNoop,
             GameElement.ElementType.Sidewalk);
     }
 
