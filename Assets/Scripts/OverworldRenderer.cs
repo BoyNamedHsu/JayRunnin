@@ -10,8 +10,8 @@ public class OverworldRenderer : MonoBehaviour
   private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
-  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite,
-    Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite;
+  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite, FanHole_Sprite,
+    Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite, Portal_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
   public GameObject Warning, Cop_Counter_Sprite; // prefab for warning object
@@ -108,7 +108,7 @@ public class OverworldRenderer : MonoBehaviour
     }
   }
 
-  public void MoveCars(List<Follower> killedOrig, List<int> carColumns, Overworld grid)
+  public void MoveCars(List<LivingObject> killedOrig, List<int> carColumns, Overworld grid)
   {
     if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
@@ -118,7 +118,7 @@ public class OverworldRenderer : MonoBehaviour
 
     currAnimation = Animation.MoveCars;
 
-    List<Follower> killed = new List<Follower>(killedOrig);
+    List<LivingObject> killed = new List<LivingObject>(killedOrig);
 
     // each car spawned is mapped to its destination, IE a y-pos off-camera
     Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
@@ -180,7 +180,7 @@ public class OverworldRenderer : MonoBehaviour
 
   // Spawns in missing objects from a grid
   // Despawns objects that no longer exist in grid
-  public void SyncSprites(Overworld grid, int copsLeft){
+  public void SyncSprites(Overworld grid, int copsGoal, int copsDefeated){
     HashSet<GameElement> gridElements = grid.GetAllObjects();
 
     // despawn no longer existing sprites
@@ -201,17 +201,21 @@ public class OverworldRenderer : MonoBehaviour
       }
     }
 
-    if (CopCounter == null){
-      // these transformations are sus lmao
-      GameObject canvas = GameObject.Find("Canvas");
-      CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
-      CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
-      CopCounter.transform.SetParent(canvas.transform);
-      CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
-    }
-    if (copsLeft > 0){
-      CopCounter.GetComponentInChildren<Text>().text = copsLeft + " cop" + (copsLeft == 1 ? "" : "s") + " left";
-    } else {
+    if (copsGoal > 0){
+      if (CopCounter == null){
+        // these transformations are sus lmao
+        GameObject canvas = GameObject.Find("Canvas");
+        CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
+        CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+        CopCounter.transform.SetParent(canvas.transform);
+        CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
+      }
+      TMPro.TextMeshProUGUI counter = CopCounter.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+      counter.text = copsDefeated + "/" + copsGoal;
+      if (copsDefeated >= copsGoal){
+        counter.color = new Color32(0, 255, 0, 255);
+      }
+    } else if (CopCounter != null){
       Destroy(CopCounter);
       CopCounter = null;
     }
@@ -279,6 +283,12 @@ public class OverworldRenderer : MonoBehaviour
         break;
       case GameElement.ElementType.InvisibleWall:
         newObj = Instantiate(Invisible_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.FanHole:
+        newObj = Instantiate(FanHole_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Portal:
+        newObj = Instantiate(Portal_Sprite) as GameObject;
         break;
       default:
         Debug.Log("Spawn failed!");
