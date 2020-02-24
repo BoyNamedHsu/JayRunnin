@@ -8,14 +8,10 @@ public class Levels : MonoBehaviour
     public LevelManager manager;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        if (LevelSelector.levelChosen == 1)
-            LoadLevel1();
-        else if (LevelSelector.levelChosen == 2)
-            LoadLevel2();
-        else if (LevelSelector.levelChosen == 3)
-            LoadLevel3();
+        Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
+
     }
 
     private void LoadLevel1() 
