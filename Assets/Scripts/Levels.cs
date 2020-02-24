@@ -16,7 +16,7 @@ public class Levels : MonoBehaviour
         Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
     }
 
-    private void LoadLevel1() // 109 teaches followers with police
+    private void LoadLevel6() // 109 teaches followers with police
     {
         int width, height;
         width = 6;
@@ -51,7 +51,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2);
     }
 
-    private void LoadLevel108() // teaches followers
+    private void LoadLevel5() // teaches followers
     {
         int width, height;
         width = 9;
@@ -64,10 +64,10 @@ public class Levels : MonoBehaviour
             objects[0, i] = GameElement.ElementType.Sidewalk;
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
-        objects[0, 0] = GameElement.ElementType.Cone;
-        objects[0, 1] = GameElement.ElementType.Cone;
-        objects[0, 2] = GameElement.ElementType.Cone;
-        objects[0, 4] = GameElement.ElementType.Cone;
+        objects[0, 0] = GameElement.ElementType.ConeWalk;
+        objects[0, 1] = GameElement.ElementType.ConeWalk;
+        objects[0, 2] = GameElement.ElementType.ConeWalk;
+        objects[0, 4] = GameElement.ElementType.ConeWalk;
         objects[1, 2] = GameElement.ElementType.Cone;
         objects[1, 4] = GameElement.ElementType.Cone;
         objects[2, 5] = GameElement.ElementType.Cone;
@@ -84,7 +84,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 0);
     }
 
-    private void LoadLevel107() // teaches portals
+    private void LoadLevel7() // teaches portals
     {
         int width, height;
         width = 9;
@@ -111,7 +111,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 1);
     }
 
-    private void LoadLevel106() // first level of the game, simple
+    private void LoadLevel1() // first level of the game, simple
     {
         int width, height;
         width = 7;
@@ -134,7 +134,7 @@ public class Levels : MonoBehaviour
         logger.LogLevelEnd("ELevel_1_1");
     }
 
-    private void LoadLevel105() // explores a level with 2 mole-cops
+    private void LoadLevel4() // explores a level with 2 mole-cops
     {
         int width, height;
         width = 7;
@@ -160,7 +160,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2);
     }
 
-    private void LoadLevel104() // teaches mole-cops
+    private void LoadLevel3() // teaches mole-cops
     {
         int width, height;
         width = 8;
@@ -176,7 +176,9 @@ public class Levels : MonoBehaviour
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
 
-        for (int i = 0; i < 4; i++){
+        objects[0, 3] = GameElement.ElementType.ConeWalk;
+        objects[0, 5] = GameElement.ElementType.ConeWalk;
+        for (int i = 1; i < 4; i++){
             objects[i, 3] = GameElement.ElementType.Cone;
             objects[i, 5] = GameElement.ElementType.Cone;
         }
@@ -189,7 +191,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 1);
     }
 
-    private void LoadLevel103() // teaches crosswalks
+    private void LoadLevel2() // teaches crosswalks
     {
         int width, height;
         width = 8;
@@ -208,8 +210,8 @@ public class Levels : MonoBehaviour
         for (int i = 1; i < width - 1; i++){
             objects[i, 4] = GameElement.ElementType.Zebra;
         }
-        objects[0, 5] = GameElement.ElementType.Cone;
-        objects[0, 7] = GameElement.ElementType.Cone;
+        objects[0, 5] = GameElement.ElementType.ConeWalk;
+        objects[0, 7] = GameElement.ElementType.ConeWalk;
 
         List<Vector2Int> cars = new List<Vector2Int>();
         for (int i = 1; i < 7; i++){
@@ -220,7 +222,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 0);
     }
 
-    private void LoadLevel102() // this one is cool, multiple solutions too.
+    private void LoadLevel8() // this one is cool, multiple solutions too.
     {
         Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -262,7 +264,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 4);
     }
 
-    private void LoadLevel101() // this level is a bit too hard lmao
+    private void LoadLevel9() // this level is a bit too hard lmao
     {
         Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -278,8 +280,8 @@ public class Levels : MonoBehaviour
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
 
-        objects[0, 2] = GameElement.ElementType.Cone;
-        objects[0, 4] = GameElement.ElementType.Cone;
+        objects[0, 2] = GameElement.ElementType.ConeWalk;
+        objects[0, 4] = GameElement.ElementType.ConeWalk;
         objects[1, 2] = GameElement.ElementType.Cone;
         objects[1, 4] = GameElement.ElementType.Cone;
         objects[3, 1] = GameElement.ElementType.Cone;
@@ -305,30 +307,6 @@ public class Levels : MonoBehaviour
         portals.Add((new Vector2Int(6, 0), new Vector2Int(6, 4)));
 
         manager.LoadLevel(jayPos, objects, cars, portals, 2);
-    }
-
-    private void LoadLevel2()
-    {
-        Vector2Int jayPos = new Vector2Int(0, 4);
-
-        int width, height;
-        width = 10;
-        height = 8;
-
-        // NOTE: This array is rotated 90d counterclockwise before being loaded in
-        // This has to do with how arrays are indexed, and uh can be fixed later
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-        for (int i = 0; i < height; i++){
-            objects[0, i] = GameElement.ElementType.Sidewalk;
-            objects[width - 1, i] = GameElement.ElementType.Flagpole;
-        }
-
-        List<Vector2Int> cars = new List<Vector2Int>();
-        for (int i = 2; i < 9; i++)
-            cars.Add(new Vector2Int(i, i - 1));
-        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 0);
     }
 
     // A quick, inefficent way to solve the rotated 90d rotation bugs
