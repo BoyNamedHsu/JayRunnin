@@ -11,7 +11,7 @@ public class OverworldRenderer : MonoBehaviour
 
   // I need prefabs for each object type, IE cones, manholes, jay, etc
   public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, 
-    Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite;
+    Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite;
 
   public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
   public GameObject Warning; // prefab for warning object
@@ -257,6 +257,9 @@ public class OverworldRenderer : MonoBehaviour
         break;
       case GameElement.ElementType.Sidewalk:
         newObj = Instantiate(Sidewalk_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.InvisibleWall:
+        newObj = Instantiate(Invisible_Sprite) as GameObject;
         break;
       default:
         Debug.Log("Spawn failed!");

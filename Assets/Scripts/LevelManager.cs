@@ -42,7 +42,7 @@ public class LevelManager : MonoBehaviour
         }
         Vector2Int newPos = ApplyDir(player.position, dir);
         if (!grid.TileIsEmpty(newPos)){
-            Debug.Log("Tile is occupied");
+            // Debug.Log("Tile is occupied");
             return;
         }
 
@@ -185,8 +185,6 @@ public class LevelManager : MonoBehaviour
             tile.TileUpdate(grid.GetOccupant(tile));
         }
         // render changes if any living were moved by tiles
-        Debug.Log("grid height: "  + grid.height);
-
         render.SyncSprites(grid);
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
@@ -250,6 +248,9 @@ public class LevelManager : MonoBehaviour
                     {
                         case GameElement.ElementType.Cone:
                             world.SpawnLiving(new Cone(x, y));
+                            break;
+                        case GameElement.ElementType.InvisibleWall:
+                            world.SpawnLiving(new InvisibleWall(x, y));
                             break;
                         case GameElement.ElementType.Sidewalk:
                             world.SpawnTile(CreateSidewalk(x, y));

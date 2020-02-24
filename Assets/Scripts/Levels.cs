@@ -30,6 +30,10 @@ public class Levels : MonoBehaviour
             objects[i, 9] = GameElement.ElementType.Flagpole;
             objects[i, 0] = GameElement.ElementType.Sidewalk;
         }
+        objects[4, 4] = GameElement.ElementType.InvisibleWall;
+        objects[4, 5] = GameElement.ElementType.InvisibleWall;
+        objects[4, 6] = GameElement.ElementType.InvisibleWall;
+
         List<Vector2Int> cars = new List<Vector2Int>();
         for (int i = 2; i < 9; i++)
             cars.Add(new Vector2Int(i, i - 1));
@@ -55,7 +59,7 @@ public class Levels : MonoBehaviour
             cars.Add(new Vector2Int(i, i - 1));
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-        manager.LoadLevel(jayPos, objects, cars, portals);
+        manager.LoadLevel(jayPos, Transpose(objects), cars, portals);
     }
 
     private void LoadLevel3()
