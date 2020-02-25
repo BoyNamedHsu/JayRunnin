@@ -29,24 +29,21 @@ public class Levels : MonoBehaviour
     {
       objects[0, i] = GameElement.ElementType.Sidewalk;
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
-      //objects[3, i] = GameElement.ElementType.Zebra;
-      //objects[4, i] = GameElement.ElementType.Zebra;
     }
 
     objects[0, 1] = GameElement.ElementType.ConeWalk;
     objects[0, 3] = GameElement.ElementType.ConeWalk;
-    objects[4, 2] = GameElement.ElementType.Cone;
 
-    objects[1, 1] = GameElement.ElementType.FanHole;
-    objects[1, 3] = GameElement.ElementType.FanHole;
     objects[2, 2] = GameElement.ElementType.FanHole;
+    objects[1, 3] = GameElement.ElementType.FanHole;
+    objects[1, 1] = GameElement.ElementType.FanHole;
 
     objects[1, 2] = GameElement.ElementType.ManHole;
     objects[2, 1] = GameElement.ElementType.ManHole;
     objects[2, 3] = GameElement.ElementType.ManHole;
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(4, 22));
+    cars.Add(new Vector2Int(4, 15));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     manager.LoadLevel(jayPos, objects, cars, portals, 2);
@@ -205,7 +202,7 @@ public class Levels : MonoBehaviour
     width = 8;
     height = 8;
 
-    Vector2Int jayPos = new Vector2Int(0, 6);
+    Vector2Int jayPos = new Vector2Int(0, 4);
 
     // NOTE: This array is rotated 90d counterclockwise before being loaded in
     // This has to do with how arrays are indexed, and uh can be fixed later
@@ -216,17 +213,17 @@ public class Levels : MonoBehaviour
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
     }
 
-    for (int i = 1; i < width - 1; i++)
+    for (int i = 2; i < width - 1; i++)
     {
       objects[i, 4] = GameElement.ElementType.Zebra;
     }
     objects[0, 5] = GameElement.ElementType.ConeWalk;
-    objects[0, 7] = GameElement.ElementType.ConeWalk;
+    objects[0, 3] = GameElement.ElementType.ConeWalk;
 
     List<Vector2Int> cars = new List<Vector2Int>();
     for (int i = 1; i < 7; i++)
     {
-      cars.Add(new Vector2Int(i, 5));
+      cars.Add(new Vector2Int(i, 2));
     }
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
@@ -301,6 +298,7 @@ public class Levels : MonoBehaviour
     objects[5, 1] = GameElement.ElementType.Cone;
     objects[5, 3] = GameElement.ElementType.Cone;
     objects[5, 5] = GameElement.ElementType.Cone;
+    objects[6, 1] = GameElement.ElementType.Cone;
 
     objects[2, 2] = GameElement.ElementType.FanHole;
     objects[2, 3] = GameElement.ElementType.FanHole;
@@ -309,12 +307,8 @@ public class Levels : MonoBehaviour
     objects[1, 3] = GameElement.ElementType.ManHole;
     objects[3, 5] = GameElement.ElementType.ManHole;
 
-    objects[3, 2] = GameElement.ElementType.Zebra;
-    objects[3, 3] = GameElement.ElementType.Zebra;
-    objects[3, 4] = GameElement.ElementType.Zebra;
-
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(4, 15));
+    cars.Add(new Vector2Int(4, 16));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     portals.Add((new Vector2Int(6, 0), new Vector2Int(6, 4)));
