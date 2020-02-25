@@ -19,7 +19,7 @@ public class Levels : MonoBehaviour
   private void LoadLevel6() // 109 teaches followers with police
   {
     int width, height;
-    width = 6;
+    width = 8;
     height = 6;
 
     Vector2Int jayPos = new Vector2Int(0, 2);
@@ -43,7 +43,8 @@ public class Levels : MonoBehaviour
     objects[2, 3] = GameElement.ElementType.ManHole;
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(4, 15));
+    cars.Add(new Vector2Int(3, 13));
+    cars.Add(new Vector2Int(4, 13));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     manager.LoadLevel(jayPos, objects, cars, portals, 2);
