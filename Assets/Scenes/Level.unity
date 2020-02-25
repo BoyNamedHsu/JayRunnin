@@ -121,6 +121,59 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &30796268
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 30796270}
+  - component: {fileID: 30796269}
+  m_Layer: 0
+  m_Name: Tutorial Popups
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &30796269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30796268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c13892e0f78b640897994a4ee9c7ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crossRoadTutorial: {fileID: 8558659834704965630, guid: 1039e7929e6729d41a9801d1ba1b0ea3,
+    type: 3}
+  saveFollowersTutorial: {fileID: 6445371380088501810, guid: ff04b81dd410235429113ae635868c8f,
+    type: 3}
+  killCopsTutorial: {fileID: 4907205567562682576, guid: c918c8a466321ca47a4821919639880d,
+    type: 3}
+  rToRestartTutorial: {fileID: 1322664521167848615, guid: a6647e79cfdc42248ae85688b9c868f9,
+    type: 3}
+  finalText: {fileID: 7693457043751766619, guid: 160ccb1afaf342d4a91a8416c40a1696,
+    type: 3}
+--- !u!4 &30796270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30796268}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.3118515, y: 3.1641192, z: -0.31676555}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &342451376
 GameObject:
   m_ObjectHideFlags: 0
