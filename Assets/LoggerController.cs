@@ -36,15 +36,15 @@ public class LoggerController : MonoBehaviour
         // 1 First test run
         // 2 Second test run
         // n nth test run
-        CapstoneLogger logger = new CapstoneLogger(gameId, gameName, skey, 0);
+        CapstoneLogger logger = new CapstoneLogger(gameId, gameName, skey, cid);
 
 
-        //string userId = logger.GetSavedUserId();
-        // if (userId == null)
-        //{
-        string userId = logger.GenerateUuid();
-        logger.SetSavedUserId(userId);
-        //}
+        string userId = logger.GetSavedUserId();
+        if (userId == null)
+        {
+            userId = logger.GenerateUuid();
+            logger.SetSavedUserId(userId);
+        }
 
         StartCoroutine(logger.StartNewSession(userId));
         LoggerController.LOGGER = logger;
