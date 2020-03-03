@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using TMPro;
 
 public class OverworldRenderer : MonoBehaviour
 {
@@ -103,7 +104,7 @@ public class OverworldRenderer : MonoBehaviour
             CarWarnings[car] = newWarning;
         }
         int countdown = car.triggerTurn - turn;
-        CarWarnings[car].GetComponentInChildren<Text>().text = "" + countdown;
+        CarWarnings[car].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
       }
     }
   }
