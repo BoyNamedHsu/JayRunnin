@@ -66,6 +66,17 @@ public class Overworld
         return lGridworld[tile.position.x, tile.position.y];
     }
 
+    // Returns which tile is at coordinates (x, y)
+    public TileObject GetTile(Vector2Int coords)
+    {
+        if (coords.x < 0 || coords.x >= tGridworld.GetLength(0)
+            || coords.y < 0 || coords.y >= tGridworld.GetLength(1))
+        {
+            return null; // invalid indexes are occupied
+        }
+        return tGridworld[coords.x, coords.y];
+    }
+
     // Note - This can overwrite other TileObjects
     public void SpawnTile(TileObject tile)
     {

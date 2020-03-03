@@ -80,6 +80,21 @@ public class OverworldRenderer : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
+  // Changes the car warning sprites depending on zebra.
+  // zebra represents whether tile Jay is standing on is a zebra tile.
+  public void ChangeCarWarningSprite(bool zebra)
+  {
+    foreach (var warning in CarWarnings)
+    {
+      GameObject stopSign = warning.Value.transform.GetChild(1).gameObject;
+      stopSign.SetActive(zebra);
+      GameObject warningSign = warning.Value.transform.GetChild(0).gameObject;
+      warningSign.SetActive(!zebra);
+            
+
+        }
+    }
+
   // Updates cars UI countdown on screen given the current turn the user is on
   // To do: remove the UI elements when countdown is zero, place them in the according column position
   public void UpdateCarCount(List<Car> cars, int turn, int height)

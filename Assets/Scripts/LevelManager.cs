@@ -211,6 +211,12 @@ public class LevelManager : MonoBehaviour
         {
             tile.TileUpdate(grid.GetOccupant(tile));
         }
+
+        // Changing warning signs to stop signs if Jay is on zebra tile
+        TileObject tileOccupied = grid.GetTile(grid.player.position);
+        bool onZebra = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Zebra : false;
+        render.ChangeCarWarningSprite(onZebra);
+
         // render changes if any living were moved by tiles
         render.SyncSprites(grid, copsGoal, copsDefeated);
         render.MoveSprites();
