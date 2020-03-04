@@ -45,6 +45,12 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // return to level select
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            SceneManager.LoadScene("MainMenu");
+            return;
+        }
+
         if (moveDisabled)
         {
             return; // don't listen for key inputs while renderer is animating
@@ -53,13 +59,18 @@ public class LevelManager : MonoBehaviour
         if (Input.GetKeyDown("r")){
             RestartLvl();
             return;
-        } 
+        }
 
         Direction dir = GetKeyboardDir();
+        Vector2Int newPos = ApplyDir(grid.player.position, dir);
+
+        if (Input.GetKeyDown(KeyCode.Space)){
+            StartCoroutine(UpdateGameState(newPos));
+            return;
+        }
         if (dir == Direction.None){
             return;
         }
-        Vector2Int newPos = ApplyDir(grid.player.position, dir);
         if (!grid.TileIsEmpty(newPos)){
             return;
         }
@@ -148,12 +159,24 @@ public class LevelManager : MonoBehaviour
     {
         Vector2Int oldPos = grid.player.position;
         grid.MoveLiving(grid.player, newPos);
+
+        // Ugly, but makes the grid animations much smoother
+        PlaySnappyAnimations(grid.GetTile(newPos));
+
         yield return StartCoroutine(MoveChain(oldPos, 0));
+    }
+
+    // Plays animations on tileStepped
+    private void PlaySnappyAnimations(TileObject tileStepped)
+    {
+        if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
+            render.PlayAnimation(tileStepped, "New Animation");
     }
 
     // Moves a portion chain of followers to the given coords, starting from index *head*
     private IEnumerator MoveChain(Vector2Int newPos, int head)
     {
+
         Vector2Int oldPos;
         for (int i = head; i < grid.followers.Count; i++)
         {
@@ -248,6 +271,16 @@ public class LevelManager : MonoBehaviour
         // Changing warning signs to stop signs if Jay is on zebra tile
         TileObject tileOccupied = grid.GetTile(grid.player.position);
         bool onZebra = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Zebra : false;
+        bool onFlagpole = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Flagpole : false;
+        if (onFlagpole) {
+            if (copsDefeated >= copsGoal){
+                WinLvl();
+            } else {
+                Debug.Log("More cops to kill still");
+            }
+            yield return null;
+        }
+
         render.ChangeCarWarningSprite(onZebra);
 
         // render changes if any living were moved by tiles
@@ -334,7 +367,7 @@ public class LevelManager : MonoBehaviour
                             world.SpawnTile(CreateFanHole(x, y));
                             break;
                         case GameElement.ElementType.Flagpole:
-                            world.SpawnTile(CreateFlagpole(x, y));
+                            world.SpawnTile(new TileObject(x, y, GameElement.ElementType.Flagpole));
                             break;
                         case GameElement.ElementType.ConeWalk:
                             world.SpawnTile(CreateSidewalk(x, y));
@@ -413,6 +446,11 @@ public class LevelManager : MonoBehaviour
 
     private PressurePlate CreateManhole(int x, int y)
     {
+        Func<TileObject, LivingObject, bool> GoIntoGround = (TileObject tile, LivingObject _) => {
+            render.PlayAnimation(tile, "ManholeStep");
+            return true;
+        };
+
         Func<TileObject, LivingObject, bool> CopSpawner = (TileObject tile, LivingObject _) => {
             Follower cop = new Cop(tile.position.x, tile.position.y);
             grid.DeleteTile(tile);
@@ -421,12 +459,17 @@ public class LevelManager : MonoBehaviour
             return true;
         };
 
-        return new PressurePlate(x, y, CopSpawner, TileNoop, 
+        return new PressurePlate(x, y, CopSpawner, GoIntoGround, 
             GameElement.ElementType.ManHole);
     }
 
     private PressurePlate CreateFanHole(int x, int y)
     {
+        Func<TileObject, LivingObject, bool> GoIntoGround = (TileObject tile, LivingObject _) => {
+            render.PlayAnimation(tile, "New Animation");
+            return true;
+        };
+
         Func<TileObject, LivingObject, bool> FanSpanwer = (TileObject tile, LivingObject _) => {
             Follower fan = new Fan(tile.position.x, tile.position.y);
             grid.DeleteTile(tile);
@@ -435,7 +478,7 @@ public class LevelManager : MonoBehaviour
             return true;
         };
 
-        return new PressurePlate(x, y, FanSpanwer, TileNoop, 
+        return new PressurePlate(x, y, FanSpanwer, GoIntoGround, 
             GameElement.ElementType.FanHole);
     }
 
@@ -448,21 +491,6 @@ public class LevelManager : MonoBehaviour
 
         return new PressurePlate(x, y, TileNoop, DecrementTurn, 
             GameElement.ElementType.Zebra);
-    }
-
-    private PressurePlate CreateFlagpole(int x, int y)
-    {
-        Func<TileObject, LivingObject, bool> Win = (TileObject _1, LivingObject _2) => {
-            if (copsDefeated >= copsGoal){
-                WinLvl();
-            } else {
-                Debug.Log("More cops to kill still");
-            }
-            return true;
-        };
-
-        return new PressurePlate(x, y, TileNoop, Win, 
-            GameElement.ElementType.Flagpole);
     }
 
     private (PressurePlate, PressurePlate) CreatePortals(int x1, int y1, int x2, int y2)

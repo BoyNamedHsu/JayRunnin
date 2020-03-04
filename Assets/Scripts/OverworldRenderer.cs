@@ -340,4 +340,8 @@ public class OverworldRenderer : MonoBehaviour
     Destroy(spawnedSprites[character]);
     spawnedSprites.Remove(character);
   }
+
+  public void PlayAnimation(GameElement el, String animationName) {
+    spawnedSprites[el].GetComponent<Animator>().Play(animationName);
+  }
 }
