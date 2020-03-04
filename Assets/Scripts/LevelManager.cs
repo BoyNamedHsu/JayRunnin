@@ -23,14 +23,23 @@ public class LevelManager : MonoBehaviour
     private Overworld grid;
     private List<Overworld> prevStates;
 
+    // Logging fields
     public CapstoneLogger logger;
+    public int moveCount;
+    public string movePath; // A string representing the directions moved before retry/win
+    public string startPos; // Where Jay begins for the purpose of knowing where movePath begins.
+
     // Start is called before the first frame update
     void Awake()
     {
-        logger = LoggerController.LOGGER;
-        StartCoroutine(logger.LogLevelStart(1, "SLevel_1_" + LevelSelector.levelChosen));
-        //StartCoroutine(logger.LogLevelStart(1, "SLevel : 1_" + LevelSelector.levelChosen));
         moveDisabled = true;
+
+        // Below we log level start and initialize fields for logging
+        moveCount = 0;
+        movePath = "";
+        startPos = "";
+        logger = LoggerController.LOGGER;
+        StartCoroutine(logger.LogLevelStart(LevelSelector.levelChosen, ""));
     }
 
     // Update is called once per frame
@@ -48,7 +57,7 @@ public class LevelManager : MonoBehaviour
         }
 
         if (Input.GetKeyDown("r")){
-            LoseLvl();
+            RestartLvl();
             return;
         }
 
@@ -66,7 +75,8 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        
+        moveCount++;
+        movePath += ConvertDirToStr(dir);
         StartCoroutine(UpdateGameState(newPos));
     }
 
@@ -100,18 +110,41 @@ public class LevelManager : MonoBehaviour
     private void WinLvl()
     {
         Debug.Log("You won!");
-        logger.LogLevelAction(2,LevelSelector.levelChosen+  " Win Move count: " + grid.turnCount); // 2 is for move count on win
-        logger.LogLevelEnd("ELevel : 1_" + LevelSelector.levelChosen);
+
+        logger.LogLevelAction(2, "" + moveCount); // 2 is for move count on win
+        logger.LogLevelAction(8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
+        Debug.Log(LoggerController.numRestarts);
         FinishLvl();
+
         LevelSelector.levelChosen++;
-        LoggerController.LOGGER.LogLevelAction(6, "Beat level : " + LevelSelector.levelChosen);
+        LoggerController.LOGGER.LogLevelAction(6, "" + LevelSelector.levelChosen); // Log level beat
+        logger.LogLevelAction(4, LoggerController.deathCount + ""); // death count
+
+        logger.LogLevelAction(9, startPos + " " + movePath + " W"); // Log path of player on win
+
+        logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + ""); // Log end of level || Details: total retries including restarts and deaths
+        LoggerController.ResetFields();
         SceneManager.LoadScene("Level");
     }
 
     private void LoseLvl()
     {
         Debug.Log("You died");
-        logger.LogLevelAction(1, LevelSelector.levelChosen + " Move count: " + grid.turnCount); // 1 is for move count on losses
+        LoggerController.deathCount++;
+        logger.LogLevelAction(1, "" + moveCount); // 1 is for move count on losses
+        logger.LogLevelAction(9, startPos + " " + movePath + " L"); // Log path of player on loss
+
+        FinishLvl();
+        SceneManager.LoadScene("Level");
+    }
+
+    // This is kinda bad but I need to differentiate restart with loss so I created a method thats basically the same as lose lvl
+    private void RestartLvl()
+    {
+        LoggerController.numRestarts++;
+        logger.LogLevelAction(7, "(" + grid.player.position.x + ", " + grid.player.position.y + ")"); // Logs where the user restarts
+        logger.LogLevelAction(9, startPos + " " + (movePath.Equals("") ? "O" : movePath) + " R"); // Log path of player on restart
+
         FinishLvl();
         SceneManager.LoadScene("Level");
     }
@@ -379,6 +412,9 @@ public class LevelManager : MonoBehaviour
         }
 
         world.player = new Jay(JayPos.x, JayPos.y);
+
+        startPos = JayPos.x + " " + JayPos.y; // Store start position of Jay for purpose of logging
+
         world.followers = new List<Follower>();
         world.SpawnLiving(world.player);
 
@@ -478,5 +514,24 @@ public class LevelManager : MonoBehaviour
 
         return (new PressurePlate(x1, y1, TileNoop, SendToExit, GameElement.ElementType.Portal),
                 new PressurePlate(x2, y2, TileNoop, SendToEntrance, GameElement.ElementType.Portal));
+    }
+
+    private string ConvertDirToStr(Direction dir)
+    {
+        switch (dir)
+        {
+            case Direction.South:
+                return "S";
+            case Direction.North:
+                return "N";
+            case Direction.West:
+                return "W";
+            case Direction.East:
+                return "E";
+            case Direction.None:
+                return "O";
+            default: // This should never occur
+                return "Z";
+        }
     }
 }

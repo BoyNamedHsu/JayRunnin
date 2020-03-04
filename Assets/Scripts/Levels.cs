@@ -14,7 +14,7 @@ public class Levels : MonoBehaviour
   {
     logger = LoggerController.LOGGER;
     Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
-  }
+    }
 
   private void LoadLevel6() // 109 teaches followers with police
   {
