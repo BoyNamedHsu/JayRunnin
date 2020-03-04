@@ -77,6 +77,12 @@ public class Overworld
         return tGridworld[coords.x, coords.y];
     }
 
+    // Returns whether the given tile is of tyleType
+    public bool IsElement(TileObject tile, GameElement.ElementType tyleType)
+    {
+        return tile != null && tile.eid == tyleType;
+    }
+
     // Note - This can overwrite other TileObjects
     public void SpawnTile(TileObject tile)
     {

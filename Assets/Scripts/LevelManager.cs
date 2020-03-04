@@ -126,12 +126,24 @@ public class LevelManager : MonoBehaviour
     {
         Vector2Int oldPos = grid.player.position;
         grid.MoveLiving(grid.player, newPos);
+
+        // Ugly, but makes the grid animations much smoother
+        PlaySnappyAnimations(grid.GetTile(newPos));
+
         yield return StartCoroutine(MoveChain(oldPos, 0));
+    }
+
+    // Plays animations on tileStepped
+    private void PlaySnappyAnimations(TileObject tileStepped)
+    {
+        if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
+            render.PlayAnimation(tileStepped, "New Animation");
     }
 
     // Moves a portion chain of followers to the given coords, starting from index *head*
     private IEnumerator MoveChain(Vector2Int newPos, int head)
     {
+
         Vector2Int oldPos;
         for (int i = head; i < grid.followers.Count; i++)
         {
@@ -418,7 +430,7 @@ public class LevelManager : MonoBehaviour
     private PressurePlate CreateFanHole(int x, int y)
     {
         Func<TileObject, LivingObject, bool> GoIntoGround = (TileObject tile, LivingObject _) => {
-            render.PlayAnimation(tile, "FanholeStep");
+            render.PlayAnimation(tile, "New Animation");
             return true;
         };
 
