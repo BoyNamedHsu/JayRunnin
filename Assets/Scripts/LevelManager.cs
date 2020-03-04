@@ -117,6 +117,10 @@ public class LevelManager : MonoBehaviour
         FinishLvl();
 
         LevelSelector.levelChosen++;
+        if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
+            Unlocker.Unlocked();
+        
+
         LoggerController.LOGGER.LogLevelAction(6, "" + LevelSelector.levelChosen); // Log level beat
         logger.LogLevelAction(4, LoggerController.deathCount + ""); // death count
 
