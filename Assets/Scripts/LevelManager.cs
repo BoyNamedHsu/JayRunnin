@@ -64,10 +64,10 @@ public class LevelManager : MonoBehaviour
         Direction dir = GetKeyboardDir();
         Vector2Int newPos = ApplyDir(grid.player.position, dir);
 
-        if (Input.GetKeyDown(KeyCode.Space)){
+/*        if (Input.GetKeyDown(KeyCode.Space)){
             StartCoroutine(UpdateGameState(newPos));
             return;
-        }
+        }*/
         if (dir == Direction.None){
             return;
         }
