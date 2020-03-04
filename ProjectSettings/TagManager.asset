@@ -44,3 +44,9 @@ TagManager:
   - name: Tile
     uniqueID: 1387727527
     locked: 0
+  - name: Living
+    uniqueID: 501191391
+    locked: 0
+  - name: UI
+    uniqueID: 981373791
+    locked: 0
