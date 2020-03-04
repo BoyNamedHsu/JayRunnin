@@ -138,6 +138,9 @@ public class LevelManager : MonoBehaviour
     {
         if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
             render.PlayAnimation(tileStepped, "New Animation");
+        else if (grid.IsElement(tileStepped, GameElement.ElementType.ManHole))
+            render.PlayAnimation(tileStepped, "ManholeStep");
+
     }
 
     // Moves a portion chain of followers to the given coords, starting from index *head*
@@ -237,8 +240,8 @@ public class LevelManager : MonoBehaviour
 
         // Changing warning signs to stop signs if Jay is on zebra tile
         TileObject tileOccupied = grid.GetTile(grid.player.position);
-        bool onZebra = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Zebra : false;
-        bool onFlagpole = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Flagpole : false;
+        bool onZebra = grid.IsElement(tileOccupied, GameElement.ElementType.Zebra);
+        bool onFlagpole = grid.IsElement(tileOccupied, GameElement.ElementType.Flagpole);
         if (onFlagpole) {
             if (copsDefeated >= copsGoal){
                 WinLvl();
@@ -410,10 +413,6 @@ public class LevelManager : MonoBehaviour
 
     private PressurePlate CreateManhole(int x, int y)
     {
-        Func<TileObject, LivingObject, bool> GoIntoGround = (TileObject tile, LivingObject _) => {
-            render.PlayAnimation(tile, "ManholeStep");
-            return true;
-        };
 
         Func<TileObject, LivingObject, bool> CopSpawner = (TileObject tile, LivingObject _) => {
             Follower cop = new Cop(tile.position.x, tile.position.y);
@@ -423,16 +422,12 @@ public class LevelManager : MonoBehaviour
             return true;
         };
 
-        return new PressurePlate(x, y, CopSpawner, GoIntoGround, 
+        return new PressurePlate(x, y, CopSpawner, TileNoop, 
             GameElement.ElementType.ManHole);
     }
 
     private PressurePlate CreateFanHole(int x, int y)
     {
-        Func<TileObject, LivingObject, bool> GoIntoGround = (TileObject tile, LivingObject _) => {
-            render.PlayAnimation(tile, "New Animation");
-            return true;
-        };
 
         Func<TileObject, LivingObject, bool> FanSpanwer = (TileObject tile, LivingObject _) => {
             Follower fan = new Fan(tile.position.x, tile.position.y);
@@ -442,7 +437,7 @@ public class LevelManager : MonoBehaviour
             return true;
         };
 
-        return new PressurePlate(x, y, FanSpanwer, GoIntoGround, 
+        return new PressurePlate(x, y, FanSpanwer, TileNoop, 
             GameElement.ElementType.FanHole);
     }
 
