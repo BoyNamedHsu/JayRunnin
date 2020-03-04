@@ -41,10 +41,16 @@ public class LevelManager : MonoBehaviour
             return; // don't listen for key inputs while renderer is animating
         }
 
+        // return to level select
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            SceneManager.LoadScene("MainMenu");
+            return;
+        }
+
         if (Input.GetKeyDown("r")){
             LoseLvl();
             return;
-        } 
+        }
 
         Direction dir = GetKeyboardDir();
         if (dir == Direction.None){
@@ -215,6 +221,16 @@ public class LevelManager : MonoBehaviour
         // Changing warning signs to stop signs if Jay is on zebra tile
         TileObject tileOccupied = grid.GetTile(grid.player.position);
         bool onZebra = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Zebra : false;
+        bool onFlagpole = tileOccupied != null ? tileOccupied.eid == GameElement.ElementType.Flagpole : false;
+        if (onFlagpole) {
+            if (copsDefeated >= copsGoal){
+                WinLvl();
+            } else {
+                Debug.Log("More cops to kill still");
+            }
+            yield return null;
+        }
+
         render.ChangeCarWarningSprite(onZebra);
 
         // render changes if any living were moved by tiles
@@ -301,7 +317,7 @@ public class LevelManager : MonoBehaviour
                             world.SpawnTile(CreateFanHole(x, y));
                             break;
                         case GameElement.ElementType.Flagpole:
-                            world.SpawnTile(CreateFlagpole(x, y));
+                            world.SpawnTile(new TileObject(x, y, GameElement.ElementType.Flagpole));
                             break;
                         case GameElement.ElementType.ConeWalk:
                             world.SpawnTile(CreateSidewalk(x, y));
@@ -412,21 +428,6 @@ public class LevelManager : MonoBehaviour
 
         return new PressurePlate(x, y, TileNoop, DecrementTurn, 
             GameElement.ElementType.Zebra);
-    }
-
-    private PressurePlate CreateFlagpole(int x, int y)
-    {
-        Func<TileObject, LivingObject, bool> Win = (TileObject _1, LivingObject _2) => {
-            if (copsDefeated >= copsGoal){
-                WinLvl();
-            } else {
-                Debug.Log("More cops to kill still");
-            }
-            return true;
-        };
-
-        return new PressurePlate(x, y, TileNoop, Win, 
-            GameElement.ElementType.Flagpole);
     }
 
     private (PressurePlate, PressurePlate) CreatePortals(int x1, int y1, int x2, int y2)

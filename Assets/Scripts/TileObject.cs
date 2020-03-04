@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class TileObject : GameElement
+public class TileObject : GameElement
 {
     // TileUpdate is run each turn
-    public abstract void TileUpdate(LivingObject occupant);
+    public virtual void TileUpdate(LivingObject occupant){}
 
-    public TileObject(int x, int y) : base (x, y){}
+    public TileObject(int x, int y, ElementType eid = ElementType.Default) : base (x, y){
+        this.eid = eid;
+    }
 }
