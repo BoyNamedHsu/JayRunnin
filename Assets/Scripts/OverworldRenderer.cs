@@ -344,4 +344,9 @@ public class OverworldRenderer : MonoBehaviour
   public void PlayAnimation(GameElement el, String animationName) {
     spawnedSprites[el].GetComponent<Animator>().Play(animationName);
   }
+
+    public GameObject GetGameObject(GameElement el)
+    {
+        return spawnedSprites[el];
+    }
 }

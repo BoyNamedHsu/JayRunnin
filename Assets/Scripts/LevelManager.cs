@@ -172,7 +172,10 @@ public class LevelManager : MonoBehaviour
         if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
             render.PlayAnimation(tileStepped, "New Animation");
         else if (grid.IsElement(tileStepped, GameElement.ElementType.ManHole))
-            render.PlayAnimation(tileStepped, "ManholeStep");
+        {
+            render.GetGameObject(tileStepped).transform.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
+            render.GetGameObject(tileStepped).transform.GetChild(2).gameObject.SetActive(false);
+        }
 
     }
 
