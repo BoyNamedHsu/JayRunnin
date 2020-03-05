@@ -14,7 +14,7 @@ public class Levels : MonoBehaviour
   {
     logger = LoggerController.LOGGER;
     Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
-  }
+    }
 
   private void LoadLevel1() // first level of the game, simple
   {

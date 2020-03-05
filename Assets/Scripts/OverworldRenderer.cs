@@ -351,4 +351,8 @@ public class OverworldRenderer : MonoBehaviour
       rToRestart = GameObject.Instantiate(rToRestartTutorial);
     }
   }
+    public GameObject GetGameObject(GameElement el)
+    {
+        return spawnedSprites[el];
+    }
 }
