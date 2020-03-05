@@ -11,6 +11,7 @@ public class MainMenuController : MonoBehaviour
 
     public void Awake()
     {
+        Unlocker.InitializeUnlocker();
         logger = LoggerController.LOGGER;
         StartCoroutine(logger.LogLevelStart(0, ""));
     }

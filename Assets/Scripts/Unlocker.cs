@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class Unlocker : MonoBehaviour
 {
-    public static Unlocker instance;
-    
-    // Awake is called before the first frame update
-    void Awake()
+    public static void InitializeUnlocker()
     {
         // fix player prefs if corrupted
         if (!PlayerPrefs.HasKey("highestUnlockedLevel") || PlayerPrefs.GetInt("highestUnlockedLevel") <= 0) {
