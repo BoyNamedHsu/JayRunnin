@@ -6,10 +6,6 @@ public class LevelChanger : MonoBehaviour
     public Animator animator;
     private string levelToLoad;
 
-    void Update()
-    {
-    }
-
     // Takes index of level and fades into that level
     public void FadeToLevel (string level)
     {
@@ -19,8 +15,11 @@ public class LevelChanger : MonoBehaviour
 
     public void ChooseLevel(int level)
     {
-        LevelSelector.levelChosen = level;
-        SceneManager.LoadScene("Level");
+        if (level <= Unlocker.GetHighestUnlockedLevel())
+        {
+            LevelSelector.levelChosen = level;
+            SceneManager.LoadScene("Level");
+        }
     }
 
     public void OnFadeComplete()

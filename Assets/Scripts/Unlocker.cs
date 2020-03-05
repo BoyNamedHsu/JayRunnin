@@ -4,23 +4,26 @@ using UnityEngine;
 
 public class Unlocker : MonoBehaviour
 {
-    private static int highest; // highest level unlocked
-
-    // Start is called before the first frame update
-    void Start()
+    public static Unlocker instance;
+    
+    // Awake is called before the first frame update
+    void Awake()
     {
-        highest = PlayerPrefs.HasKey("highestUnlockedLevel") ? PlayerPrefs.GetInt("highestUnlockedLevel") : 1;
+        // fix player prefs if corrupted
+        if (!PlayerPrefs.HasKey("highestUnlockedLevel") || PlayerPrefs.GetInt("highestUnlockedLevel") <= 0) {
+            PlayerPrefs.SetInt("highestUnlockedLevel", 1);
+            PlayerPrefs.Save();
+        }
     }
 
     public static void Unlocked()
     {
-        highest++;
-        PlayerPrefs.SetInt("highestUnlockedLevel", highest);
+        PlayerPrefs.SetInt("highestUnlockedLevel", PlayerPrefs.GetInt("highestUnlockedLevel") + 1);
         PlayerPrefs.Save();
     }
 
     public static int GetHighestUnlockedLevel()
     {
-        return highest;
+        return PlayerPrefs.GetInt("highestUnlockedLevel");
     }
 }
