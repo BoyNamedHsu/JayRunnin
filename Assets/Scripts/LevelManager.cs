@@ -86,6 +86,17 @@ public class LevelManager : MonoBehaviour
         if (alive){
             moveDisabled = false;
         }
+
+        // check if player is unwinnable state
+        if (grid.cars.Count == 0 && copsDefeated < copsGoal ||
+            // if the player is surrouneded on all sides
+            (!grid.TileIsEmpty(ApplyDir(grid.player.position, Direction.North)) && 
+            !grid.TileIsEmpty(ApplyDir(grid.player.position, Direction.South)) &&
+            !grid.TileIsEmpty(ApplyDir(grid.player.position, Direction.East)) &&
+            !grid.TileIsEmpty(ApplyDir(grid.player.position, Direction.West))
+            )){
+            render.SuggestRestart();
+        }
         yield return null;
     }
 

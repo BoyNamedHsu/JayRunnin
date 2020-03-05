@@ -542,6 +542,8 @@ MonoBehaviour:
     type: 3}
   Car_Sprite: {fileID: 115888350124333969, guid: 5a7fd8e36c4cbc3419c41df38f41130f,
     type: 3}
+  rToRestartTutorial: {fileID: 1322664521167848615, guid: a6647e79cfdc42248ae85688b9c868f9,
+    type: 3}
   Warning: {fileID: 1511276191562055917, guid: 429fbc232b848bb45a15314c089332b4, type: 3}
   Cop_Counter_Sprite: {fileID: 1511276191562055917, guid: 95f1b1670d26ce34a9703170e0ce07a5,
     type: 3}

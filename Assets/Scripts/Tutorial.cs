@@ -12,13 +12,11 @@ public class Tutorial : MonoBehaviour
     {
         if (LevelSelector.levelChosen == 1)
             GameObject.Instantiate(crossRoadTutorial);
-        else if (LevelSelector.levelChosen == 4)
-            GameObject.Instantiate(killCopsTutorial);
         else if (LevelSelector.levelChosen == 3)
-            GameObject.Instantiate(rToRestartTutorial);
+            GameObject.Instantiate(killCopsTutorial);
         else if (LevelSelector.levelChosen == 5)
             GameObject.Instantiate(saveFollowersTutorial);
-        else if (LevelSelector.levelChosen == 10)
+        else if (LevelSelector.levelChosen == 13)
             GameObject.Instantiate(finalText);
 
     }

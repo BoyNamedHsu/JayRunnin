@@ -14,7 +14,7 @@ public class OverworldRenderer : MonoBehaviour
   public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite, FanHole_Sprite,
     Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite, Portal_Sprite;
 
-  public GameObject Car_Sprite; // and prefabs for other game ObjectSpawner
+  public GameObject Car_Sprite, rToRestartTutorial; // and prefabs for other game ObjectSpawner
   public GameObject Warning, Cop_Counter_Sprite; // prefab for warning object
 
   Tilemap tilemap; // And the tilemap those cells exist on
@@ -31,6 +31,7 @@ public class OverworldRenderer : MonoBehaviour
   // List of the car warning UI elements with the timer countdown
   private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
   private GameObject CopCounter;
+  private GameObject rToRestart;
 
   // returns true if the renderer is in an animation, otherwise false
   public bool IsInAnimation()
@@ -343,5 +344,11 @@ public class OverworldRenderer : MonoBehaviour
 
   public void PlayAnimation(GameElement el, String animationName) {
     spawnedSprites[el].GetComponent<Animator>().Play(animationName);
+  }
+
+  public void SuggestRestart() {
+    if (rToRestart == null) {
+      rToRestart = GameObject.Instantiate(rToRestartTutorial);
+    }
   }
 }
