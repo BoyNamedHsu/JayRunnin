@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class LevelChanger : MonoBehaviour
 {
     public Animator animator;
-    private string levelToLoad;
+    private static string levelToLoad;
 
     // Takes index of level and fades into that level
     public void FadeToLevel (string level)

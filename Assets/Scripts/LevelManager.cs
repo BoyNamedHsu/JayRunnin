@@ -313,16 +313,15 @@ public class LevelManager : MonoBehaviour
     // Returns the tile Jay will move to, else returns the same position as Jay
     private Direction GetKeyboardDir()
     {
-        if (Input.GetButtonDown("Vertical"))
-        {
-            float moveVertical = Input.GetAxis("Vertical");
-            return moveVertical < 0 ? Direction.South : Direction.North;
-        }
-        else if (Input.GetButtonDown("Horizontal"))
-        {
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            return moveHorizontal < 0 ? Direction.West : Direction.East;
-        }
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            return Direction.North;
+        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            return Direction.South;
+        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            return Direction.West;
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            return Direction.East;
+
         return Direction.None;
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Unlocker : MonoBehaviour
 {
+
     public static void InitializeUnlocker()
     {
         // fix player prefs if corrupted
