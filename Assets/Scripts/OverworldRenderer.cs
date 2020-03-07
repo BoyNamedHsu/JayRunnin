@@ -32,9 +32,10 @@ public class OverworldRenderer : MonoBehaviour
   private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
   private GameObject CopCounter;
   private GameObject rToRestart;
+  public SoundPlayer audio;
 
-  // returns true if the renderer is in an animation, otherwise false
-  public bool IsInAnimation()
+    // returns true if the renderer is in an animation, otherwise false
+    public bool IsInAnimation()
   {
     return this.currAnimation != Animation.None;
   }
@@ -93,8 +94,8 @@ public class OverworldRenderer : MonoBehaviour
       warningSign.SetActive(!zebra);
             
 
-        }
     }
+  }
 
   // Updates cars UI countdown on screen given the current turn the user is on
   // To do: remove the UI elements when countdown is zero, place them in the according column position
@@ -281,9 +282,11 @@ public class OverworldRenderer : MonoBehaviour
         newObj = Instantiate(Cone_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Cop:
+        audio.PlaySound("plop");
         newObj = Instantiate(Cop_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Fan:
+        audio.PlaySound("plop");
         newObj = Instantiate(Fan_Sprite) as GameObject;
         break;
       case GameElement.ElementType.ManHole:

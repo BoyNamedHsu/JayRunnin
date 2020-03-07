@@ -283,7 +283,6 @@ public class LevelManager : MonoBehaviour
     {
         List<GameElement> spawns = new List<GameElement>(); 
         List<GameElement> despawns = new List<GameElement>();
-
         foreach (TileObject tile in grid.GetAllTiles())
         {
             tile.TileUpdate(grid.GetOccupant(tile));
