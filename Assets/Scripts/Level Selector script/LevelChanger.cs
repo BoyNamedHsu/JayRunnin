@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelChanger : MonoBehaviour
 {
     public Animator animator;
+    public Animator menuAnimator;
+    public GameObject image;
     private static string levelToLoad;
 
     // Takes index of level and fades into that level
@@ -25,5 +28,11 @@ public class LevelChanger : MonoBehaviour
     public void OnFadeComplete()
     {
         SceneManager.LoadScene(levelToLoad);
+    }
+
+    public void PanUp()
+    {
+        image.SetActive(false);
+        menuAnimator.Play("PanUpMenu");
     }
 }
