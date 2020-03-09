@@ -12,6 +12,7 @@ public class LevelManager : MonoBehaviour
     public Tilemap tilemap;
     private OverworldRenderer render;
     public SoundPlayer audio;
+    public LevelChanger sceneFader;
 
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
@@ -115,6 +116,7 @@ public class LevelManager : MonoBehaviour
     {
         grid.Clear();
         render.SyncSprites(grid, copsGoal, copsDefeated);
+        Destroy(GameObject.Find("CanvasUI"));
         alive = false;
     }
 
@@ -126,7 +128,8 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelAction(2, "" + moveCount); // 2 is for move count on win
         logger.LogLevelAction(8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
-        FinishLvl();
+        if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
+            FinishLvl();
 
         LevelSelector.levelChosen++;
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
@@ -140,7 +143,15 @@ public class LevelManager : MonoBehaviour
 
         logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + ""); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
-        SceneManager.LoadScene("Level");
+
+        if (LevelSelector.levelChosen > Levels.LAST_LEVEL)
+        {
+            sceneFader.FadeToLevel("Ending");
+        }
+        else
+        {
+            SceneManager.LoadScene("Level");
+        }
     }
 
     private void LoseLvl()

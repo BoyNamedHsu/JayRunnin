@@ -10,14 +10,23 @@ public class Tutorial : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameObject canvas = GameObject.Find("CanvasUI");
+
         if (LevelSelector.levelChosen == 1)
-            GameObject.Instantiate(crossRoadTutorial);
+        {
+            var tutorial = GameObject.Instantiate(crossRoadTutorial);
+            tutorial.transform.SetParent(canvas.transform);
+        }
         else if (LevelSelector.levelChosen == 3)
-            GameObject.Instantiate(killCopsTutorial);
+        {
+            var tutorial = GameObject.Instantiate(killCopsTutorial);
+            tutorial.transform.SetParent(canvas.transform);
+        }
         else if (LevelSelector.levelChosen == 5)
-            GameObject.Instantiate(saveFollowersTutorial);
-        else if (LevelSelector.levelChosen == 13)
-            GameObject.Instantiate(finalText);
+        {
+            var tutorial = GameObject.Instantiate(saveFollowersTutorial);
+            tutorial.transform.SetParent(canvas.transform);
+        }
 
     }
 }

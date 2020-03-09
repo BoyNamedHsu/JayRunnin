@@ -68,8 +68,8 @@ public class OverworldRenderer : MonoBehaviour
       bool animationIsComplete = true;
       foreach (GameElement obj in spawnedSprites.Keys)
       {
-        if (obj.eid == GameElement.ElementType.Cop) print(obj.eid);
-        animationIsComplete = animationIsComplete &&
+/*        if (obj.eid == GameElement.ElementType.Cop) print(obj.eid);
+*/        animationIsComplete = animationIsComplete &&
                 (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.1f);
       }
       if (animationIsComplete)
@@ -101,7 +101,7 @@ public class OverworldRenderer : MonoBehaviour
   // To do: remove the UI elements when countdown is zero, place them in the according column position
   public void UpdateCarCount(List<Car> cars, int turn, int height)
   {
-    GameObject canvas = GameObject.Find("Canvas");
+    GameObject canvas = GameObject.Find("CanvasUI");
     foreach (Car car in cars)
     {
       if (car.triggerTurn <= turn){
@@ -224,7 +224,7 @@ public class OverworldRenderer : MonoBehaviour
     if (copsGoal > 0){
       if (CopCounter == null){
         // these transformations are sus lmao
-        GameObject canvas = GameObject.Find("Canvas");
+        GameObject canvas = GameObject.Find("CanvasUI");
         CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
         CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
         CopCounter.transform.SetParent(canvas.transform);
