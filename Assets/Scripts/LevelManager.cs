@@ -11,6 +11,8 @@ public class LevelManager : MonoBehaviour
     // rendering:
     public Tilemap tilemap;
     private OverworldRenderer render;
+    public SoundPlayer audio;
+    public LevelChanger sceneFader;
 
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
@@ -48,7 +50,7 @@ public class LevelManager : MonoBehaviour
         // return to level select
         if (Input.GetKeyDown(KeyCode.Escape)){
             logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " E");
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("World_1");
             return;
         }
 
@@ -115,6 +117,7 @@ public class LevelManager : MonoBehaviour
     {
         grid.Clear();
         render.SyncSprites(grid, copsGoal, copsDefeated);
+        Destroy(GameObject.Find("CanvasUI"));
         alive = false;
     }
 
@@ -126,7 +129,8 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelAction(2, "" + moveCount); // 2 is for move count on win
         logger.LogLevelAction(8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
-        FinishLvl();
+        if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
+            FinishLvl();
 
         LevelSelector.levelChosen++;
         Debug.Log(LevelSelector.levelChosen++);
@@ -141,7 +145,15 @@ public class LevelManager : MonoBehaviour
 
         logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
-        SceneManager.LoadScene("Level");
+
+        if (LevelSelector.levelChosen > Levels.LAST_LEVEL)
+        {
+            sceneFader.FadeToLevel("Ending");
+        }
+        else
+        {
+            SceneManager.LoadScene("Level");
+        }
     }
 
     private void LoseLvl()
@@ -176,9 +188,11 @@ public class LevelManager : MonoBehaviour
     {
         Vector2Int oldPos = grid.player.position;
         grid.MoveLiving(grid.player, newPos);
-
+       
         // Ugly, but makes the grid animations much smoother
         PlaySnappyAnimations(grid.GetTile(newPos));
+
+        //audio.PlaySound("woosh");
 
         yield return StartCoroutine(MoveChain(oldPos, 0));
     }
@@ -187,11 +201,16 @@ public class LevelManager : MonoBehaviour
     private void PlaySnappyAnimations(TileObject tileStepped)
     {
         if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
+        {
+            audio.PlaySound("close");
             render.PlayAnimation(tileStepped, "New Animation");
+        }
         else if (grid.IsElement(tileStepped, GameElement.ElementType.ManHole))
         {
-            render.GetGameObject(tileStepped).transform.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
-            render.GetGameObject(tileStepped).transform.GetChild(2).gameObject.SetActive(false);
+            audio.PlaySound("close");
+            Transform transMan = render.GetGameObject(tileStepped).transform;
+            transMan.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
+            transMan.GetChild(2).gameObject.SetActive(false);
         }
 
     }
@@ -285,7 +304,6 @@ public class LevelManager : MonoBehaviour
     {
         List<GameElement> spawns = new List<GameElement>(); 
         List<GameElement> despawns = new List<GameElement>();
-
         foreach (TileObject tile in grid.GetAllTiles())
         {
             tile.TileUpdate(grid.GetOccupant(tile));
@@ -315,16 +333,15 @@ public class LevelManager : MonoBehaviour
     // Returns the tile Jay will move to, else returns the same position as Jay
     private Direction GetKeyboardDir()
     {
-        if (Input.GetButtonDown("Vertical"))
-        {
-            float moveVertical = Input.GetAxis("Vertical");
-            return moveVertical < 0 ? Direction.South : Direction.North;
-        }
-        else if (Input.GetButtonDown("Horizontal"))
-        {
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            return moveHorizontal < 0 ? Direction.West : Direction.East;
-        }
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            return Direction.North;
+        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            return Direction.South;
+        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            return Direction.West;
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            return Direction.East;
+
         return Direction.None;
     }
 

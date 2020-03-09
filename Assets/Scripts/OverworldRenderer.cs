@@ -32,9 +32,10 @@ public class OverworldRenderer : MonoBehaviour
   private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
   private GameObject CopCounter;
   private GameObject rToRestart;
+  public SoundPlayer audio;
 
-  // returns true if the renderer is in an animation, otherwise false
-  public bool IsInAnimation()
+    // returns true if the renderer is in an animation, otherwise false
+    public bool IsInAnimation()
   {
     return this.currAnimation != Animation.None;
   }
@@ -48,8 +49,7 @@ public class OverworldRenderer : MonoBehaviour
       Debug.Log("MoveSprites animation was cancelled");
       return;
     }
-
-    currAnimation = Animation.MoveSprites;
+        currAnimation = Animation.MoveSprites;
 
     // when called, this method moves each GameObject closer to its given destination
     Func<bool> MoveSpritesUpdate = () =>
@@ -68,7 +68,8 @@ public class OverworldRenderer : MonoBehaviour
       bool animationIsComplete = true;
       foreach (GameElement obj in spawnedSprites.Keys)
       {
-        animationIsComplete = animationIsComplete &&
+/*        if (obj.eid == GameElement.ElementType.Cop) print(obj.eid);
+*/        animationIsComplete = animationIsComplete &&
                 (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.1f);
       }
       if (animationIsComplete)
@@ -93,18 +94,19 @@ public class OverworldRenderer : MonoBehaviour
       warningSign.SetActive(!zebra);
             
 
-        }
     }
+  }
 
   // Updates cars UI countdown on screen given the current turn the user is on
   // To do: remove the UI elements when countdown is zero, place them in the according column position
   public void UpdateCarCount(List<Car> cars, int turn, int height)
   {
-    GameObject canvas = GameObject.Find("Canvas");
+    GameObject canvas = GameObject.Find("CanvasUI");
     foreach (Car car in cars)
     {
       if (car.triggerTurn <= turn){
         if (CarWarnings.ContainsKey(car)){
+          audio.PlaySound("car");
           Destroy(CarWarnings[car]);
           CarWarnings.Remove(car);
         }
@@ -158,7 +160,8 @@ public class OverworldRenderer : MonoBehaviour
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
-                    // shake is scaled to cellsize
+                        audio.PlaySound("thud");
+                        // shake is scaled to cellsize
                     CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
                     // hide sprites that get runover
                     spawnedSprites[killed[i]].GetComponent<Renderer>().enabled = false;
@@ -221,7 +224,7 @@ public class OverworldRenderer : MonoBehaviour
     if (copsGoal > 0){
       if (CopCounter == null){
         // these transformations are sus lmao
-        GameObject canvas = GameObject.Find("Canvas");
+        GameObject canvas = GameObject.Find("CanvasUI");
         CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
         CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
         CopCounter.transform.SetParent(canvas.transform);
@@ -281,9 +284,11 @@ public class OverworldRenderer : MonoBehaviour
         newObj = Instantiate(Cone_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Cop:
+        audio.PlaySound("plop");
         newObj = Instantiate(Cop_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Fan:
+        audio.PlaySound("plop");
         newObj = Instantiate(Fan_Sprite) as GameObject;
         break;
       case GameElement.ElementType.ManHole:

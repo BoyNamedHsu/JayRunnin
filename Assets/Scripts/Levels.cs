@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static GameElement;
 using cse481.logging;
 
@@ -8,13 +9,14 @@ public class Levels : MonoBehaviour
 {
   public LevelManager manager;
   public CapstoneLogger logger;
+  public static int LAST_LEVEL = 12; // for triggering ending cutscene. Please edit this
 
   // Start is called before the first frame update
   void Awake()
   {
     logger = LoggerController.LOGGER;
     Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
-    }
+  }
 
   private void LoadLevel1() // first level of the game, simple
   {
@@ -410,8 +412,8 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2);
   }
 
-  // A quick, inefficent way to solve the rotated 90d rotation bugs
-  public static GameElement.ElementType?[,] Transpose(GameElement.ElementType?[,] arr)
+    // A quick, inefficent way to solve the rotated 90d rotation bugs
+    public static GameElement.ElementType?[,] Transpose(GameElement.ElementType?[,] arr)
   {
     int rowCount = arr.GetLength(0);
     int columnCount = arr.GetLength(1);
