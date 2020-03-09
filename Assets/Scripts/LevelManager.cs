@@ -47,6 +47,7 @@ public class LevelManager : MonoBehaviour
     {
         // return to level select
         if (Input.GetKeyDown(KeyCode.Escape)){
+            logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " E");
             SceneManager.LoadScene("MainMenu");
             return;
         }
@@ -128,6 +129,7 @@ public class LevelManager : MonoBehaviour
         FinishLvl();
 
         LevelSelector.levelChosen++;
+        Debug.Log(LevelSelector.levelChosen++);
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
             Unlocker.Unlocked();
         
@@ -137,7 +139,7 @@ public class LevelManager : MonoBehaviour
 
         logger.LogLevelAction(9, startPos + " " + movePath + " W"); // Log path of player on win
 
-        logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + ""); // Log end of level || Details: total retries including restarts and deaths
+        logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
         SceneManager.LoadScene("Level");
     }
