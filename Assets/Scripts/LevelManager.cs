@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour
     // rendering:
     public Tilemap tilemap;
     private OverworldRenderer render;
+    public SoundPlayer audio;
 
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
@@ -174,9 +175,11 @@ public class LevelManager : MonoBehaviour
     {
         Vector2Int oldPos = grid.player.position;
         grid.MoveLiving(grid.player, newPos);
-
+       
         // Ugly, but makes the grid animations much smoother
         PlaySnappyAnimations(grid.GetTile(newPos));
+
+        //audio.PlaySound("woosh");
 
         yield return StartCoroutine(MoveChain(oldPos, 0));
     }
@@ -185,11 +188,16 @@ public class LevelManager : MonoBehaviour
     private void PlaySnappyAnimations(TileObject tileStepped)
     {
         if (grid.IsElement(tileStepped, GameElement.ElementType.FanHole))
+        {
+            audio.PlaySound("close");
             render.PlayAnimation(tileStepped, "New Animation");
+        }
         else if (grid.IsElement(tileStepped, GameElement.ElementType.ManHole))
         {
-            render.GetGameObject(tileStepped).transform.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
-            render.GetGameObject(tileStepped).transform.GetChild(2).gameObject.SetActive(false);
+            audio.PlaySound("close");
+            Transform transMan = render.GetGameObject(tileStepped).transform;
+            transMan.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
+            transMan.GetChild(2).gameObject.SetActive(false);
         }
 
     }

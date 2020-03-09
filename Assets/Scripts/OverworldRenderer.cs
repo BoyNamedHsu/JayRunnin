@@ -49,8 +49,7 @@ public class OverworldRenderer : MonoBehaviour
       Debug.Log("MoveSprites animation was cancelled");
       return;
     }
-
-    currAnimation = Animation.MoveSprites;
+        currAnimation = Animation.MoveSprites;
 
     // when called, this method moves each GameObject closer to its given destination
     Func<bool> MoveSpritesUpdate = () =>
@@ -69,6 +68,7 @@ public class OverworldRenderer : MonoBehaviour
       bool animationIsComplete = true;
       foreach (GameElement obj in spawnedSprites.Keys)
       {
+        if (obj.eid == GameElement.ElementType.Cop) print(obj.eid);
         animationIsComplete = animationIsComplete &&
                 (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.1f);
       }
@@ -106,6 +106,7 @@ public class OverworldRenderer : MonoBehaviour
     {
       if (car.triggerTurn <= turn){
         if (CarWarnings.ContainsKey(car)){
+          audio.PlaySound("car");
           Destroy(CarWarnings[car]);
           CarWarnings.Remove(car);
         }
@@ -159,7 +160,8 @@ public class OverworldRenderer : MonoBehaviour
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
-                    // shake is scaled to cellsize
+                        audio.PlaySound("thud");
+                        // shake is scaled to cellsize
                     CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
                     // hide sprites that get runover
                     spawnedSprites[killed[i]].GetComponent<Renderer>().enabled = false;
