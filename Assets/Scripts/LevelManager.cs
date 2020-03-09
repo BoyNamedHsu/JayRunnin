@@ -48,7 +48,7 @@ public class LevelManager : MonoBehaviour
     {
         // return to level select
         if (Input.GetKeyDown(KeyCode.Escape)){
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("World_1");
             return;
         }
 
