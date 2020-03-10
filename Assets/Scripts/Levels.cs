@@ -39,7 +39,7 @@ public class Levels : MonoBehaviour
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     manager.LoadLevel(jayPos, objects, cars, portals, 0);
-    logger.LogLevelEnd("ELevel_1_1");
+    //logger.LogLevelEnd("ELevel_1_1");
   }
 
   private void LoadLevel2() // teaches mole-cops
