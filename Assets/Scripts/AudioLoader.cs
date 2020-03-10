@@ -14,11 +14,18 @@ public class AudioLoader : MonoBehaviour
             instance = gameObject;
         else
             Destroy(gameObject);
+
+        if (SettingsController.muteMusic)
+            MuteAudio();
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void MuteAudio()
     {
-        
+        instance.GetComponent<AudioSource>().volume = 0;
+    }
+
+    public static void Blast()
+    {
+        instance.GetComponent<AudioSource>().volume = 1;
     }
 }

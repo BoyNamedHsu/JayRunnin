@@ -20,25 +20,27 @@ public class SoundPlayer : MonoBehaviour
 
     public void PlaySound(string name)
     {
-        if (name == "plop")
+        if (!SettingsController.muteSFX)
         {
-            plop.Play();
+            if (name == "plop")
+            {
+                plop.Play();
+            }
+            else if (name == "woosh")
+            {
+                wooshes[wooshIndex].Play();
+                wooshIndex = wooshIndex >= wooshes.Length - 1 ? 0 : wooshIndex + 1;
+            }
+            else if (name == "car")
+            {
+                car.Play();
+            }
+            else if (name == "thud")
+            {
+                thud.PlayOneShot(thud.clip);
+            }
+            else if (name == "close")
+                close.Play();
         }
-        else if (name == "woosh")
-        {
-            wooshes[wooshIndex].Play();
-            wooshIndex = wooshIndex >= wooshes.Length - 1 ? 0 : wooshIndex + 1;
-        }
-        else if (name == "car")
-        {
-            car.Play();
-        }
-        else if (name == "thud")
-        {
-            thud.PlayOneShot(thud.clip);
-        }
-        else if (name == "close")
-            close.Play();
     }
-
 }
