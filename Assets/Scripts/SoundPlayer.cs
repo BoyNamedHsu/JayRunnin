@@ -26,7 +26,7 @@ public class SoundPlayer : MonoBehaviour
         }
         else if (name == "woosh")
         {
-            // wooshes[wooshIndex].Play();
+            wooshes[wooshIndex].Play();
             wooshIndex = wooshIndex >= wooshes.Length - 1 ? 0 : wooshIndex + 1;
         }
         else if (name == "car")

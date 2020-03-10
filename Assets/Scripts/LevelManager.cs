@@ -535,6 +535,7 @@ public class LevelManager : MonoBehaviour
             }
             lastTurnUsed = grid.turnCount;
             grid.MoveLiving(occupant, exit);
+            audio.PlaySound("woosh");
             return true;
         };
 
@@ -544,6 +545,7 @@ public class LevelManager : MonoBehaviour
             }
             lastTurnUsed = grid.turnCount;
             grid.MoveLiving(occupant, entrance);
+            audio.PlaySound("woosh");
             return true;
         };
 
