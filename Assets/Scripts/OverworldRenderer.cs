@@ -123,6 +123,12 @@ public class OverworldRenderer : MonoBehaviour
         }
         int countdown = car.triggerTurn - turn;
         CarWarnings[car].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
+        if (countdown == 1)
+        {
+            Animator carAnimator = CarWarnings[car].GetComponentInChildren<Animator>();
+            if (carAnimator != null)
+              carAnimator.Play("shaking");
+        }
       }
     }
   }

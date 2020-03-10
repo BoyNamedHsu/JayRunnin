@@ -24,6 +24,7 @@ public class LevelManager : MonoBehaviour
     public enum Direction {North, East, South, West, None};
     private Overworld grid;
     private List<Overworld> prevStates;
+    public List<Direction> playerDirections;
 
     // Logging fields
     public CapstoneLogger logger;
@@ -41,6 +42,7 @@ public class LevelManager : MonoBehaviour
         movePath = "";
         startPos = "";
         logger = LoggerController.LOGGER;
+        playerDirections = new List<Direction>();
         StartCoroutine(logger.LogLevelStart(LevelSelector.levelChosen, ""));
     }
 
@@ -67,10 +69,6 @@ public class LevelManager : MonoBehaviour
         Direction dir = GetKeyboardDir();
         Vector2Int newPos = ApplyDir(grid.player.position, dir);
 
-/*        if (Input.GetKeyDown(KeyCode.Space)){
-            StartCoroutine(UpdateGameState(newPos));
-            return;
-        }*/
         if (dir == Direction.None){
             return;
         }
@@ -80,6 +78,12 @@ public class LevelManager : MonoBehaviour
 
         moveCount++;
         movePath += ConvertDirToStr(dir);
+       
+
+        playerDirections.Insert(0, dir);
+        if (playerDirections.Count > grid.followers.Count)
+            playerDirections.RemoveAt(playerDirections.Count - 1);
+
         StartCoroutine(UpdateGameState(newPos));
     }
 
@@ -217,7 +221,7 @@ public class LevelManager : MonoBehaviour
     // Moves a portion chain of followers to the given coords, starting from index *head*
     private IEnumerator MoveChain(Vector2Int newPos, int head)
     {
-
+        print("NEW MOVE");
         Vector2Int oldPos;
         for (int i = head; i < grid.followers.Count; i++)
         {
@@ -225,9 +229,9 @@ public class LevelManager : MonoBehaviour
             grid.MoveLiving(grid.followers[i], newPos);
             newPos = oldPos;
         }
-        
         render.MoveSprites();
         yield return new WaitUntil(() => !render.IsInAnimation());
+
 
         // then check if any tiles were triggered by movement
         yield return StartCoroutine(UpdateTiles());
@@ -536,6 +540,7 @@ public class LevelManager : MonoBehaviour
             }
             lastTurnUsed = grid.turnCount;
             grid.MoveLiving(occupant, exit);
+            audio.PlaySound("woosh");
             return true;
         };
 
@@ -545,6 +550,7 @@ public class LevelManager : MonoBehaviour
             }
             lastTurnUsed = grid.turnCount;
             grid.MoveLiving(occupant, entrance);
+            audio.PlaySound("woosh");
             return true;
         };
 
