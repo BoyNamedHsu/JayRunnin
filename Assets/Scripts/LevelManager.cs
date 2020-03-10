@@ -133,7 +133,6 @@ public class LevelManager : MonoBehaviour
             FinishLvl();
 
         LevelSelector.levelChosen++;
-        Debug.Log(LevelSelector.levelChosen++);
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
             Unlocker.Unlocked();
         
