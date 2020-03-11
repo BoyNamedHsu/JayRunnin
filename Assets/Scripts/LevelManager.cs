@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using cse481.logging;
@@ -14,11 +15,18 @@ public class LevelManager : MonoBehaviour
     public SoundPlayer audio;
     public LevelChanger sceneFader;
 
+    //Level Complete panel
+    public GameObject levelCompleteUI; // Gameobject for panel
+    public GameObject[] stars; // Image sprites for stars
+    private int three; // anything lower than this is 2 stars
+    private int two; // anything lower than this is 1 star
+
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
     private int copsGoal; // the amount of cops to be defeated in this level
     private int copsDefeated; // the amount of cops we've defeated so far
+    private int followersLeft;
 
     // collisions
     public enum Direction {North, East, South, West, None};
@@ -125,6 +133,68 @@ public class LevelManager : MonoBehaviour
         alive = false;
     }
 
+    // Calculates how many stars player earned and shows the level complete panel 
+    private void showPanel(int three, int two)
+    {
+        levelCompleteUI.SetActive(true);
+        int totalStars = 0;
+        Debug.Log(followersLeft);
+
+        if (three == 0)
+        {
+            totalStars = 3;
+        } else if (followersLeft < three && followersLeft >= 2)
+        {
+            totalStars = 2;
+        } else if (followersLeft < 2)
+        {
+            totalStars = 1;
+        } else
+        {
+            totalStars = 3;
+        }
+
+        for (int i = 0; i < totalStars; i++)
+        {
+            stars[i].SetActive(true);
+        }
+
+    }
+
+    // On click for next level button (should be moved elsewhere?)
+    public void NextLevel()
+    {
+
+        if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
+            FinishLvl();
+
+        if (LevelSelector.levelChosen > Levels.LAST_LEVEL)
+        {
+            Debug.Log("end");
+            sceneFader.FadeToLevel("Ending");
+        }
+        else
+        {
+            SceneManager.LoadScene("Level");
+        }
+    }
+
+    // On click for retry level button
+    public void RetryLevel()
+    {
+        if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
+            FinishLvl();
+
+        LevelSelector.levelChosen--;
+        SceneManager.LoadScene("Level");
+    }
+
+    // On click for exit to level select button
+    public void ExitToLevelSelect()
+    {
+        SceneManager.LoadScene("World_1");
+    }
+
     // Might be worth considering a coroutine instead of coupling this with flags but this works
     private void WinLvl()
     {
@@ -133,8 +203,6 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelAction(2, "" + moveCount); // 2 is for move count on win
         logger.LogLevelAction(8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
-        if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
-            FinishLvl();
 
         LevelSelector.levelChosen++;
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
@@ -149,14 +217,7 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
 
-        if (LevelSelector.levelChosen > Levels.LAST_LEVEL)
-        {
-            sceneFader.FadeToLevel("Ending");
-        }
-        else
-        {
-            SceneManager.LoadScene("Level");
-        }
+        showPanel(0, 0);
     }
 
     private void LoseLvl()
@@ -287,17 +348,18 @@ public class LevelManager : MonoBehaviour
             LoseLvl();
             yield return null;
         } else {
-            foreach (Follower f in killed)
+            /*foreach (Follower f in killed)
             {
                 if (f.eid == GameElement.ElementType.Fan){
                     LoseLvl();
                     yield return null;
                 } 
-            }
+            }*/
 
             // Then delete followers who were killed
             foreach (Follower f in killed)
             {
+                followersLeft--;
                 yield return StartCoroutine(KillFollower(f));
             }
         }
@@ -375,7 +437,7 @@ public class LevelManager : MonoBehaviour
                         GameElement.ElementType?[, ] objects,  
                         List<Vector2Int> cars, // misuse of Vector2Int
                         List<(Vector2Int, Vector2Int)> portals,
-                        int copsGoal){
+                        int copsGoal, Vector2Int stars){
         int height, width;
         
         width = objects.GetLength(0);
@@ -408,6 +470,7 @@ public class LevelManager : MonoBehaviour
                             break;
                         case GameElement.ElementType.FanHole:
                             world.SpawnTile(CreateFanHole(x, y));
+                            followersLeft++;
                             break;
                         case GameElement.ElementType.Flagpole:
                             world.SpawnTile(new TileObject(x, y, GameElement.ElementType.Flagpole));

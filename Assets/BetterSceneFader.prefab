@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 7325483633171864942}
   - component: {fileID: 7325483633171864936}
   m_Layer: 0
-  m_Name: SceneFader
+  m_Name: BetterSceneFader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,6 +138,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 7325483633171864942}
+  menuAnimator: {fileID: 0}
+  image: {fileID: 0}
 --- !u!1 &7325483633579988234
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,7 +38,10 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(5, 5));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 0);
+
+        Vector2Int stars = new Vector2Int(0, 0);
+
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
         //logger.LogLevelEnd("ELevel_1_1");
     }
 
@@ -70,7 +73,10 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(4, 5));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 1);
+
+        Vector2Int stars = new Vector2Int(0, 0);
+
+        manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
     }
 
     private void LoadLevel3() // explores a level with 2 mole-cops
@@ -96,7 +102,8 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(5, 10));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 2);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
     private void LoadLevel4() // explores a level with a ton of mole cops (only need to kill 4)
@@ -128,7 +135,8 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(5, 9));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 4);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
     private void LoadLevel5() // teaches followers
@@ -158,11 +166,12 @@ public class Levels : MonoBehaviour
         objects[2, 3] = GameElement.ElementType.FanHole;
 
         List<Vector2Int> cars = new List<Vector2Int>();
-        cars.Add(new Vector2Int(3, 5));
+        cars.Add(new Vector2Int(3, 6));
         cars.Add(new Vector2Int(4, 7));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 0);
+        Vector2Int stars = new Vector2Int(3, 2);
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
     }
 
     private void LoadLevel6() // teaches followers w/ cops (just movement)
@@ -197,7 +206,8 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(6, 13));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 3);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
     }
 
     private void LoadLevel7() // teaches followers w/ cops (make a single choice)
@@ -232,7 +242,8 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(6, 10));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 2);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
     private void LoadLevel8() // many choices on this level
@@ -269,8 +280,8 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(7, 11));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 3);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
     }
 
     private void LoadLevel9() // teaches portals
@@ -299,7 +310,8 @@ public class Levels : MonoBehaviour
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         portals.Add((new Vector2Int(2, 1), new Vector2Int(6, 4)));
-        manager.LoadLevel(jayPos, objects, cars, portals, 1);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
     }
 
     private void LoadLevel10() // leap of faith into a portal.
@@ -334,8 +346,8 @@ public class Levels : MonoBehaviour
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         portals.Add((new Vector2Int(1, 0), new Vector2Int(3, 5)));
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 4);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
     private void LoadLevel11() // this one is cool, multiple solutions too.
@@ -370,8 +382,8 @@ public class Levels : MonoBehaviour
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         portals.Add((new Vector2Int(3, 0), new Vector2Int(5, 4)));
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 4);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
     private void LoadLevel12() // this level is a bit too hard lmao
@@ -413,8 +425,8 @@ public class Levels : MonoBehaviour
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         portals.Add((new Vector2Int(6, 0), new Vector2Int(6, 4)));
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 2);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
     // A quick, inefficent way to solve the rotated 90d rotation bugs
@@ -486,7 +498,8 @@ public class Levels : MonoBehaviour
         }
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        manager.LoadLevel(jayPos, objects, cars, portals, 0);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
     }
 
     private void LoadLevel108() // many choices on this level
@@ -520,7 +533,7 @@ public class Levels : MonoBehaviour
         cars.Add(new Vector2Int(7, 14));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 3);
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
     }
 }
