@@ -82,9 +82,25 @@ public class OverworldRenderer : MonoBehaviour
     animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
   }
 
-  // Changes the car warning sprites depending on zebra.
-  // zebra represents whether tile Jay is standing on is a zebra tile.
-  public void ChangeCarWarningSprite(bool zebra)
+    public void UpdateSpriteDirection(List<LevelManager.Direction> jayDirections, List<Follower> followers, int head)
+    {
+        for (int i = head; i < followers.Count; i++)
+        {
+            var anim = spawnedSprites[followers[i]].GetComponent<Animator>();
+            if (jayDirections[i] == LevelManager.Direction.West)
+                anim.Play("Cop Idle Left");
+            else if (jayDirections[i] == LevelManager.Direction.East)
+                anim.Play("Cop Idle Right");
+            else if (jayDirections[i] == LevelManager.Direction.South)
+                anim.Play("Cop Idle South");
+            else
+                anim.Play("Cop Idle North");
+        }
+    }
+
+    // Changes the car warning sprites depending on zebra.
+    // zebra represents whether tile Jay is standing on is a zebra tile.
+    public void ChangeCarWarningSprite(bool zebra)
   {
     foreach (var warning in CarWarnings)
     {

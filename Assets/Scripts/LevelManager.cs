@@ -81,8 +81,7 @@ public class LevelManager : MonoBehaviour
        
 
         playerDirections.Insert(0, dir);
-        if (playerDirections.Count > grid.followers.Count)
-            playerDirections.RemoveAt(playerDirections.Count - 1);
+        //print(string.Join(",", playerDirections));
 
         StartCoroutine(UpdateGameState(newPos));
     }
@@ -228,8 +227,10 @@ public class LevelManager : MonoBehaviour
             oldPos = grid.followers[i].position;
             grid.MoveLiving(grid.followers[i], newPos);
             newPos = oldPos;
+            print(playerDirections[i]);
         }
         render.MoveSprites();
+        render.UpdateSpriteDirection(playerDirections, grid.followers, head);
         yield return new WaitUntil(() => !render.IsInAnimation());
 
 
