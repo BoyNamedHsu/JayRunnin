@@ -363,6 +363,17 @@ public class OverworldRenderer : MonoBehaviour
     tmp.position = new Vector3(cellSize.y * width / 2f, cellSize.y * height / 2f, -10);
   }
 
+  public void ScalePanel(int height, int width)
+    {
+        /*GameObject panel = GameObject.Find("EndLevelPanel");
+        Vector3 cellSize = tilemap.cellSize;
+        var camWidth = Camera.main.orthographicSize * 2.0 * Screen.width / Screen.height;
+        Transform tmp = panel.GetComponent<Transform>();
+        Transform cam = Camera.main.GetComponent<Transform>();
+        tmp.position = cam.position;
+        tmp.localScale = cam.localScale;*/
+    }
+
   private void DestroySprite(GameElement character)
   {
     Destroy(spawnedSprites[character]);
