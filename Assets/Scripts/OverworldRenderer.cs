@@ -88,13 +88,13 @@ public class OverworldRenderer : MonoBehaviour
         {
             var anim = spawnedSprites[followers[i]].GetComponent<Animator>();
             if (jayDirections[i] == LevelManager.Direction.West)
-                anim.Play("Cop Idle Left");
+                anim.Play("Idle West");
             else if (jayDirections[i] == LevelManager.Direction.East)
-                anim.Play("Cop Idle Right");
+                anim.Play("Idle East");
             else if (jayDirections[i] == LevelManager.Direction.South)
-                anim.Play("Cop Idle South");
+                anim.Play("Idle South");
             else
-                anim.Play("Cop Idle North");
+                anim.Play("Idle North");
         }
     }
 
@@ -240,6 +240,7 @@ public class OverworldRenderer : MonoBehaviour
     foreach (GameElement obj in gridElements){
       if (!spawnedSprites.ContainsKey(obj)){
         SpawnSprite(obj);
+
       }
     }
 
@@ -296,6 +297,7 @@ public class OverworldRenderer : MonoBehaviour
     Vector2Int loc = character.position;
     GameElement.ElementType characterType = character.eid;
     GameObject newObj;
+    bool isFollower = false;
 
     switch (character.eid)
     {
@@ -307,10 +309,12 @@ public class OverworldRenderer : MonoBehaviour
         break;
       case GameElement.ElementType.Cop:
         audio.PlaySound("plop");
+        isFollower = true;
         newObj = Instantiate(Cop_Sprite) as GameObject;
         break;
       case GameElement.ElementType.Fan:
         audio.PlaySound("plop");
+        isFollower = true;
         newObj = Instantiate(Fan_Sprite) as GameObject;
         break;
       case GameElement.ElementType.ManHole:

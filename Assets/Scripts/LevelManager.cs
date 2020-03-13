@@ -288,7 +288,7 @@ public class LevelManager : MonoBehaviour
             oldPos = grid.followers[i].position;
             grid.MoveLiving(grid.followers[i], newPos);
             newPos = oldPos;
-            print(playerDirections[i]);
+            
         }
         render.MoveSprites();
         render.UpdateSpriteDirection(playerDirections, grid.followers, head);
