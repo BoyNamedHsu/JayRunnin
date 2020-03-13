@@ -272,7 +272,7 @@ public class Levels : MonoBehaviour
         objects[3, 2] = GameElement.ElementType.ManHole;
         objects[3, 1] = GameElement.ElementType.ManHole;
         objects[3, 3] = GameElement.ElementType.FanHole;
-        objects[4, 2] = GameElement.ElementType.Cone;
+        objects[2, 1] = GameElement.ElementType.Cone;
 
         List<Vector2Int> cars = new List<Vector2Int>();
         cars.Add(new Vector2Int(4, 11));
