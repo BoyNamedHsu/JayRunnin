@@ -133,31 +133,39 @@ public class LevelManager : MonoBehaviour
     }
 
     // Calculates how many stars player earned and shows the level complete panel 
-    private void showPanel(int three, int two)
+    private void showPanel(int three, int two, int showPanel)
     {
-        levelCompleteUI.SetActive(true);
-        int totalStars = 0;
-        Debug.Log(followersLeft);
+        if (showPanel == 1)
+        {
+            levelCompleteUI.SetActive(true);
+            int totalStars = 0;
+            Debug.Log(followersLeft);
 
-        if (three == 0)
-        {
-            totalStars = 3;
-        } else if (followersLeft < three && followersLeft >= 2)
-        {
-            totalStars = 2;
-        } else if (followersLeft < 2)
-        {
-            totalStars = 1;
+            if (three == 0)
+            {
+                totalStars = 3;
+            }
+            else if (followersLeft < three && followersLeft >= 2)
+            {
+                totalStars = 2;
+            }
+            else if (followersLeft < 2)
+            {
+                totalStars = 1;
+            }
+            else
+            {
+                totalStars = 3;
+            }
+
+            for (int i = 0; i < totalStars; i++)
+            {
+                stars[i].SetActive(true);
+            }
         } else
         {
-            totalStars = 3;
+            NextLevel();
         }
-
-        for (int i = 0; i < totalStars; i++)
-        {
-            stars[i].SetActive(true);
-        }
-
     }
 
     // On click for next level button (should be moved elsewhere?)
@@ -216,7 +224,7 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
 
-        showPanel(0, 0);
+        showPanel(0, 0, PlayerPrefs.GetInt("levelEndPanel")); // third field is for AB testing to see if Panel is shown or not
     }
 
     private void LoseLvl()

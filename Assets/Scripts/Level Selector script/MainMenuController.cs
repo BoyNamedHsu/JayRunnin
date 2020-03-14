@@ -13,6 +13,11 @@ public class MainMenuController : MonoBehaviour
     {
         Unlocker.InitializeUnlocker();
         logger = LoggerController.LOGGER;
+
+        bool levelEndPanel = (Random.value > 0.5f);
+        PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing
+        PlayerPrefs.Save();
+
         StartCoroutine(logger.LogLevelStart(0, ""));
     }
 
