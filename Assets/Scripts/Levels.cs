@@ -9,7 +9,7 @@ public class Levels : MonoBehaviour
 {
     public LevelManager manager;
     public CapstoneLogger logger;
-    public static int LAST_LEVEL = 13; // for triggering ending cutscene. Please edit this
+    public static int LAST_LEVEL = 16; // for triggering ending cutscene. Please edit this
 
     // Start is called before the first frame update
     void Awake()
@@ -385,7 +385,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
-    private void LoadLevel12() // this one is cool, multiple solutions too.
+    private void LoadLevel12) // this one is cool, multiple solutions too.
     {
         Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -464,6 +464,157 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
+    private void LoadLevel20() // this level is a bit too hard lmao
+    {
+        Vector2Int jayPos = new Vector2Int(0, 2);
+
+        int width, height;
+        width = 11;
+        height = 7;
+
+        // NOTE: This array is rotated 90d counterclockwise before being loaded in
+        // This has to do with how arrays are indexed, and uh can be fixed later
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++)
+        {
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+        }
+
+        objects[0, 3] = GameElement.ElementType.ConeWalk;
+        objects[0, 1] = GameElement.ElementType.ConeWalk;
+        objects[0, 0] = GameElement.ElementType.ConeWalk;
+
+        objects[1, 6] = GameElement.ElementType.ManHole;
+        objects[1, 4] = GameElement.ElementType.FanHole;
+        objects[1, 3] = GameElement.ElementType.Cone;
+        objects[1, 1] = GameElement.ElementType.Cone;
+
+        objects[2, 3] = GameElement.ElementType.Cone;
+        objects[2, 1] = GameElement.ElementType.Cone;
+
+        objects[3, 6] = GameElement.ElementType.Cone;
+        objects[3, 4] = GameElement.ElementType.Cone;
+        objects[3, 2] = GameElement.ElementType.Cone;
+        objects[3, 1] = GameElement.ElementType.Cone;
+
+        objects[4, 6] = GameElement.ElementType.Cone;
+        objects[4, 4] = GameElement.ElementType.Cone;
+        objects[4, 2] = GameElement.ElementType.Cone;
+
+        objects[5, 6] = GameElement.ElementType.Cone;
+        objects[5, 4] = GameElement.ElementType.Cone;
+        objects[5, 0] = GameElement.ElementType.FanHole;
+        objects[5, 1] = GameElement.ElementType.ManHole;
+        objects[5, 2] = GameElement.ElementType.Cone;
+
+        objects[6, 6] = GameElement.ElementType.Cone;
+        objects[6, 4] = GameElement.ElementType.Cone;
+        objects[6, 2] = GameElement.ElementType.Cone;
+
+        objects[7, 6] = GameElement.ElementType.Cone;
+        objects[7, 4] = GameElement.ElementType.Cone;
+        objects[7, 2] = GameElement.ElementType.Cone;
+        objects[7, 1] = GameElement.ElementType.FanHole;
+        objects[7, 0] = GameElement.ElementType.ManHole;
+    
+        objects[8, 6] = GameElement.ElementType.Cone;
+        objects[8, 4] = GameElement.ElementType.Cone;
+        objects[8, 2] = GameElement.ElementType.Cone;
+
+
+        objects[9, 4] = GameElement.ElementType.Cone;
+        objects[9, 2] = GameElement.ElementType.Cone;
+        objects[9, 6] = GameElement.ElementType.Cone;
+
+
+        objects[10, 5] = GameElement.ElementType.ConeWalk;
+        objects[10, 6] = GameElement.ElementType.ConeWalk ;
+
+        objects[10, 1] = GameElement.ElementType.ConeWalk;
+        objects[10, 0] = GameElement.ElementType.ConeWalk;
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+        cars.Add(new Vector2Int(4, 35));
+        cars.Add(new Vector2Int(7, 35));
+        cars.Add(new Vector2Int(9, 35));
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        portals.Add((new Vector2Int(2, 2), new Vector2Int(1, 0)));
+        portals.Add((new Vector2Int(9, 0), new Vector2Int(9, 5)));
+        portals.Add((new Vector2Int(1, 5), new Vector2Int(3, 3)));
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
+    }
+
+    private void LoadLevel21() // this level is a bit too hard lmao
+    {
+        Vector2Int jayPos = new Vector2Int(0, 0);
+
+        int width, height;
+        width = 11;
+        height = 7;
+
+        // NOTE: This array is rotated 90d counterclockwise before being loaded in
+        // This has to do with how arrays are indexed, and uh can be fixed later
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++)
+        {
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+        }
+
+        objects[1, 6] = GameElement.ElementType.ManHole;
+        objects[1, 5] = GameElement.ElementType.Cone;
+        objects[1, 4] = GameElement.ElementType.Cone;
+        objects[1, 3] = GameElement.ElementType.Cone;
+        objects[1, 2] = GameElement.ElementType.Cone;
+        objects[1, 1] = GameElement.ElementType.Cone;
+        objects[1, 0] = GameElement.ElementType.Cone;
+
+        objects[2, 6] = GameElement.ElementType.ManHole;
+        objects[2, 0] = GameElement.ElementType.Cone;
+        objects[2, 4] = GameElement.ElementType.Cone;
+
+        objects[3, 6] = GameElement.ElementType.FanHole;
+        objects[3, 5] = GameElement.ElementType.ManHole;
+        objects[3, 4] = GameElement.ElementType.Cone;
+        objects[3, 2] = GameElement.ElementType.Cone;
+
+        objects[4, 0] = GameElement.ElementType.ManHole;
+        objects[4, 1] = GameElement.ElementType.FanHole;
+        objects[4, 2] = GameElement.ElementType.Cone;
+        objects[4, 4] = GameElement.ElementType.ManHole;
+
+        objects[5, 6] = GameElement.ElementType.Cone;
+        objects[5, 5] = GameElement.ElementType.Cone;
+        objects[5, 4] = GameElement.ElementType.Cone;
+        objects[5, 3] = GameElement.ElementType.Cone;
+        objects[5, 2] = GameElement.ElementType.Cone;
+
+
+        objects[6, 2] = GameElement.ElementType.Cone;
+        objects[6, 0] = GameElement.ElementType.Cone;
+
+        objects[7, 2] = GameElement.ElementType.Cone;
+
+        objects[8, 1] = GameElement.ElementType.Cone;
+
+        objects[9, 1] = GameElement.ElementType.Cone;
+        objects[10, 1] = GameElement.ElementType.ConeWalk;
+
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+        cars.Add(new Vector2Int(2, 20));
+        cars.Add(new Vector2Int(7, 29));
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
+    }
+
+
+
     // A quick, inefficent way to solve the rotated 90d rotation bugs
     public static GameElement.ElementType?[,] Transpose(GameElement.ElementType?[,] arr)
     {
@@ -495,6 +646,7 @@ public class Levels : MonoBehaviour
         }
         return transposed;
     }
+
 
     private void LoadLevel102() // teaches crosswalks
     {
