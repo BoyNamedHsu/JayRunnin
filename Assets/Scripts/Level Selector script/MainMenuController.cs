@@ -15,15 +15,16 @@ public class MainMenuController : MonoBehaviour
         logger = LoggerController.LOGGER;
 
         bool levelEndPanel = (Random.value > 0.5f);
-        /*if (!PlayerPrefs.HasKey("levelEndPanel"))
+        if (!PlayerPrefs.HasKey("levelEndPanel"))
         {
             PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing
             PlayerPrefs.Save();
         }*/
 
+        
         // For testing
         PlayerPrefs.SetInt("levelEndPanel", 1);
-        PlayerPrefs.Save();
+        PlayerPrefs.Save();*/
 
 
         StartCoroutine(logger.LogLevelStart(0, ""));
