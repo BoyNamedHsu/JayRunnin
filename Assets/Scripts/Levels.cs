@@ -9,7 +9,7 @@ public class Levels : MonoBehaviour
 {
   public LevelManager manager;
   public CapstoneLogger logger;
-  public static int LAST_LEVEL = 20; // for triggering ending cutscene. Please edit this
+  public static int LAST_LEVEL = 21; // for triggering ending cutscene. Please edit this
 
   // Start is called before the first frame update
   void Awake()

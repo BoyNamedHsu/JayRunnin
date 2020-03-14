@@ -213,8 +213,8 @@ public class LevelManager : MonoBehaviour
         if (PlayerPrefs.GetInt("levelEndPanel") == 1)
         {
             GameOver = true;
-            NextLevel();
-            //elPanel.GetComponent<endLevelPanel>().showPanel(starRange.x, starRange.y, numFollowers, followersDead);
+            //NextLevel();
+            elPanel.GetComponent<endLevelPanel>().showPanel(starRange.x, starRange.y, numFollowers, followersDead);
         } else
         {
             NextLevel();
