@@ -19,9 +19,9 @@ public class MainMenuController : MonoBehaviour
         {
             PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing
             PlayerPrefs.Save();
-        }*/
+        }
 
-        
+        /*
         // For testing
         PlayerPrefs.SetInt("levelEndPanel", 1);
         PlayerPrefs.Save();*/
