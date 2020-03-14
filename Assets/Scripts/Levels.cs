@@ -638,7 +638,7 @@ public class Levels : MonoBehaviour
         Vector2Int jayPos = new Vector2Int(0, 0);
 
         GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-        for (int x = 0; x < 6; x++)
+        for (int x = 0; x <= 6; x++)
         {
             for (int y = 0; y < height; y++)
             {
@@ -663,27 +663,26 @@ public class Levels : MonoBehaviour
         objects[4, 4] = GameElement.ElementType.FanHole;
         objects[2, 4] = GameElement.ElementType.FanHole;
 
-        objects[6, 5] = GameElement.ElementType.Cone;
-        objects[6, 4] = GameElement.ElementType.Cone;
-        objects[6, 2] = GameElement.ElementType.Cone;
-        objects[6, 1] = GameElement.ElementType.Cone;
-        objects[6, 0] = GameElement.ElementType.Cone;
+        objects[7, 5] = GameElement.ElementType.Cone;
+        objects[7, 1] = GameElement.ElementType.Cone;
+        objects[7, 0] = GameElement.ElementType.Cone;
 
         objects[7, 4] = GameElement.ElementType.Cone;
         objects[7, 2] = GameElement.ElementType.Cone;
 
+        objects[8, 5] = GameElement.ElementType.Cone;
         objects[8, 4] = GameElement.ElementType.Cone;
         objects[8, 2] = GameElement.ElementType.Cone;
+        objects[8, 1] = GameElement.ElementType.Cone;
+        objects[8, 0] = GameElement.ElementType.Cone;
 
-        objects[9, 4] = GameElement.ElementType.Cone;
-        objects[9, 2] = GameElement.ElementType.Cone;
 
-        objects[10, 4] = GameElement.ElementType.ConeWalk;
-        objects[10, 2] = GameElement.ElementType.ConeWalk;
+ 
+
 
         List<Vector2Int> cars = new List<Vector2Int>();
-        cars.Add(new Vector2Int(6, 9));
-        cars.Add(new Vector2Int(9, 9));
+        cars.Add(new Vector2Int(6, 8));
+        cars.Add(new Vector2Int(9, 8));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 

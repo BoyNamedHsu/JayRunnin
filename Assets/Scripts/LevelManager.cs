@@ -191,8 +191,8 @@ public class LevelManager : MonoBehaviour
         LevelSelector.levelChosen++;
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
             Unlocker.Unlocked();
-        
 
+        print("NEXT LEVEL: " + LevelSelector.levelChosen);
         LoggerController.LOGGER.LogLevelAction(6, "" + LevelSelector.levelChosen); // Log level beat
         logger.LogLevelAction(panel + 4, LoggerController.deathCount + ""); // death count
 
@@ -288,7 +288,7 @@ public class LevelManager : MonoBehaviour
     // Moves a portion chain of followers to the given coords, starting from index *head*
     private IEnumerator MoveChain(Vector2Int newPos, int head)
     {
-        print("NEW MOVE");
+        //print("NEW MOVE");
         Vector2Int oldPos;
         for (int i = head; i < grid.followers.Count; i++)
         {
