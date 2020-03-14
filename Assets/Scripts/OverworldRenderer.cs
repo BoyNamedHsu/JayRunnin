@@ -182,7 +182,7 @@ public class OverworldRenderer : MonoBehaviour
             {
                 if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
                 {
-                        audio.PlaySound("thud");
+                     audio.PlaySound("thud");
                         // shake is scaled to cellsize
                     CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
                     // hide sprites that get runover
@@ -192,7 +192,16 @@ public class OverworldRenderer : MonoBehaviour
                 }
             }
 
-            Vector3 newPos = Vector2.Lerp(currPos, carDestinations[car], 10.0f * Time.deltaTime);
+                foreach (KeyValuePair<GameElement, GameObject> entry in spawnedSprites)
+                {
+                    if (entry.Key.eid == GameElement.ElementType.Cone && Vector3.Distance(currPos, spawnedSprites[entry.Key].transform.position) < 1.0f)
+                    {
+
+                        entry.Value.GetComponent<Animator>().Play("cone hit");
+                    }
+                }
+
+                Vector3 newPos = Vector2.Lerp(currPos, carDestinations[car], 10.0f * Time.deltaTime);
             car.transform.position = newPos;
           }
 

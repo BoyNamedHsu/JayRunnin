@@ -33,7 +33,9 @@ public class Levels : MonoBehaviour
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
     }
 
-    List<Vector2Int> cars = new List<Vector2Int>();
+
+
+        List<Vector2Int> cars = new List<Vector2Int>();
     cars.Add(new Vector2Int(3, 2));
     cars.Add(new Vector2Int(5, 5));
 
