@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class endLevelPanel : MonoBehaviour
 {
     public GameObject levelCompleteUI;
     public GameObject[] stars;
     public Animator animator;
-    public Text followersLeftText;
+    public TMP_Text followersLeftText;
     // Start is called before the first frame update
     void Start()
     {
