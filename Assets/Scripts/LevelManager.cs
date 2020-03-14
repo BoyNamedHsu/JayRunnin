@@ -18,6 +18,7 @@ public class LevelManager : MonoBehaviour
     //Level Complete panel
     public GameObject levelCompleteUI; // Gameobject for panel
     public GameObject[] stars; // Image sprites for stars
+    public Vector2Int starRange;
     private int three; // anything lower than this is 2 stars
     private int two; // anything lower than this is 1 star
 
@@ -27,6 +28,7 @@ public class LevelManager : MonoBehaviour
     private int copsGoal; // the amount of cops to be defeated in this level
     private int copsDefeated; // the amount of cops we've defeated so far
     private int followersLeft;
+    private int numFollowers;
 
     // collisions
     public enum Direction {North, East, South, West, None};
@@ -126,30 +128,29 @@ public class LevelManager : MonoBehaviour
 
     private void FinishLvl()
     {
+        LevelSelector.currentRetries = 0;
         grid.Clear();
         render.SyncSprites(grid, copsGoal, copsDefeated);
         Destroy(GameObject.Find("CanvasUI"));
         alive = false;
+
     }
 
     // Calculates how many stars player earned and shows the level complete panel 
     private void showPanel(int three, int two, int showPanel)
     {
+
+
         if (showPanel == 1)
         {
             levelCompleteUI.SetActive(true);
-            int totalStars = 0;
-            Debug.Log(followersLeft);
+            int totalStars;
 
-            if (three == 0)
-            {
-                totalStars = 3;
-            }
-            else if (followersLeft < three && followersLeft >= 2)
+            if (followersLeft < three && followersLeft >= two)
             {
                 totalStars = 2;
             }
-            else if (followersLeft < 2)
+            else if (followersLeft < two)
             {
                 totalStars = 1;
             }
@@ -157,7 +158,7 @@ public class LevelManager : MonoBehaviour
             {
                 totalStars = 3;
             }
-
+            Debug.Log(followersLeft);
             for (int i = 0; i < totalStars; i++)
             {
                 stars[i].SetActive(true);
@@ -191,7 +192,6 @@ public class LevelManager : MonoBehaviour
     {
         if (LevelSelector.levelChosen < Levels.LAST_LEVEL)
             FinishLvl();
-
         LevelSelector.levelChosen--;
         SceneManager.LoadScene("Level");
     }
@@ -205,10 +205,11 @@ public class LevelManager : MonoBehaviour
     // Might be worth considering a coroutine instead of coupling this with flags but this works
     private void WinLvl()
     {
+        int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         Debug.Log("You won!");
 
-        logger.LogLevelAction(2, "" + moveCount); // 2 is for move count on win
-        logger.LogLevelAction(8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
+        logger.LogLevelAction(panel + 2, "" + moveCount); // 2 is for move count on win
+        logger.LogLevelAction(panel + 8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
 
         LevelSelector.levelChosen++;
@@ -217,22 +218,34 @@ public class LevelManager : MonoBehaviour
         
 
         LoggerController.LOGGER.LogLevelAction(6, "" + LevelSelector.levelChosen); // Log level beat
-        logger.LogLevelAction(4, LoggerController.deathCount + ""); // death count
+        logger.LogLevelAction(panel + 4, LoggerController.deathCount + ""); // death count
 
-        logger.LogLevelAction(9, startPos + " " + movePath + " W"); // Log path of player on win
+        logger.LogLevelAction(panel + 9, startPos + " " + movePath + " W"); // Log path of player on win
 
         logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
         LoggerController.ResetFields();
 
-        showPanel(0, 0, PlayerPrefs.GetInt("levelEndPanel")); // third field is for AB testing to see if Panel is shown or not
+        int curRetries = LevelSelector.currentRetries;
+        int lvlChosen = LevelSelector.levelChosen;
+        Debug.Log(curRetries);
+        // If retries this time surpasses your max retries on this level
+        if ( curRetries > LevelSelector.maxRetries[lvlChosen - 1])
+        {
+            LevelSelector.maxRetries[lvlChosen - 1] = curRetries;
+            Debug.Log(" max : " +  LevelSelector.maxRetries[lvlChosen - 1]);
+        }
+
+        showPanel(starRange.x, starRange.y, PlayerPrefs.GetInt("levelEndPanel")); // third field is for AB testing to see if Panel is shown or not
     }
 
     private void LoseLvl()
     {
+        int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         Debug.Log("You died");
         LoggerController.deathCount++;
-        logger.LogLevelAction(1, "" + moveCount); // 1 is for move count on losses
-        logger.LogLevelAction(9, startPos + " " + movePath + " L"); // Log path of player on loss
+        LevelSelector.currentRetries++;
+        logger.LogLevelAction(1 + panel, "" + moveCount); // 1 is for move count on losses
+        logger.LogLevelAction(9 + panel, startPos + " " + movePath + " L"); // Log path of player on loss
 
         FinishLvl();
         SceneManager.LoadScene("Level");
@@ -241,6 +254,8 @@ public class LevelManager : MonoBehaviour
     // This is kinda bad but I need to differentiate restart with loss so I created a method thats basically the same as lose lvl
     private void RestartLvl()
     {
+        LevelSelector.currentRetries++;
+        int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         LoggerController.numRestarts++;
         logger.LogLevelAction(7, "(" + grid.player.position.x + ", " + grid.player.position.y + ")"); // Logs where the user restarts
         logger.LogLevelAction(9, startPos + " " + (movePath.Equals("") ? "O" : movePath) + " R"); // Log path of player on restart
@@ -446,7 +461,7 @@ public class LevelManager : MonoBehaviour
                         GameElement.ElementType?[, ] objects,  
                         List<Vector2Int> cars, // misuse of Vector2Int
                         List<(Vector2Int, Vector2Int)> portals,
-                        int copsGoal, Vector2Int stars){
+                        int copsGoal, Vector2Int star){
         int height, width;
         
         width = objects.GetLength(0);
@@ -479,7 +494,7 @@ public class LevelManager : MonoBehaviour
                             break;
                         case GameElement.ElementType.FanHole:
                             world.SpawnTile(CreateFanHole(x, y));
-                            followersLeft++;
+                            numFollowers++;
                             break;
                         case GameElement.ElementType.Flagpole:
                             world.SpawnTile(new TileObject(x, y, GameElement.ElementType.Flagpole));
@@ -543,6 +558,8 @@ public class LevelManager : MonoBehaviour
 
         moveDisabled = false;
         alive = true;
+
+        starRange = star;
     }
 
 
@@ -582,6 +599,7 @@ public class LevelManager : MonoBehaviour
             grid.DeleteTile(tile);
             grid.SpawnLiving(fan);
             grid.followers.Add(fan);
+            followersLeft++;
             return true;
         };
 

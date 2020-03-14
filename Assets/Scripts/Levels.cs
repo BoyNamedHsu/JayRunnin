@@ -9,7 +9,7 @@ public class Levels : MonoBehaviour
 {
     public LevelManager manager;
     public CapstoneLogger logger;
-    public static int LAST_LEVEL = 12; // for triggering ending cutscene. Please edit this
+    public static int LAST_LEVEL = 13; // for triggering ending cutscene. Please edit this
 
     // Start is called before the first frame update
     void Awake()
@@ -174,7 +174,42 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
     }
 
-    private void LoadLevel6() // teaches followers w/ cops (just movement)
+    private void LoadLevel6() // teaches followers
+    {
+        int width, height;
+        width = 9;
+        height = 6;
+
+        Vector2Int jayPos = new Vector2Int(0, 3);
+
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++)
+        {
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+        }
+        objects[0, 0] = GameElement.ElementType.ConeWalk;
+        objects[0, 1] = GameElement.ElementType.ConeWalk;
+        objects[0, 2] = GameElement.ElementType.ConeWalk;
+        objects[0, 4] = GameElement.ElementType.ConeWalk;
+        objects[1, 2] = GameElement.ElementType.Cone;
+        objects[1, 4] = GameElement.ElementType.Cone;
+        objects[2, 5] = GameElement.ElementType.Cone;
+
+        objects[1, 3] = GameElement.ElementType.FanHole;
+        objects[2, 1] = GameElement.ElementType.FanHole;
+        objects[2, 3] = GameElement.ElementType.FanHole;
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+        cars.Add(new Vector2Int(3, 6));
+        cars.Add(new Vector2Int(4, 7));
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        Vector2Int stars = new Vector2Int(3, 2);
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
+    }
+
+    private void LoadLevel7() // teaches followers w/ cops (just movement)
     {
         int width, height;
         width = 8;
@@ -210,7 +245,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
     }
 
-    private void LoadLevel7() // teaches followers w/ cops (make a single choice)
+    private void LoadLevel8() // teaches followers w/ cops (make a single choice)
     {
         int width, height;
         width = 9;
@@ -246,7 +281,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
-    private void LoadLevel8() // many choices on this level
+    private void LoadLevel9() // many choices on this level
     {
         Vector2Int jayPos = new Vector2Int(0, 2);
 
@@ -284,7 +319,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
     }
 
-    private void LoadLevel9() // teaches portals
+    private void LoadLevel10() // teaches portals
     {
         int width, height;
         width = 9;
@@ -314,7 +349,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
     }
 
-    private void LoadLevel10() // leap of faith into a portal.
+    private void LoadLevel11() // leap of faith into a portal.
     {
         Vector2Int jayPos = new Vector2Int(0, 1);
 
@@ -350,7 +385,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
-    private void LoadLevel11() // this one is cool, multiple solutions too.
+    private void LoadLevel12() // this one is cool, multiple solutions too.
     {
         Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -386,7 +421,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
     }
 
-    private void LoadLevel12() // this level is a bit too hard lmao
+    private void LoadLevel13() // this level is a bit too hard lmao
     {
         Vector2Int jayPos = new Vector2Int(0, 3);
 
