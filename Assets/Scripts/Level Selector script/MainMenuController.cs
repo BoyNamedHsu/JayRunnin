@@ -21,6 +21,11 @@ public class MainMenuController : MonoBehaviour
             PlayerPrefs.Save();
         }
 
+        /*
+        // For testing
+        PlayerPrefs.SetInt("levelEndPanel", 1);
+        PlayerPrefs.Save();*/
+
 
         StartCoroutine(logger.LogLevelStart(0, ""));
     }

@@ -360,18 +360,20 @@ public class LevelManager : MonoBehaviour
         if (killed.Contains(grid.player)){
             LoseLvl();
             yield return null;
-        } else {
-            /*foreach (Follower f in killed)
+        } else if (PlayerPrefs.GetInt("levelEndPanel") == 0) {
+            foreach (Follower f in killed)
             {
                 if (f.eid == GameElement.ElementType.Fan){
                     LoseLvl();
                     yield return null;
                 } 
-            }*/
+            }
 
-            // Then delete followers who were killed
+        } else
+        {
             foreach (Follower f in killed)
             {
+                // Then delete followers who were killed
                 yield return StartCoroutine(KillFollower(f));
             }
         }
