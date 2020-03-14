@@ -16,18 +16,18 @@ public class LevelManager : MonoBehaviour
     public LevelChanger sceneFader;
 
     //Level Complete panel
-    public GameObject levelCompleteUI; // Gameobject for panel
-    public GameObject[] stars; // Image sprites for stars
-    public Vector2Int starRange;
+    private Vector2Int starRange;
     private int three; // anything lower than this is 2 stars
-    private int two; // anything lower than this is 1 star
+    private int two; // anything lower than this is 1 sta
+    public LevelEndPanel elPanel;
+    private bool GameOver;
 
     private bool moveDisabled; // disable movements while renderer is playing
     private bool alive; // checks if the player is alive
 
     private int copsGoal; // the amount of cops to be defeated in this level
     private int copsDefeated; // the amount of cops we've defeated so far
-    private int followersLeft;
+    private int followersDead;
     private int numFollowers;
 
     // collisions
@@ -38,13 +38,15 @@ public class LevelManager : MonoBehaviour
 
     // Logging fields
     public CapstoneLogger logger;
-    public int moveCount;
-    public string movePath; // A string representing the directions moved before retry/win
-    public string startPos; // Where Jay begins for the purpose of knowing where movePath begins.
+    private int moveCount;
+    private string movePath; // A string representing the directions moved before retry/win
+    private string startPos; // Where Jay begins for the purpose of knowing where movePath begins.
 
-    // Start is called before the first frame update
+
+
     void Awake()
     {
+        GameOver = false;
         moveDisabled = true;
 
         // Below we log level start and initialize fields for logging
@@ -59,6 +61,10 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameOver)
+        {
+            return; //for endlevelpanel interactions
+        }
         // return to level select
         if (Input.GetKeyDown(KeyCode.Escape)){
             logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " E");
@@ -136,38 +142,7 @@ public class LevelManager : MonoBehaviour
 
     }
 
-    // Calculates how many stars player earned and shows the level complete panel 
-    private void showPanel(int three, int two, int showPanel)
-    {
 
-
-        if (showPanel == 1)
-        {
-            levelCompleteUI.SetActive(true);
-            int totalStars;
-
-            if (followersLeft < three && followersLeft >= two)
-            {
-                totalStars = 2;
-            }
-            else if (followersLeft < two)
-            {
-                totalStars = 1;
-            }
-            else
-            {
-                totalStars = 3;
-            }
-            Debug.Log(followersLeft);
-            for (int i = 0; i < totalStars; i++)
-            {
-                stars[i].SetActive(true);
-            }
-        } else
-        {
-            NextLevel();
-        }
-    }
 
     // On click for next level button (should be moved elsewhere?)
     public void NextLevel()
@@ -205,6 +180,7 @@ public class LevelManager : MonoBehaviour
     // Might be worth considering a coroutine instead of coupling this with flags but this works
     private void WinLvl()
     {
+        moveDisabled = true;
         int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         Debug.Log("You won!");
 
@@ -232,10 +208,17 @@ public class LevelManager : MonoBehaviour
         if ( curRetries > LevelSelector.maxRetries[lvlChosen - 1])
         {
             LevelSelector.maxRetries[lvlChosen - 1] = curRetries;
-            Debug.Log(" max : " +  LevelSelector.maxRetries[lvlChosen - 1]);
         }
 
-        showPanel(starRange.x, starRange.y, PlayerPrefs.GetInt("levelEndPanel")); // third field is for AB testing to see if Panel is shown or not
+        if (PlayerPrefs.GetInt("levelEndPanel") == 1)
+        {
+            GameOver = true;
+            elPanel.GetComponent<endLevelPanel>().showPanel(starRange.x, starRange.y, numFollowers, followersDead);
+        } else
+        {
+            NextLevel();
+        }
+        
     }
 
     private void LoseLvl()
@@ -324,6 +307,11 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
     {
+        Follower fan = new Fan(0, 0);
+        if (f.GetType().Equals(fan.GetType()))
+        {
+            followersDead++;
+        }
         int i = grid.followers.IndexOf(f); // if this is slow, we can pass in int directly 
 
         Vector2Int dest = grid.followers[i].position;
@@ -383,7 +371,6 @@ public class LevelManager : MonoBehaviour
             // Then delete followers who were killed
             foreach (Follower f in killed)
             {
-                followersLeft--;
                 yield return StartCoroutine(KillFollower(f));
             }
         }
@@ -599,7 +586,6 @@ public class LevelManager : MonoBehaviour
             grid.DeleteTile(tile);
             grid.SpawnLiving(fan);
             grid.followers.Add(fan);
-            followersLeft++;
             return true;
         };
 
