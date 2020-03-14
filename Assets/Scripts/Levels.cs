@@ -389,7 +389,7 @@ public class Levels : MonoBehaviour
     {
       int width, height;
       width = 9;
-      height = 4;
+      height = 5;
 
       Vector2Int jayPos = new Vector2Int(0, 0);
 
@@ -404,13 +404,15 @@ public class Levels : MonoBehaviour
       objects[2,0] = GameElement.ElementType.Cone;
       objects[2,1] = GameElement.ElementType.Cone;
       objects[2,3] = GameElement.ElementType.Cone;
+      objects[2,4] = GameElement.ElementType.Cone;
 
       objects[6,0] = GameElement.ElementType.Cone;
       objects[6,1] = GameElement.ElementType.Cone;
       objects[6,3] = GameElement.ElementType.Cone;
+      objects[6,4] = GameElement.ElementType.Cone;
 
 
-      objects[1,0] = GameElement.ElementType.ManHole;
+        objects[1,0] = GameElement.ElementType.ManHole;
       objects[1,1] = GameElement.ElementType.ManHole;
 
       List<Vector2Int> cars = new List<Vector2Int>();
