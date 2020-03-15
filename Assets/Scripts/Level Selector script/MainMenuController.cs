@@ -20,8 +20,9 @@ public class MainMenuController : MonoBehaviour
             PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing
             PlayerPrefs.Save();
         }
-        
 
+        PlayerPrefs.SetInt("levelEndPanel", 1); // For AB testing
+        PlayerPrefs.Save();
 
         StartCoroutine(logger.LogLevelStart(0, ""));
     }

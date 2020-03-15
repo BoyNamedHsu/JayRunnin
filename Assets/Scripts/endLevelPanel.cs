@@ -32,10 +32,11 @@ public class endLevelPanel : MonoBehaviour
     // Calculates how many stars player earned and shows the level complete panel 
     public void showPanel(int three, int two, int numFollowers, int followersDead, int followersUp)
     {
-        int followersLeft = numFollowers - followersDead - followersUp;
+        int followersLeft = followersUp;
+        
         levelCompleteUI.SetActive(true);
         Debug.Log("set active");
-        followersLeftText.text = "" + followersLeft;
+        followersLeftText.text = "" + (numFollowers - followersDead - followersUp);
         int totalStars;
 
         if (followersLeft < three && followersLeft >= two)
