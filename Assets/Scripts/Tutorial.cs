@@ -17,12 +17,12 @@ public class Tutorial : MonoBehaviour
             var tutorial = GameObject.Instantiate(crossRoadTutorial);
             tutorial.transform.SetParent(canvas.transform);
         }
-        else if (LevelSelector.levelChosen == 2)
+        else if (LevelSelector.levelChosen == 3)
         {
             var tutorial = GameObject.Instantiate(killCopsTutorial);
             tutorial.transform.SetParent(canvas.transform);
         }
-        else if (LevelSelector.levelChosen == 5)
+        else if (LevelSelector.levelChosen == 2)
         {
             var tutorial = GameObject.Instantiate(saveFollowersTutorial);
             tutorial.transform.SetParent(canvas.transform);
