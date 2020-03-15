@@ -628,7 +628,7 @@ public class Levels : MonoBehaviour
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
 
-    Vector2Int stars = new Vector2Int(2, 1);
+    Vector2Int stars = new Vector2Int(0, 0);
 
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
