@@ -226,7 +226,7 @@ public class LevelManager : MonoBehaviour
             LevelSelector.maxRetries[lvlChosen - 1] = curRetries;
         }
 
-        if (PlayerPrefs.GetInt("levelEndPanel") == 1 && LevelSelector.levelChosen != Levels.LAST_LEVEL && LevelSelector.levelChosen != 2)
+        if (PlayerPrefs.GetInt("levelEndPanel") == 1 && LevelSelector.levelChosen != Levels.LAST_LEVEL + 1 && LevelSelector.levelChosen != 2)
         {
             GameOver = true;
             //NextLevel();
