@@ -756,6 +756,7 @@ private void LoadLevel20() // this level is a bit too hard lmao
     int width, height;
     width = 11;
     height = 7;
+        print("ENTER LEVEL: " + LevelSelector.levelChosen);
 
     // NOTE: This array is rotated 90d counterclockwise before being loaded in
     // This has to do with how arrays are indexed, and uh can be fixed later

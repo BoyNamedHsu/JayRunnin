@@ -18,9 +18,12 @@ public class LevelChanger : MonoBehaviour
 
     public void ChooseLevel(int level)
     {
+
+        print(level);
         if (level <= Unlocker.GetHighestUnlockedLevel())
         {
             LevelSelector.levelChosen = level;
+            print(LevelSelector.levelChosen);
             SceneManager.LoadScene("Level");
         }
     }

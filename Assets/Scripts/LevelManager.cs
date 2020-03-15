@@ -129,6 +129,20 @@ public class LevelManager : MonoBehaviour
             )){
             render.SuggestRestart();
         }
+        TileObject tileOccupied = grid.GetTile(grid.player.position);
+        bool onFlagpole = grid.IsElement(tileOccupied, GameElement.ElementType.Flagpole);
+        if (onFlagpole)
+        {
+            if (copsDefeated >= copsGoal)
+            {
+                WinLvl();
+            }
+            else
+            {
+                Debug.Log("More cops to kill still");
+            }
+            yield return null;
+        }
         yield return null;
     }
 
@@ -187,7 +201,7 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelAction(panel + 2, "" + moveCount); // 2 is for move count on win
         logger.LogLevelAction(panel + 8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
-
+        print("THIS LEVEL: " + LevelSelector.levelChosen);
         LevelSelector.levelChosen++;
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
             Unlocker.Unlocked();
@@ -263,6 +277,9 @@ public class LevelManager : MonoBehaviour
         PlaySnappyAnimations(grid.GetTile(newPos));
 
         //audio.PlaySound("woosh");
+        // Changing warning signs to stop signs if Jay is on zebra tile
+
+
 
         yield return StartCoroutine(MoveChain(oldPos, 0));
     }
@@ -391,17 +408,8 @@ public class LevelManager : MonoBehaviour
         // Changing warning signs to stop signs if Jay is on zebra tile
         TileObject tileOccupied = grid.GetTile(grid.player.position);
         bool onZebra = grid.IsElement(tileOccupied, GameElement.ElementType.Zebra);
-        bool onFlagpole = grid.IsElement(tileOccupied, GameElement.ElementType.Flagpole);
-        if (onFlagpole) {
-            if (copsDefeated >= copsGoal){
-                WinLvl();
-            } else {
-                Debug.Log("More cops to kill still");
-            }
-            yield return null;
-        }
-
         render.ChangeCarWarningSprite(onZebra);
+
 
         // render changes if any living were moved by tiles
         render.SyncSprites(grid, copsGoal, copsDefeated);

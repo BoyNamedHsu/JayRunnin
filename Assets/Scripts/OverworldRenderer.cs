@@ -196,7 +196,6 @@ public class OverworldRenderer : MonoBehaviour
                 {
                     if (entry.Key.eid == GameElement.ElementType.Cone && Vector3.Distance(currPos, spawnedSprites[entry.Key].transform.position) < 1.0f)
                     {
-
                         entry.Value.GetComponent<Animator>().Play("cone hit");
                     }
                 }
