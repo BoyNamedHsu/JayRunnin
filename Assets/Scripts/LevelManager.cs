@@ -29,6 +29,7 @@ public class LevelManager : MonoBehaviour
     private int copsDefeated; // the amount of cops we've defeated so far
     private int followersDead;
     private int numFollowers;
+    private int followersUp;
 
     // collisions
     public enum Direction {North, East, South, West, None};
@@ -188,7 +189,10 @@ public class LevelManager : MonoBehaviour
         logger.LogLevelAction(panel + 8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
         Debug.Log(LoggerController.numRestarts);
 
+        Debug.Log("current Level : " + LevelSelector.levelChosen);
         LevelSelector.levelChosen++;
+        Debug.Log("next Level : " + LevelSelector.levelChosen);
+
         if (LevelSelector.levelChosen > Unlocker.GetHighestUnlockedLevel())
             Unlocker.Unlocked();
 
@@ -210,11 +214,11 @@ public class LevelManager : MonoBehaviour
             LevelSelector.maxRetries[lvlChosen - 1] = curRetries;
         }
 
-        if (PlayerPrefs.GetInt("levelEndPanel") == 1)
+        if (PlayerPrefs.GetInt("levelEndPanel") == 1 && LevelSelector.levelChosen != Levels.LAST_LEVEL && LevelSelector.levelChosen != 2)
         {
             GameOver = true;
             //NextLevel();
-            elPanel.GetComponent<endLevelPanel>().showPanel(starRange.x, starRange.y, numFollowers, followersDead);
+            elPanel.GetComponent<endLevelPanel>().showPanel(starRange.x, starRange.y, numFollowers, followersDead, followersUp);
         } else
         {
             NextLevel();
@@ -308,11 +312,6 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator KillFollower(Follower f) // Deletes follower *i* from the chain
     {
-        Follower fan = new Fan(0, 0);
-        if (f.GetType().Equals(fan.GetType()))
-        {
-            followersDead++;
-        }
         int i = grid.followers.IndexOf(f); // if this is slow, we can pass in int directly 
 
         Vector2Int dest = grid.followers[i].position;
@@ -343,7 +342,13 @@ public class LevelManager : MonoBehaviour
                     if (f.position.x == car.xPos){
                         killed.Add(f);
                         if (f.eid == GameElement.ElementType.Cop)
+                        {
                             copsDefeated++;
+                        }
+                        else
+                        {
+                            followersDead++;
+                        }
                     }
                 }
                 if (grid.player.position.x == car.xPos)
@@ -366,7 +371,10 @@ public class LevelManager : MonoBehaviour
                 if (f.eid == GameElement.ElementType.Fan){
                     LoseLvl();
                     yield return null;
-                } 
+                }
+
+                // Then delete followers who were killed
+                yield return StartCoroutine(KillFollower(f));
             }
 
         } else
@@ -589,6 +597,7 @@ public class LevelManager : MonoBehaviour
             grid.DeleteTile(tile);
             grid.SpawnLiving(fan);
             grid.followers.Add(fan);
+            followersUp++;
             return true;
         };
 

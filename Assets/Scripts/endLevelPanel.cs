@@ -11,6 +11,7 @@ public class endLevelPanel : MonoBehaviour
     public GameObject[] stars;
     public Animator animator;
     public TMP_Text followersLeftText;
+    //public GameObject levels;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,9 +30,9 @@ public class endLevelPanel : MonoBehaviour
     }
 
     // Calculates how many stars player earned and shows the level complete panel 
-    public void showPanel(int three, int two, int numFollowers, int followersDead)
+    public void showPanel(int three, int two, int numFollowers, int followersDead, int followersUp)
     {
-        int followersLeft = numFollowers - followersDead;
+        int followersLeft = numFollowers - followersDead - followersUp;
         levelCompleteUI.SetActive(true);
         Debug.Log("set active");
         followersLeftText.text = "" + followersLeft;
