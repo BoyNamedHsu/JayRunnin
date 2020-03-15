@@ -33,6 +33,16 @@ public class LevelChanger : MonoBehaviour
         SceneManager.LoadScene(levelToLoad);
     }
 
+    public void Ending()
+    {
+        SceneManager.LoadScene("Ending");
+    }
+
+    public void MenuWoopWoop()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void PanUp()
     {
         image.SetActive(false);

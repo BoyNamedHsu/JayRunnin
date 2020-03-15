@@ -761,7 +761,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 63ba0b84de38abe429509ef538e3a084, type: 2}
+      objectReference: {fileID: 9100000, guid: e0d2035f44143014d8341e16fa038684, type: 2}
     - target: {fileID: 7325483633171864943, guid: 7222f4d0fb8f5fc40867355db73b7042,
         type: 3}
       propertyPath: m_Name
@@ -804,7 +804,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -7, y: -14.000015}
+  m_AnchoredPosition: {x: -7, y: -13.999985}
   m_SizeDelta: {x: 118.69995, y: 32.400024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1202832592
@@ -1187,6 +1187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1908078196}
   - component: {fileID: 1908078195}
+  - component: {fileID: 1908078197}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -1221,3 +1222,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1908078197
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908078194}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d5630a4394c150040a7c83111547b4bd, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
