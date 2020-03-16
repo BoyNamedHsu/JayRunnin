@@ -46,7 +46,8 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
     // logger.LogLevelEnd("ELevel_1_1");
   }
-  private void LoadLevel3() // teaches mole-cops
+
+  private void LoadLevel2() // teaches mole-cops
   {
     int width, height;
     width = 8;
@@ -80,7 +81,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
-  private void LoadLevel4() // explores a level with 2 mole-cops
+  private void LoadLevel3() // explores a level with 2 mole-cops
   {
     int width, height;
     width = 7;
@@ -107,7 +108,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel5() // explores a level with a ton of mole cops (only need to kill 4)
+  private void LoadLevel4() // explores a level with a ton of mole cops (only need to kill 4)
   {
     int width, height;
     width = 8;
@@ -140,7 +141,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
   }
 
-  private void LoadLevel2() // teaches followers
+  private void LoadLevel5() // teaches followers
   {
     int width, height;
     width = 9;
@@ -175,11 +176,11 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
   }
 
-  private void LoadLevel6() // teaches followers w/ cops (make a single choice)
+  private void LoadLevel6()
   {
     int width, height;
     width = 9;
-    height = 5;
+    height = 4;
 
     Vector2Int jayPos = new Vector2Int(0, 2);
 
@@ -189,35 +190,35 @@ public class Levels : MonoBehaviour
       objects[0, i] = GameElement.ElementType.Sidewalk;
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
     }
+
     objects[0, 1] = GameElement.ElementType.ConeWalk;
     objects[0, 3] = GameElement.ElementType.ConeWalk;
+    for (int i = 1; i <= 2; i++)
+    {
+      objects[i, 1] = GameElement.ElementType.Cone;
+      objects[i, 3] = GameElement.ElementType.Cone;
+    }
+
     objects[1, 2] = GameElement.ElementType.ManHole;
-
-    objects[3, 0] = GameElement.ElementType.FanHole;
-    objects[4, 0] = GameElement.ElementType.ManHole;
-    objects[3, 1] = GameElement.ElementType.Cone;
-    objects[4, 1] = GameElement.ElementType.Cone;
-
-    objects[3, 4] = GameElement.ElementType.ManHole;
-    objects[4, 4] = GameElement.ElementType.FanHole;
-    objects[3, 3] = GameElement.ElementType.Cone;
-    objects[4, 3] = GameElement.ElementType.Cone;
+    objects[2, 2] = GameElement.ElementType.FanHole;
+    objects[3, 2] = GameElement.ElementType.ManHole;
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(6, 10));
+    cars.Add(new Vector2Int(4, 7));
+    cars.Add(new Vector2Int(6, 7));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-    Vector2Int stars = new Vector2Int(2, 0);
+    Vector2Int stars = new Vector2Int(0, 0);
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel7() // many choices on this level
+  private void LoadLevel7()
   {
-    Vector2Int jayPos = new Vector2Int(0, 2);
-
     int width, height;
-    width = 10;
-    height = 5;
+    width = 9;
+    height = 4;
+
+    Vector2Int jayPos = new Vector2Int(0, 2);
 
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
     for (int i = 0; i < height; i++)
@@ -229,24 +230,17 @@ public class Levels : MonoBehaviour
     objects[0, 1] = GameElement.ElementType.ConeWalk;
     objects[0, 3] = GameElement.ElementType.ConeWalk;
 
-    objects[1, 1] = GameElement.ElementType.FanHole;
-    objects[1, 3] = GameElement.ElementType.ManHole;
-
-    objects[2, 2] = GameElement.ElementType.Cone;
-
+    objects[1, 2] = GameElement.ElementType.ManHole;
+    objects[3, 1] = GameElement.ElementType.FanHole;
     objects[3, 2] = GameElement.ElementType.ManHole;
-    objects[3, 1] = GameElement.ElementType.ManHole;
-    objects[3, 3] = GameElement.ElementType.FanHole;
-    objects[2, 1] = GameElement.ElementType.Cone;
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(4, 11));
-    cars.Add(new Vector2Int(5, 11));
-    cars.Add(new Vector2Int(7, 11));
+    cars.Add(new Vector2Int(4, 9));
+    cars.Add(new Vector2Int(6, 9));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-    Vector2Int stars = new Vector2Int(2, 1);
-    manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
+    Vector2Int stars = new Vector2Int(0, 0);
+    manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
   private void LoadLevel8() // kill 2 w/ one car
@@ -437,8 +431,6 @@ public class Levels : MonoBehaviour
     width = 8;
     height = 7;
 
-    // NOTE: This array is rotated 90d counterclockwise before being loaded in
-    // This has to do with how arrays are indexed, and uh can be fixed later
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
     for (int i = 0; i < height; i++)
     {
@@ -472,9 +464,6 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-
-
-  // A quick, inefficent way to solve the rotated 90d rotation bugs
   private void LoadLevel14()
   {
     int width, height;
@@ -834,8 +823,6 @@ private void LoadLevel20() // this level is a bit too hard lmao
     width = 11;
     height = 7;
 
-    // NOTE: This array is rotated 90d counterclockwise before being loaded in
-    // This has to do with how arrays are indexed, and uh can be fixed later
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
     for (int i = 0; i < height; i++)
     {
