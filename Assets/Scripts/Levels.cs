@@ -694,7 +694,6 @@ public class Levels : MonoBehaviour
                     {
                         objects[x, y] = GameElement.ElementType.Zebra;
                     }
-
                 }
             }
         }
@@ -718,8 +717,8 @@ public class Levels : MonoBehaviour
         objects[8, 1] = GameElement.ElementType.FanHole;
 
         List<Vector2Int> cars = new List<Vector2Int>();
-        cars.Add(new Vector2Int(4, 13));
-        cars.Add(new Vector2Int(6, 13));
+        cars.Add(new Vector2Int(4, 10));
+        cars.Add(new Vector2Int(6, 10));
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         portals.Add((new Vector2Int(2, 3), new Vector2Int(8, 3)));
@@ -728,8 +727,7 @@ public class Levels : MonoBehaviour
 
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
-    
-  
+
 
 private void LoadLevel20() // this level is a bit too hard lmao
   {
