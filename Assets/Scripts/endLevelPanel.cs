@@ -36,7 +36,7 @@ public class endLevelPanel : MonoBehaviour
         
         levelCompleteUI.SetActive(true);
         Debug.Log("set active");
-        followersLeftText.text = "" + (numFollowers - followersDead - followersUp);
+        followersLeftText.text = "" + (numFollowers - followersUp);
         int totalStars;
 
         if (followersLeft < three && followersLeft >= two)

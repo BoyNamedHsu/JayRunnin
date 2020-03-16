@@ -362,6 +362,7 @@ public class LevelManager : MonoBehaviour
                         }
                         else
                         {
+                            followersUp--;
                             followersDead++;
                         }
                     }
