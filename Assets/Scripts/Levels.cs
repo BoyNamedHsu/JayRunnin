@@ -519,42 +519,33 @@ public class Levels : MonoBehaviour
   private void LoadLevel15() // crosswalks tut 2
   {
     int width, height;
-    width = 11;
-    height = 6;
+    width = 9;
+    height = 5;
 
-    Vector2Int jayPos = new Vector2Int(0, 4);
+    Vector2Int jayPos = new Vector2Int(1, 0);
 
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-
     for (int i = 0; i < height; i++)
     {
-      objects[0, i] = GameElement.ElementType.Sidewalk;
+      objects[0, i] = GameElement.ElementType.ConeWalk;
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
     }
-    objects[0, 3] = GameElement.ElementType.ConeWalk;
-    objects[0, 5] = GameElement.ElementType.ConeWalk;
 
-    objects[1, 4] = GameElement.ElementType.ManHole;
-    objects[2, 4] = GameElement.ElementType.ManHole;
-    objects[2, 3] = GameElement.ElementType.ManHole;
-    objects[2, 2] = GameElement.ElementType.ManHole;
-    objects[2, 1] = GameElement.ElementType.ManHole;
+    objects[4, 2] = GameElement.ElementType.ManHole;
 
-    for (int i = 1; i <= 9; i++)
-    {
+    for (int i = 2; i <= 6; i++) {
       objects[i, 0] = GameElement.ElementType.Zebra;
     }
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(5, 7));
-    cars.Add(new Vector2Int(7, 12));
-    cars.Add(new Vector2Int(8, 12));
+    for (int i = 1; i <= 6; i++)
+    {
+      cars.Add(new Vector2Int(i, 4));
+    }
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
     Vector2Int stars = new Vector2Int(0, 0);
-
-    manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
+    manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
   private void LoadLevel16() // good shar lvl
@@ -563,7 +554,7 @@ public class Levels : MonoBehaviour
     width = 13;
     height = 7;
 
-    Vector2Int jayPos = new Vector2Int(1, 1);
+    Vector2Int jayPos = new Vector2Int(1, 0);
 
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
     for (int i = 0; i < height; i++)
@@ -577,7 +568,7 @@ public class Levels : MonoBehaviour
     objects[6, 1] = GameElement.ElementType.Cone;
     objects[8, 1] = GameElement.ElementType.Cone;
 
-    for (int i = 1; i <= 10; i++)
+    for (int i = 2; i <= 10; i++)
     {
       objects[i, 0] = GameElement.ElementType.Zebra;
     }
