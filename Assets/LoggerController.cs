@@ -33,14 +33,16 @@ public class LoggerController : MonoBehaviour
         string skey = "1f16a6c017f12c1539c4947e234de78a";
         int gameId = 202009;
         string gameName = "jayswalkin";
-        int cid = 4;
+        int cid = 5;
         // -1... -inf also debug / maintenance
         // MOST RECENT: -7 ********** REMEMBER TO UPDATE **************
         // 0 Debug and Maintenance
         // 1 First test run
         // 2 Itch.IO version
         // 3 Iteration 3
-        // 4 NewGrounds
+        // 5 NewGrounds
+        // 6 Itch
+        // 7 kongregate
 
 
 

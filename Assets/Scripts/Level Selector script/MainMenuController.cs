@@ -14,7 +14,7 @@ public class MainMenuController : MonoBehaviour
         Unlocker.InitializeUnlocker();
         logger = LoggerController.LOGGER;
 
-        bool levelEndPanel = (Random.value > 0.5f);
+        bool levelEndPanel = false;
         if (!PlayerPrefs.HasKey("levelEndPanel"))
         {
             PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing

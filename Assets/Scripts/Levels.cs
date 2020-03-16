@@ -9,7 +9,7 @@ public class Levels : MonoBehaviour
 {
   public LevelManager manager;
   public CapstoneLogger logger;
-  public static int LAST_LEVEL = 20; // for triggering ending cutscene. Please edit this
+  public static int LAST_LEVEL = 22; // for triggering ending cutscene. Please edit this
 
   // Start is called before the first frame update
   void Awake()
@@ -722,7 +722,7 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
-    private void LoadLevel20() // v lap
+    private void LoadLevel22() // v lap
     {
         int width, height;
         width = 16;
@@ -756,8 +756,8 @@ public class Levels : MonoBehaviour
     }
 
 
-/*
-INSANE mazes that Kelvin made omg
+
+//INSANE mazes that Kelvin made omg
 
 private void LoadLevel20() // this level is a bit too hard lmao
   {
@@ -906,5 +906,5 @@ private void LoadLevel20() // this level is a bit too hard lmao
     Vector2Int stars = new Vector2Int(0, 0);
     manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
   }
-*/
+
 }
