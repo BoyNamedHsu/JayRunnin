@@ -894,8 +894,8 @@ private void LoadLevel20() // this level is a bit too hard lmao
 
     objects[8, 1] = GameElement.ElementType.Cone;
 
-    objects[9, 1] = GameElement.ElementType.Cone;
-    objects[10, 1] = GameElement.ElementType.ConeWalk;
+    objects[9, 2] = GameElement.ElementType.Cone;
+    objects[10, 2] = GameElement.ElementType.ConeWalk;
 
 
     List<Vector2Int> cars = new List<Vector2Int>();
