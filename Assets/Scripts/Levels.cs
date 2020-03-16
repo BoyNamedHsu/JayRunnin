@@ -9,7 +9,7 @@ public class Levels : MonoBehaviour
 {
   public LevelManager manager;
   public CapstoneLogger logger;
-  public static int LAST_LEVEL = 22; // for triggering ending cutscene. Please edit this
+  public static int LAST_LEVEL = 20; // for triggering ending cutscene. Please edit this
 
   // Start is called before the first frame update
   void Awake()
@@ -317,8 +317,6 @@ public class Levels : MonoBehaviour
     width = 6;
     height = 7;
 
-    // NOTE: This array is rotated 90d counterclockwise before being loaded in
-    // This has to do with how arrays are indexed, and uh can be fixed later
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
     for (int i = 0; i < height; i++)
     {
@@ -366,9 +364,9 @@ public class Levels : MonoBehaviour
     objects[2, 1] = GameElement.ElementType.Cone;
     objects[6, 3] = GameElement.ElementType.Cone;
 
-    objects[1, 2] = GameElement.ElementType.ManHole;
+    objects[2, 2] = GameElement.ElementType.ManHole;
     objects[1, 3] = GameElement.ElementType.ManHole;
-    objects[1, 4] = GameElement.ElementType.ManHole;
+    objects[2, 4] = GameElement.ElementType.ManHole;
     objects[2, 3] = GameElement.ElementType.ManHole;
 
     List<Vector2Int> cars = new List<Vector2Int>();
@@ -660,10 +658,6 @@ public class Levels : MonoBehaviour
         objects[8, 1] = GameElement.ElementType.Cone;
         objects[8, 0] = GameElement.ElementType.Cone;
 
-
- 
-
-
         List<Vector2Int> cars = new List<Vector2Int>();
         cars.Add(new Vector2Int(6, 8));
         cars.Add(new Vector2Int(9, 8));
@@ -728,6 +722,42 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
+    private void LoadLevel20() // v lap
+    {
+        int width, height;
+        width = 16;
+        height = 10;
+
+        Vector2Int jayPos = new Vector2Int(0, 5);
+
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+
+        for (int i = 0; i < height; i++)
+        {
+            objects[0, i] = GameElement.ElementType.Sidewalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+        }
+        objects[0, 4] = GameElement.ElementType.ConeWalk;
+        objects[0, 6] = GameElement.ElementType.ConeWalk;
+
+        objects[1, 5] = GameElement.ElementType.ManHole;
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+        for (int i = 3; i <= 3; i++)
+        {
+            cars.Add(new Vector2Int(i, i + 1));
+        }
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+
+        Vector2Int stars = new Vector2Int(0, 0);
+
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
+    }
+
+
+/*
+INSANE mazes that Kelvin made omg
 
 private void LoadLevel20() // this level is a bit too hard lmao
   {
@@ -876,37 +906,5 @@ private void LoadLevel20() // this level is a bit too hard lmao
     Vector2Int stars = new Vector2Int(0, 0);
     manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
   }
-
-    private void LoadLevel22() // v lap
-    {
-        int width, height;
-        width = 16;
-        height = 10;
-
-        Vector2Int jayPos = new Vector2Int(0, 5);
-
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-
-        for (int i = 0; i < height; i++)
-        {
-            objects[0, i] = GameElement.ElementType.Sidewalk;
-            objects[width - 1, i] = GameElement.ElementType.Flagpole;
-        }
-        objects[0, 4] = GameElement.ElementType.ConeWalk;
-        objects[0, 6] = GameElement.ElementType.ConeWalk;
-
-        objects[1, 5] = GameElement.ElementType.ManHole;
-
-        List<Vector2Int> cars = new List<Vector2Int>();
-        for (int i = 3; i < 6; i++)
-        {
-            cars.Add(new Vector2Int(i, i + 1));
-        }
-
-        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-
-        Vector2Int stars = new Vector2Int(0, 0);
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
-    }
+*/
 }
