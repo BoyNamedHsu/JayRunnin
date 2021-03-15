@@ -5,160 +5,82 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using TMPro;
-using System.Security.Cryptography;
-using UnityEngine.Rendering;
 
 public class OverworldRenderer : MonoBehaviour
 {
-    // I need prefabs for each object type, IE cones, manholes, jay, etc
-    public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite, FanHole_Sprite,
-      Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite, Portal_Sprite;
+  private enum Animation { MoveSprites, MoveCars, SpawnCopSprites, None }; // All animation "states" our renderer can be in
 
-    public GameObject Car_Sprite, rToRestartTutorial; // and prefabs for other game ObjectSpawner
-    public GameObject Warning, Cop_Counter_Sprite; // prefab for warning object
+  // I need prefabs for each object type, IE cones, manholes, jay, etc
+  public GameObject Jay_Sprite, Cone_Sprite, Cop_Sprite, ManHole_Sprite, Fan_Sprite, FanHole_Sprite,
+    Zebra_Sprite, Flagpole_Sprite, Sidewalk_Sprite, Invisible_Sprite, Portal_Sprite;
 
-    Tilemap tilemap; // And the tilemap those cells exist on
+  public GameObject Car_Sprite, rToRestartTutorial; // and prefabs for other game ObjectSpawner
+  public GameObject Warning, Cop_Counter_Sprite; // prefab for warning object
 
-    // References to each GameObject we instantiate
-    private Dictionary<GameElement, GameObject> spawnedSprites;
+  Tilemap tilemap; // And the tilemap those cells exist on
 
-    // List of the car warning UI elements with the timer countdown
-    private Dictionary<Car, GameObject> CarWarnings;
-    private GameObject CopCounter;
-    private GameObject rToRestart;
-    public SoundPlayer GameAudio; // And our sound player
+  // References to each GameObject we instantiate
+  private Dictionary<GameElement, GameObject> spawnedSprites;
 
-    private List<Func<bool>> animations; // All the movement animations we'll between during updating
-    private Func<bool> update; // allows us to change our FixedUpdate tic
+  // fields for specific animations, we need to hold onto these variables between calls to Update()
+  private Animation currAnimation;
 
-    const float DELTA = 0.5f; // Delta for distance calculations 
-    private Func<bool> NOOP = () => true; // treat this as a const
+  // Kinda weird, but the dictionary of different animations we're in
+  private Dictionary<Animation, Func<bool>> animationUpdates;
 
-    private void Clear() // Deletes everything onscreen!
+  // List of the car warning UI elements with the timer countdown
+  private Dictionary<Car, GameObject> CarWarnings = new Dictionary<Car, GameObject>();
+  private GameObject CopCounter;
+  private GameObject rToRestart;
+  public SoundPlayer audio;
+
+    // returns true if the renderer is in an animation, otherwise false
+    public bool IsInAnimation()
+  {
+    return this.currAnimation != Animation.None;
+  }
+
+  // Snaps all current GameObjects to their proper locations
+  // (Requires that the positions of GameElements have been modified)
+  public void MoveSprites()
+  {
+    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
     {
-        update = NOOP;
-        animations = new List<Func<bool>>(); // Cancel our animations
-        if (spawnedSprites != null)
-        {
-            foreach (GameElement ge in spawnedSprites.Keys)
-                Destroy(spawnedSprites[ge]);
-        }
-        spawnedSprites = new Dictionary<GameElement, GameObject>(); // All sprites gone
-
-        if (CarWarnings != null)
-        {
-            foreach (Car car in CarWarnings.Keys)
-                Destroy(CarWarnings[car]);
-        }
-        CarWarnings = new Dictionary<Car, GameObject>();
-
-        if (CopCounter != null)
-            Destroy(CopCounter);
-        CopCounter = null;
-        if (rToRestart != null)
-            Destroy(rToRestart);
-        rToRestart = null;
+      Debug.Log("MoveSprites animation was cancelled");
+      return;
     }
+        currAnimation = Animation.MoveSprites;
 
-    // Start is called before the first frame update
-    void Awake()
+    // when called, this method moves each GameObject closer to its given destination
+    Func<bool> MoveSpritesUpdate = () =>
     {
-        tilemap = transform.GetComponent<Tilemap>();
-        this.Clear();
-    }
+      foreach (GameElement obj in spawnedSprites.Keys)
+      {
+        Vector3 destination = ConvertCellLoc(obj.position);
+        GameObject sprite = spawnedSprites[obj];
+        Vector3 currPos = sprite.transform.position;
 
-    void FixedUpdate()
-    {
-        update();
-    }
+        Vector3 newPos = Vector3.Lerp(currPos, destination, 10.0f * Time.deltaTime);
+        sprite.transform.position = newPos;
+      }
 
-    // Deletes renders the given grid
-    public void SyncSprites(Overworld grid)
-    {
-        HashSet<GameElement> gridObjects = grid.GetAllObjects();
-        HashSet<GameElement> toRemove = new HashSet<GameElement>();
-        foreach (GameElement obj in spawnedSprites.Keys)
-        {
-            if (!gridObjects.Contains(obj))
-                toRemove.Add(obj);
-        }
-        foreach (GameElement removed in toRemove)
-        {
-            Destroy(spawnedSprites[removed]);
-            spawnedSprites.Remove(removed);
-        } // Deleted all extra sprites
+      // now check if this animation is completed and update AnimationState if so
+      bool animationIsComplete = true;
+      foreach (GameElement obj in spawnedSprites.Keys)
+      {
+/*        if (obj.eid == GameElement.ElementType.Cop) print(obj.eid);
+*/        animationIsComplete = animationIsComplete &&
+                (Vector3.Distance(spawnedSprites[obj].transform.position, ConvertCellLoc(obj.position)) < 0.1f);
+      }
+      if (animationIsComplete)
+      {
+        this.currAnimation = Animation.None; // if so, our animation is set back to None
+      }
+      return true;
+    };
 
-        foreach (GameElement obj in gridObjects)
-        {
-            if (!spawnedSprites.ContainsKey(obj))
-            {
-                SpawnSprite(obj);
-            }
-            spawnedSprites[obj].transform.position = ConvertCellLoc(obj.position); // (Don't really need this lol)
-        } // All sprites synced
-        foreach (TileObject tile in grid.GetAllTiles())
-        {
-            if ((tile.eid == GameElement.ElementType.FanHole || tile.eid == GameElement.ElementType.ManHole)
-                && grid.GetOccupant(tile) != null)
-                ShutManhole(tile);
-        }  // Finally close all occupied manholes
-
-        GameObject canvas = GameObject.Find("CanvasUI");
-        if (grid.copsGoal > 0)
-        {
-            if (CopCounter == null)
-            {
-                // these transformations are sus lmao
-                CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
-                CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
-                CopCounter.transform.SetParent(canvas.transform);
-                CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
-            }
-            TMPro.TextMeshProUGUI counter = CopCounter.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-            counter.text = grid.copsDefeated + "/" + grid.copsGoal;
-            if (grid.copsDefeated >= grid.copsGoal)
-                counter.color = new Color32(0, 255, 0, 255);
-        } // Cop counter synced
-
-        foreach (Car car in grid.cars)
-        {
-            int countdown = car.triggerTurn - grid.turnCount;
-            if (countdown > 0)
-            {
-                if (!CarWarnings.ContainsKey(car))
-                {
-                    GameObject newWarning = GameObject.Instantiate(Warning);
-                    newWarning.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
-                    newWarning.transform.SetParent(canvas.transform);
-                    newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, (grid.height - 1)));
-                    CarWarnings[car] = newWarning;
-                }
-                CarWarnings[car].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
-                if (countdown == 1)
-                    CarWarnings[car].GetComponentInChildren<Animator>().Play("shaking");
-            }
-            else if (CarWarnings.ContainsKey(car))
-            {
-                Destroy(CarWarnings[car]);
-                CarWarnings[car] = null;
-            }
-        } // All car warnings Synced
-
-        if (rToRestart != null)
-        {
-            Destroy(rToRestart);
-            rToRestart = null;
-        }
-        if (grid.IsStuck())
-            rToRestart = GameObject.Instantiate(rToRestartTutorial);
-    }
-
-    // This method erases the grid, so there's no possilibity of desyncs.
-    public void SyncSpritesHard(Overworld grid)
-    {
-        this.Clear();
-        this.SyncSprites(grid);
-    }
+    animationUpdates[Animation.MoveSprites] = MoveSpritesUpdate;
+  }
 
     public void UpdateSpriteDirection(List<LevelManager.Direction> jayDirections, List<Follower> followers, int head)
     {
@@ -176,266 +98,311 @@ public class OverworldRenderer : MonoBehaviour
         }
     }
 
-    // converts a given Vector2Int into a location in the world space
-    private Vector3 ConvertCellLoc(Vector2Int coords)
-    {
-        Vector3 res = tilemap.GetCellCenterLocal(new Vector3Int(coords.x, coords.y, 0));
-
-        // then center on those tiles
-        return new Vector3(res.x + (tilemap.cellSize.x / 2f), res.y + (tilemap.cellSize.y / 2f), 0);
-    }
-
-    private void SpawnSprite(GameElement character)
-    {
-        Vector2Int loc = character.position;
-        GameElement.ElementType characterType = character.eid;
-        GameObject newObj;
-
-        switch (character.eid)
-        {
-            case GameElement.ElementType.Jay:
-                newObj = Instantiate(Jay_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Cone:
-                newObj = Instantiate(Cone_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Cop:
-                newObj = Instantiate(Cop_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Fan:
-                newObj = Instantiate(Fan_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.ManHole:
-                newObj = Instantiate(ManHole_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Zebra:
-                newObj = Instantiate(Zebra_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Flagpole:
-                newObj = Instantiate(Flagpole_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Sidewalk:
-                newObj = Instantiate(Sidewalk_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.InvisibleWall:
-                newObj = Instantiate(Invisible_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.FanHole:
-                newObj = Instantiate(FanHole_Sprite) as GameObject;
-                break;
-            case GameElement.ElementType.Portal:
-                newObj = Instantiate(Portal_Sprite) as GameObject;
-                break;
-            default:
-                Debug.Log("Spawn failed!");
-                return; // This should never occur
-        }
-
-        newObj.transform.position = ConvertCellLoc(loc);
-
-        // scale sprite to size of grid
-        ScaleSprite(newObj);
-        spawnedSprites[character] = newObj;
-    }
-
-    private void ScaleSprite(GameObject obj)
-    {
-        SpriteRenderer objBounds = obj.GetComponent<SpriteRenderer>();
-        Vector3 tilesize = tilemap.cellSize;
-        Vector3 spritesize = objBounds.bounds.size;
-
-        // scale sprite to size of grid
-        obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
-    }
-
-    // scales the camera to fit the given width/height of cells
-    public void ScaleCamera(int height, int width)
-    {
-        Vector3 cellSize = tilemap.cellSize;
-        Camera.main.orthographicSize = cellSize.y * height / 2f;
-        Transform tmp = Camera.main.GetComponent<Transform>();
-        tmp.position = new Vector3(cellSize.y * width / 2f, cellSize.y * height / 2f, -10);
-    }
-
     // Changes the car warning sprites depending on zebra.
     // zebra represents whether tile Jay is standing on is a zebra tile.
     public void ChangeCarWarningSprite(bool zebra)
+  {
+    foreach (var warning in CarWarnings)
     {
-        foreach (var warning in CarWarnings)
-        {
-            GameObject stopSign = warning.Value.transform.GetChild(1).gameObject;
-            stopSign.SetActive(zebra);
-            GameObject warningSign = warning.Value.transform.GetChild(0).gameObject;
-            warningSign.SetActive(!zebra);
+      GameObject stopSign = warning.Value.transform.GetChild(1).gameObject;
+      stopSign.SetActive(zebra);
+      GameObject warningSign = warning.Value.transform.GetChild(0).gameObject;
+      warningSign.SetActive(!zebra);
+            
+
+    }
+  }
+
+  // Updates cars UI countdown on screen given the current turn the user is on
+  // To do: remove the UI elements when countdown is zero, place them in the according column position
+  public void UpdateCarCount(List<Car> cars, int turn, int height)
+  {
+    GameObject canvas = GameObject.Find("CanvasUI");
+    foreach (Car car in cars)
+    {
+      if (car.triggerTurn <= turn){
+        if (CarWarnings.ContainsKey(car)){
+          audio.PlaySound("car");
+          Destroy(CarWarnings[car]);
+          CarWarnings.Remove(car);
         }
-    }
-
-    /*
-     * All of these public methods enqueue animations for the renderer to perform
-     */
-    public IEnumerator PlayAnimations() // Plays every enqueued animation
-    {
-        Func<bool> PlayAnimations =
-            () =>
-            {
-                for (int i = animations.Count - 1; i >= 0; i--)
-                {
-                    if (animations[i]())
-                        animations.RemoveAt(i); // If that animation finished, remove it
-                }
-                return true;
-            };
-        update = PlayAnimations;
-        yield return new WaitUntil(() => animations.Count == 0); // when empty, no more animations to play
-        update = NOOP;
-        yield return null;
-
-        // This can hang! If there are two opposing move commands for single sprite, this stalls
-        // A map is likely a better way to represent this
-    }
-
-    /*
-     * Note: None of these animations have side effects *until* they're executed
-     */
-    public void MoveLiving(LivingObject obj, Vector2Int dest) // Moves a sprite to the given location
-    {
-        Vector3 real_destination = ConvertCellLoc(dest);
-        Func<bool> MoveToDest =
-            () =>
-            {
-                if (!spawnedSprites.ContainsKey(obj)) return true; // If the sprite has been deleted, don't move it!
-                GameObject sprite = spawnedSprites[obj];
-                float dist = Vector3.Distance(sprite.transform.position, real_destination);
-                if (dist < 0.01f)
-                    return true; // Our sprite is at our destination
-
-                Vector3 newPos = (dist > 0.1f) ?
-                    Vector3.Lerp(sprite.transform.position, real_destination, 10.0f * Time.deltaTime) :
-                    Vector3.Lerp(sprite.transform.position, real_destination, 20.0f * Time.deltaTime);
-                sprite.transform.position = newPos;
-                return false;
-            }; // This function moves sprite (obj) gradually to the destination position, returns true when done
-        animations.Add(MoveToDest); // Add this function to our list of animation updates
-    }
-
-    public void SpawnObject(GameElement obj)
-    {
-        // This one will probably play those pop-out animations
-        Func<bool> Spawn = () =>
+      } else {
+        if (!CarWarnings.ContainsKey(car))
         {
-            this.SpawnSprite(obj);
-            if (obj.eid == GameElement.ElementType.Cop || obj.eid == GameElement.ElementType.Fan)
+            // these transformations are sus lmao
+            GameObject newWarning = GameObject.Instantiate(Warning);
+            newWarning.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+            newWarning.transform.SetParent(canvas.transform);
+
+            newWarning.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, height));
+            CarWarnings[car] = newWarning;
+        }
+        int countdown = car.triggerTurn - turn;
+        CarWarnings[car].GetComponentInChildren<TextMeshProUGUI>().text = "" + countdown;
+        if (countdown == 1)
+        {
+            Animator carAnimator = CarWarnings[car].GetComponentInChildren<Animator>();
+            if (carAnimator != null)
+              carAnimator.Play("shaking");
+        }
+      }
+    }
+  }
+
+  public void MoveCars(List<LivingObject> killedOrig, List<int> carColumns, Overworld grid)
+  {
+    if (this.IsInAnimation()) // THIS SHOULD NEVER HAPPEN
+    {
+      Debug.Log("MoveCars animation was cancelled");
+      return;
+    }
+
+    currAnimation = Animation.MoveCars;
+
+    List<LivingObject> killed = new List<LivingObject>(killedOrig);
+
+    // each car spawned is mapped to its destination, IE a y-pos off-camera
+    Dictionary<GameObject, Vector3> carDestinations = new Dictionary<GameObject, Vector3>();
+    foreach (int xPos in carColumns)
+    {
+        GameObject carSprite = Instantiate(Car_Sprite) as GameObject;
+        ScaleSprite(carSprite);
+        carSprite.transform.position = ConvertCellLoc(new Vector2Int(xPos, grid.height + 1));
+        carDestinations[carSprite] = ConvertCellLoc(new Vector2Int(xPos, -1));
+    }
+
+    // when called, this method moves each car down the map, destroy objects in killed they touch along the way
+    Func<bool> MoveCarsUpdate = () =>
+        {
+          foreach (GameObject car in carDestinations.Keys)
+          {
+            Vector3 currPos = car.transform.position;
+            // if a car is near any followers, destroy them
+            for (int i = 0; i < killed.Count; i++)
             {
-                // GameAudio.PlaySound("plop");
+                if (Vector3.Distance(currPos, spawnedSprites[killed[i]].transform.position) < 2.0f)
+                {
+                     audio.PlaySound("thud");
+                        // shake is scaled to cellsize
+                    CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
+                    // hide sprites that get runover
+                    spawnedSprites[killed[i]].GetComponent<Renderer>().enabled = false;
+                    killed.RemoveAt(i);
+                    i--;
+                }
             }
-            return true;
-        };
-        animations.Add(Spawn);
-    }
 
-    public void DeleteObject(GameElement obj)
-    {
-        Func<bool> Delete = () =>
-        {
-            if (spawnedSprites.ContainsKey(obj))
-            {
-                Destroy(spawnedSprites[obj]);
-                spawnedSprites.Remove(obj);
-            }
-            return true;
-        };
-        animations.Add(Delete);
-    }
-    public void SendCar(Car car, Overworld grid, List<LivingObject> killed) // Sends a car down the given column
-    {
-        GameObject carSprite = null;
-        bool firstExecution = true;
-        Vector3 dest = ConvertCellLoc(new Vector2Int(car.xPos, -1));
-
-        Func<bool> MoveCar =
-            () =>
-            {
-                if (firstExecution) // On our first call to this method we need to create a car!
+                foreach (KeyValuePair<GameElement, GameObject> entry in spawnedSprites)
                 {
-                    // GameAudio.PlaySound("car");
-                    carSprite = Instantiate(Car_Sprite) as GameObject;
-                    ScaleSprite(carSprite);
-                    carSprite.transform.position = ConvertCellLoc(new Vector2Int(car.xPos, grid.height + 1));
-                    if (CarWarnings.ContainsKey(car))
+                    if (entry.Key.eid == GameElement.ElementType.Cone && Vector3.Distance(currPos, spawnedSprites[entry.Key].transform.position) < 1.0f)
                     {
-                        Destroy(CarWarnings[car]); /// And destroy its associated warning
-                        CarWarnings.Remove(car);
-                    }
-                    firstExecution = false;
-                }
-
-                Vector3 currPos = carSprite.transform.position;
-                if (Vector3.Distance(currPos, dest) < 1.0f)
-                {
-                    Destroy(carSprite);
-                    return true; // Car has driven to bottom of screen!
-                }
-
-                foreach (GameElement key in killed)
-                {
-                    if (key.position.x == car.xPos &&
-                        spawnedSprites[key].GetComponent<Renderer>().enabled &&
-                        Vector3.Distance(currPos, spawnedSprites[key].transform.position) < 0.5f)
-                    {
-                        // GameAudio.PlaySound("thud");
-                        CameraShake.Shake(0.05f, tilemap.cellSize.y / 20.0f);
-                        // hide sprites that get runover
-                        spawnedSprites[key].GetComponent<Renderer>().enabled = false;
+                        entry.Value.GetComponent<Animator>().Play("cone hit");
                     }
                 }
 
-                // Cone hit animation:
-                foreach (TileObject tile in grid.GetAllTiles())
+                Vector3 newPos = Vector2.Lerp(currPos, carDestinations[car], 10.0f * Time.deltaTime);
+            car.transform.position = newPos;
+          }
+
+          // now check if this animation is completed and update AnimationState if so
+          bool animationIsComplete = true;
+          foreach (GameObject car in carDestinations.Keys)
+          {
+            animationIsComplete = animationIsComplete &&
+                    (Vector3.Distance(car.transform.position, carDestinations[car]) < 1.0f);
+          }
+
+          if (animationIsComplete)
+          {
+                this.currAnimation = Animation.None; // if so, our animation is set back to None
+
+                // and destroy car sprites now that they're offscreen
+                foreach (GameObject car in carDestinations.Keys)
                 {
-                    if (tile.eid == GameElement.ElementType.Cone && 
-                        Vector3.Distance(currPos, spawnedSprites[tile].transform.position) < 0.5f)
-                    {
-                        PlaySpriteAnimation(tile, "cone hit");
-                    }
+                   Destroy(car);
                 }
-
-
-                Vector3 newPos = Vector2.Lerp(currPos, dest, 10.0f * Time.deltaTime);
-                carSprite.transform.position = newPos;
-
-                return false;
-            };
-        animations.Add(MoveCar);
-    }
-
-    public void PlayManholeClose(TileObject tile)
-    {
-        Func<bool> CloseHole = () =>
-        {
-            ShutManhole(tile);
-            return true;
+          }
+          return true;
         };
-        animations.Add(CloseHole);
+
+    animationUpdates[Animation.MoveCars] = MoveCarsUpdate;
+  }
+
+  // Spawns in missing objects from a grid
+  // Despawns objects that no longer exist in grid
+  public void SyncSprites(Overworld grid, int copsGoal, int copsDefeated){
+    HashSet<GameElement> gridElements = grid.GetAllObjects();
+
+    // despawn no longer existing sprites
+    HashSet<GameElement> toRemove = new HashSet<GameElement>();
+    foreach (GameElement obj in spawnedSprites.Keys){
+      if (!gridElements.Contains(obj)){
+        toRemove.Add(obj);
+      }
+    }
+    foreach (GameElement obj in toRemove){
+      DestroySprite(obj);
     }
 
-    private void PlaySpriteAnimation(GameElement el, String animationName)
-    {
-        spawnedSprites[el].GetComponent<Animator>().Play(animationName);
+    // spawn missing sprites
+    foreach (GameElement obj in gridElements){
+      if (!spawnedSprites.ContainsKey(obj)){
+        SpawnSprite(obj);
+
+      }
     }
 
-    private void ShutManhole(TileObject tile)
+    if (copsGoal > 0){
+      if (CopCounter == null){
+        // these transformations are sus lmao
+        GameObject canvas = GameObject.Find("CanvasUI");
+        CopCounter = GameObject.Instantiate(Cop_Counter_Sprite);
+        CopCounter.transform.localScale = new Vector3(tilemap.cellSize.x / 100f, tilemap.cellSize.y / 100f, 1);
+        CopCounter.transform.SetParent(canvas.transform);
+        CopCounter.transform.position = ConvertCellLoc(new Vector2Int(grid.width - 1, 0));
+      }
+      TMPro.TextMeshProUGUI counter = CopCounter.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+      counter.text = copsDefeated + "/" + copsGoal;
+      if (copsDefeated >= copsGoal){
+        counter.color = new Color32(0, 255, 0, 255);
+      }
+    } else if (CopCounter != null){
+      Destroy(CopCounter);
+      CopCounter = null;
+    }
+
+    UpdateCarCount(grid.cars, grid.turnCount, grid.height - 1);
+  }
+
+  void Update()
+  {
+    animationUpdates[this.currAnimation]();
+  }
+
+  // Start is called before the first frame update
+  void Awake()
+  {
+    tilemap = transform.GetComponent<Tilemap>();
+    spawnedSprites = new Dictionary<GameElement, GameObject>();
+    CarWarnings = new Dictionary<Car, GameObject>();
+
+    currAnimation = Animation.None;
+    animationUpdates = new Dictionary<Animation, Func<bool>>();
+    animationUpdates[Animation.None] = (() => { return true; });
+  }
+
+  // converts a given Vector2Int into a location in the world space
+  private Vector3 ConvertCellLoc(Vector2Int coords)
+  {
+    Vector3 res = tilemap.GetCellCenterLocal(new Vector3Int(coords.x, coords.y, 0));
+
+    // then center on those tiles
+    return new Vector3(res.x + (tilemap.cellSize.x / 2f), res.y + (tilemap.cellSize.y / 2f), 0);
+  }
+
+  private void SpawnSprite(GameElement character)
+  {
+    Vector2Int loc = character.position;
+    GameElement.ElementType characterType = character.eid;
+    GameObject newObj;
+    bool isFollower = false;
+
+    switch (character.eid)
     {
-        if (tile.eid != GameElement.ElementType.FanHole && tile.eid != GameElement.ElementType.ManHole)
-            return;
-        if (tile.eid == GameElement.ElementType.FanHole)
-        {
-            PlaySpriteAnimation(tile, "New Animation");
-        }
-        else if (tile.eid == GameElement.ElementType.ManHole)
-        {
-            Transform transMan = spawnedSprites[tile].transform;
-            transMan.GetChild(1).GetComponent<Animator>().Play("ManholeTopClose");
-            transMan.GetChild(2).gameObject.SetActive(false);
-        }
-    } // I really want a method that insta-closes a manhole too
+      case GameElement.ElementType.Jay:
+        newObj = Instantiate(Jay_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Cone:
+        newObj = Instantiate(Cone_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Cop:
+        audio.PlaySound("plop");
+        isFollower = true;
+        newObj = Instantiate(Cop_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Fan:
+        audio.PlaySound("plop");
+        isFollower = true;
+        newObj = Instantiate(Fan_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.ManHole:
+        newObj = Instantiate(ManHole_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Zebra:
+        newObj = Instantiate(Zebra_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Flagpole:
+        newObj = Instantiate(Flagpole_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Sidewalk:
+        newObj = Instantiate(Sidewalk_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.InvisibleWall:
+        newObj = Instantiate(Invisible_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.FanHole:
+        newObj = Instantiate(FanHole_Sprite) as GameObject;
+        break;
+      case GameElement.ElementType.Portal:
+        newObj = Instantiate(Portal_Sprite) as GameObject;
+        break;
+      default:
+        Debug.Log("Spawn failed!");
+        return; // This should never occur
+    }
+
+    newObj.transform.position = ConvertCellLoc(loc);
+
+    // scale sprite to size of grid
+    ScaleSprite(newObj);
+    spawnedSprites[character] = newObj;
+  }
+
+  private void ScaleSprite (GameObject obj){
+    SpriteRenderer objBounds = obj.GetComponent<SpriteRenderer>();
+    Vector3 tilesize = tilemap.cellSize;
+    Vector3 spritesize = objBounds.bounds.size;
+
+    // scale sprite to size of grid
+    obj.transform.localScale = new Vector3(tilesize.x / spritesize.x, tilesize.y / spritesize.y, 1);
+  }
+
+  // scales the camera to fit the given width/height of cells
+  public void ScaleCamera(int height, int width){
+    Vector3 cellSize = tilemap.cellSize;
+    Camera.main.orthographicSize = cellSize.y * height / 2f;
+    Transform tmp = Camera.main.GetComponent<Transform>();
+    tmp.position = new Vector3(cellSize.y * width / 2f, cellSize.y * height / 2f, -10);
+  }
+
+  public void ScalePanel(int height, int width)
+    {
+        /*GameObject panel = GameObject.Find("EndLevelPanel");
+        Vector3 cellSize = tilemap.cellSize;
+        var camWidth = Camera.main.orthographicSize * 2.0 * Screen.width / Screen.height;
+        Transform tmp = panel.GetComponent<Transform>();
+        Transform cam = Camera.main.GetComponent<Transform>();
+        tmp.position = cam.position;
+        tmp.localScale = cam.localScale;*/
+    }
+
+  private void DestroySprite(GameElement character)
+  {
+    Destroy(spawnedSprites[character]);
+    spawnedSprites.Remove(character);
+  }
+
+  public void PlayAnimation(GameElement el, String animationName) {
+    spawnedSprites[el].GetComponent<Animator>().Play(animationName);
+  }
+
+  public void SuggestRestart() {
+    if (rToRestart == null) {
+      rToRestart = GameObject.Instantiate(rToRestartTutorial);
+    }
+  }
+    public GameObject GetGameObject(GameElement el)
+    {
+        return spawnedSprites[el];
+    }
 }

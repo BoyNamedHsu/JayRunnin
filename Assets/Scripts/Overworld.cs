@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Overworld
@@ -15,10 +14,6 @@ public class Overworld
     public List<Car> cars;
     public List<Follower> followers;
     public Jay player;
-
-    // And cop counters to check level completion
-    public int copsDefeated, copsGoal;
-    public bool alive;
 
     public Overworld(int width, int height)
     {
@@ -41,11 +36,6 @@ public class Overworld
         this.player = orig.player;
     }
 
-    public bool CopsKilled()
-    {
-        return this.copsDefeated >= this.copsGoal;
-    }
-
     // Resets the grid
     public void Clear()
     {
@@ -53,7 +43,6 @@ public class Overworld
         lGridworld = new LivingObject[this.width, this.height];
         turnCount = 0;
         this.cars = new List<Car>();
-        this.alive = true;
     }
 
     // Adds the given car to this grid
@@ -127,30 +116,6 @@ public class Overworld
         this.SpawnLiving(living);
     }
 
-    private bool IsSurrounded(Vector2Int pos)
-    {
-        return
-            !this.TileIsEmpty(pos + new Vector2Int(0, 1)) &&
-            !this.TileIsEmpty(pos + new Vector2Int(0, -1)) &&
-            !this.TileIsEmpty(pos + new Vector2Int(1, 0)) &&
-            !this.TileIsEmpty(pos + new Vector2Int(-1, 0));
-    }
-
-    private bool CarsLeft() // Returns whether there are any other cars that will trigger
-    {
-        foreach (Car car in this.cars)
-        {
-            if (car.triggerTurn > this.turnCount)
-                return true;
-        }
-        return false;
-    }
-    public bool IsStuck() // Returns whether the player is in an unwinnable state
-    {
-        return !this.alive ||
-            ((!this.CarsLeft() && !this.CopsKilled()) || this.IsSurrounded(this.player.position));
-    }
-
     public List<LivingObject> GetAllLiving()
     {
         List<LivingObject> allLiving = new List<LivingObject>();
@@ -187,6 +152,38 @@ public class Overworld
         }
         foreach (TileObject t in this.GetAllTiles()){
             res.Add(t);
+        }
+        return res;
+    }
+
+    public string GameStateToString()
+    {
+        string res = "Tiles:\n";
+        for (int x = 0; x < this.tGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.tGridworld.GetLength(1); y++){
+                TileObject t = this.tGridworld[x, y];
+                if (t != null){
+                    res += t.eid;
+                } else {
+                    res += "_";
+                }
+                res += ", ";
+            }
+            res += "\n";
+        }
+
+        res += "\nLiving:\n";
+        for (int x = 0; x < this.lGridworld.GetLength(0); x++){
+            for (int y = 0; y < this.lGridworld.GetLength(1); y++){
+                LivingObject l = this.lGridworld[x, y];
+                if (l != null){
+                    res += l.eid;
+                } else {
+                    res += "_";
+                }
+                res += ", ";
+            }
+            res += "\n";
         }
         return res;
     }
