@@ -901,7 +901,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
         int width, height;
         width = 9;
-        height = 9;
+        height = 8;
 
         GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
         for (int i = 0; i < height; i++)
@@ -923,9 +923,8 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
         List<Vector2Int> cars = new List<Vector2Int>();
 
-        cars.Add(new Vector2Int(4, 15));
-        cars.Add(new Vector2Int(5, 14));
-        cars.Add(new Vector2Int(7, 15));
+        cars.Add(new Vector2Int(5, 10));
+        cars.Add(new Vector2Int(7, 11));
 
         objects[0, 3] = GameElement.ElementType.Cone;
         objects[0, 4] = GameElement.ElementType.Cone;
@@ -938,11 +937,10 @@ private void LoadLevel19() // this level is a bit too hard lmao
         objects[1, 3] = GameElement.ElementType.FanHole;
         objects[1, 5] = GameElement.ElementType.ManHole;
         objects[1, 6] = GameElement.ElementType.ManHole;
-        objects[1, 7] = GameElement.ElementType.ManHole;
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         Vector2Int stars = new Vector2Int(0, 0);
         portals.Add((new Vector2Int(1, 0), new Vector2Int(1, height - 1)));
-        manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
+        manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 }
