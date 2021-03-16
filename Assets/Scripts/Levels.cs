@@ -883,7 +883,9 @@ private void LoadLevel19() // this level is a bit too hard lmao
         cars.Add(new Vector2Int(2, 5));
         cars.Add(new Vector2Int(0, 1));
         cars.Add(new Vector2Int(1, 3));
+        cars.Add(new Vector2Int(1, 2));
         cars.Add(new Vector2Int(2, 3));
+        cars.Add(new Vector2Int(3, 4));
         cars.Add(new Vector2Int(3, 3));
 
 
