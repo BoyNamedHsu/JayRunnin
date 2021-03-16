@@ -516,15 +516,11 @@ public class LevelManager : MonoBehaviour
                 }
             }
         }
-
         if (objects[0, 0] is GameElement.ElementType.Sidewalk || objects[0, 0] is GameElement.ElementType.ConeWalk)
         {
             world.SpawnTile(CreateSidewalk(0, height - 1));
-            if (objects[0, 0] is GameElement.ElementType.ConeWalk)
-            {
-                world.SpawnLiving(new Cone(0, height - 1));
-            }
         }
+
         world.SpawnTile(CreateSidewalk(width - 1, height - 1));
         for (int x = 0; x < objects.GetLength(0); x++){
             world.SpawnLiving(new InvisibleWall(x, height - 1)); 
