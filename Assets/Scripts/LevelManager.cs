@@ -517,7 +517,14 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        world.SpawnTile(CreateSidewalk(0, height - 1));
+        if (objects[0, 0] is GameElement.ElementType.Sidewalk)
+        {
+            world.SpawnTile(CreateSidewalk(0, height - 1));
+        }
+        else if (objects[0, 0] is GameElement.ElementType.ConeWalk)
+        {
+            world.SpawnTile(CreateSidewalk(0, height - 1));
+        }
         world.SpawnTile(CreateSidewalk(width - 1, height - 1));
         for (int x = 0; x < objects.GetLength(0); x++){
             world.SpawnLiving(new InvisibleWall(x, height - 1)); 
@@ -580,6 +587,12 @@ public class LevelManager : MonoBehaviour
     {
         return new PressurePlate(x, y, TileNoop, TileNoop,
             GameElement.ElementType.Sidewalk);
+    }
+
+    private PressurePlate CreateConeWalk(int x, int y)
+    {
+        return new PressurePlate(x, y, TileNoop, TileNoop,
+            GameElement.ElementType.ConeWalk);
     }
 
     private PressurePlate CreateManhole(int x, int y)

@@ -35,7 +35,7 @@ public class Levels : MonoBehaviour
 
 
 
-        List<Vector2Int> cars = new List<Vector2Int>();
+    List<Vector2Int> cars = new List<Vector2Int>();
     cars.Add(new Vector2Int(3, 2));
     cars.Add(new Vector2Int(5, 5));
 
@@ -503,7 +503,7 @@ public class Levels : MonoBehaviour
   }
 
 
-  private void LoadLevel15() // crosswalks tut 2
+  private void LoadLevel17() // crosswalks tut 2
   {
     int width, height;
     width = 9;
@@ -535,7 +535,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
-  private void LoadLevel16() // good shar lvl
+  private void LoadLevel18() // good shar lvl
   {
     int width, height;
     width = 13;
@@ -571,7 +571,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel17() // experimental level, gives players CONTROL of the cars
+  private void LoadLevel15() // experimental level, gives players CONTROL of the cars
   {
     int width, height;
     width = 8;
@@ -611,7 +611,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-    private void LoadLevel18() // experimental level, gives players CONTROL of the cars
+    private void LoadLevel16() // experimental level, gives players CONTROL of the cars
     {
         int width, height;
         width = 11;
@@ -669,60 +669,8 @@ public class Levels : MonoBehaviour
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
     }
 
-    private void LoadLevel19() // experimental level, gives players CONTROL of the cars
-    {
-        int width, height;
-        width = 11;
-        height = 7;
 
-        Vector2Int jayPos = new Vector2Int(0, 0);
-
-        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-        for (int x = 0; x < width; x++)
-        {
-            if (x != 4 && x != 5 && x != 6)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    if (y != 3)
-                    {
-                        objects[x, y] = GameElement.ElementType.Zebra;
-                    }
-                }
-            }
-        }
-
-        objects[1, 3] = GameElement.ElementType.Zebra;
-        objects[2, 4] = GameElement.ElementType.Zebra;
-        objects[9, 3] = GameElement.ElementType.Zebra;
-
-        for (int i = 0; i < height; i++)
-        {
-            objects[0, i] = GameElement.ElementType.Sidewalk;
-            objects[width - 1, i] = GameElement.ElementType.Flagpole;
-        }
-
-        objects[0, 1] = GameElement.ElementType.ConeWalk;
-
-        objects[2, 5] = GameElement.ElementType.ManHole;
-        objects[2, 1] = GameElement.ElementType.ManHole;
-
-        objects[8, 5] = GameElement.ElementType.FanHole;
-        objects[8, 1] = GameElement.ElementType.FanHole;
-
-        List<Vector2Int> cars = new List<Vector2Int>();
-        cars.Add(new Vector2Int(4, 10));
-        cars.Add(new Vector2Int(6, 10));
-
-        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
-        portals.Add((new Vector2Int(2, 3), new Vector2Int(8, 3)));
-
-        Vector2Int stars = new Vector2Int(0, 0);
-
-        manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
-    }
-
-    private void LoadLevel22() // v lap
+    private void LoadLevel21() // v lap
     {
         int width, height;
         width = 16;
@@ -759,7 +707,7 @@ public class Levels : MonoBehaviour
 
 //INSANE mazes that Kelvin made omg
 
-private void LoadLevel20() // this level is a bit too hard lmao
+private void LoadLevel19() // this level is a bit too hard lmao
   {
     Vector2Int jayPos = new Vector2Int(0, 2);
 
@@ -843,7 +791,7 @@ private void LoadLevel20() // this level is a bit too hard lmao
     manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
   }
 
-  private void LoadLevel21() // this level is a bit too hard lmao
+  private void LoadLevel20() // this level is a bit too hard lmao
   {
     Vector2Int jayPos = new Vector2Int(0, 0);
 
@@ -906,5 +854,31 @@ private void LoadLevel20() // this level is a bit too hard lmao
     Vector2Int stars = new Vector2Int(0, 0);
     manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
   }
+
+    private void LoadLevel22()
+    {
+        Vector2Int jayPos = new Vector2Int(1, 1);
+
+        int width, height;
+        width = 7;
+        height = 3;
+
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++)
+        {
+            objects[0, i] = GameElement.ElementType.ConeWalk;
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+        }
+
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+
+       cars.Add(new Vector2Int(2, 2));
+        
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
+    }
 
 }
