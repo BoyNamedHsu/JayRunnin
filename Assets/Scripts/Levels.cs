@@ -857,24 +857,35 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
     private void LoadLevel22()
     {
-        Vector2Int jayPos = new Vector2Int(1, 1);
+        Vector2Int jayPos = new Vector2Int(0, 1);
 
         int width, height;
-        width = 7;
+        width = 5;
         height = 3;
 
         GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
         for (int i = 0; i < height; i++)
         {
-            objects[0, i] = GameElement.ElementType.ConeWalk;
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
         }
 
 
         List<Vector2Int> cars = new List<Vector2Int>();
+        for (int i = 0; i < width - 1; i++)
+        {
+            cars.Add(new Vector2Int(i, 9));
+        }
+        cars.Add(new Vector2Int(2, 8));
+        cars.Add(new Vector2Int(0, 6));
+        cars.Add(new Vector2Int(0, 4));
+        cars.Add(new Vector2Int(1, 7));
+        cars.Add(new Vector2Int(1, 5));
+        cars.Add(new Vector2Int(2, 5));
+        cars.Add(new Vector2Int(0, 1));
+        cars.Add(new Vector2Int(1, 3));
+        cars.Add(new Vector2Int(2, 3));
+        cars.Add(new Vector2Int(3, 3));
 
-       cars.Add(new Vector2Int(2, 2));
-        
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
         Vector2Int stars = new Vector2Int(0, 0);
