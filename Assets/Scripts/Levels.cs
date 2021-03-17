@@ -43,7 +43,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
   }
 
-  private void LoadLevel2() // teaches mole-cops
+  private void LoadLevel3() // teaches mole-cops
   {
     int width, height;
     width = 8;
@@ -77,7 +77,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
-  private void LoadLevel3() // explores a level with 2 mole-cops
+  private void LoadLevel4() // explores a level with 2 mole-cops
   {
     int width, height;
     width = 7;
@@ -104,7 +104,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel4() // explores a level with a ton of mole cops (only need to kill 4)
+  private void LoadLevel5() // explores a level with a ton of mole cops (only need to kill 4)
   {
     int width, height;
     width = 8;
@@ -137,7 +137,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
   }
 
-  private void LoadLevel5() // teaches followers
+  private void LoadLevel6() // teaches followers
   {
     int width, height;
     width = 9;
@@ -172,7 +172,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
   }
 
-  private void LoadLevel6()
+  private void LoadLevel7()
   {
     int width, height;
     width = 9;
@@ -208,7 +208,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel7()
+  private void LoadLevel8()
   {
     int width, height;
     width = 9;
@@ -239,7 +239,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel8() // kill 2 w/ one car
+  private void LoadLevel9() // kill 2 w/ one car
   {
     int width, height;
     width = 10;
@@ -275,7 +275,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel9() // teaches portals
+  private void LoadLevel10() // teaches portals
   {
     int width, height;
     width = 9;
@@ -305,7 +305,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
-  private void LoadLevel10() // leap of faith into a portal.
+  private void LoadLevel11() // leap of faith into a portal.
   {
     Vector2Int jayPos = new Vector2Int(0, 1);
 
@@ -339,7 +339,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
   }
 
-  private void LoadLevel11() // this one is cool, multiple solutions too.
+  private void LoadLevel12() // this one is cool, multiple solutions too.
   {
     Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -375,7 +375,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 4, stars);
   }
 
-  private void LoadLevel12() // portal loop. jank but cool
+  private void LoadLevel13() // portal loop. jank but cool
   {
     int width, height;
     width = 9;
@@ -417,7 +417,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel13() // this level is a bit too hard lmao
+  private void LoadLevel14() // this level is a bit too hard lmao
   {
     Vector2Int jayPos = new Vector2Int(0, 3);
 
@@ -458,7 +458,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel14()
+  private void LoadLevel15()
   {
     int width, height;
     width = 8;
@@ -499,7 +499,7 @@ public class Levels : MonoBehaviour
   }
 
 
-  private void LoadLevel17() // crosswalks tut 2
+  private void LoadLevel18() // crosswalks tut 2
   {
     int width, height;
     width = 9;
@@ -531,7 +531,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 1, stars);
   }
 
-  private void LoadLevel18() // good shar lvl
+  private void LoadLevel19() // good shar lvl
   {
     int width, height;
     width = 13;
@@ -567,7 +567,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-  private void LoadLevel15() // experimental level, gives players CONTROL of the cars
+  private void LoadLevel16() // experimental level, gives players CONTROL of the cars
   {
     int width, height;
     width = 8;
@@ -607,7 +607,7 @@ public class Levels : MonoBehaviour
     manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
 
-    private void LoadLevel16() // experimental level, gives players CONTROL of the cars
+    private void LoadLevel17() // experimental level, gives players CONTROL of the cars
     {
         int width, height;
         width = 11;
@@ -666,7 +666,7 @@ public class Levels : MonoBehaviour
     }
 
 
-    private void LoadLevel21() // v lap
+    private void LoadLevel24() // v lap
     {
         int width, height;
         width = 16;
@@ -703,7 +703,7 @@ public class Levels : MonoBehaviour
 
 //INSANE mazes that Kelvin made omg
 
-private void LoadLevel19() // this level is a bit too hard lmao
+private void LoadLevel20() // this level is a bit too hard lmao
   {
     Vector2Int jayPos = new Vector2Int(0, 2);
 
@@ -808,7 +808,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
     manager.LoadLevel(jayPos, objects, cars, portals, 3, stars);
   }
 
-  private void LoadLevel20() // this level is a bit too hard lmao
+  private void LoadLevel22() // this level is a bit too hard lmao
   {
     Vector2Int jayPos = new Vector2Int(0, 6);
 
@@ -880,7 +880,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
     manager.LoadLevel(jayPos, objects, cars, portals, 5, stars);
   }
 
-  private void LoadLevel22()
+  private void LoadLevel2()
   {
         Vector2Int jayPos = new Vector2Int(1, 1);
 
@@ -922,7 +922,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
         manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
   }
 
-  private void LoadLevel23()
+  private void LoadLevel21()
   {
         Vector2Int jayPos = new Vector2Int(1, 1);
 
@@ -969,7 +969,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
   }
 
     // seven bridge puzzle
-    private void LoadLevel24()
+    private void LoadLevel23()
     {
         Vector2Int jayPos = new Vector2Int(3, 4);
 
