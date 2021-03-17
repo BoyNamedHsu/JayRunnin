@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
-using cse481.logging;
 
 public class LevelManager : MonoBehaviour
 {
@@ -38,7 +37,6 @@ public class LevelManager : MonoBehaviour
     public List<Direction> playerDirections;
 
     // Logging fields
-    public CapstoneLogger logger;
     private int moveCount;
     private string movePath; // A string representing the directions moved before retry/win
     private string startPos; // Where Jay begins for the purpose of knowing where movePath begins.
@@ -54,9 +52,7 @@ public class LevelManager : MonoBehaviour
         moveCount = 0;
         movePath = "";
         startPos = "";
-        logger = LoggerController.LOGGER;
         playerDirections = new List<Direction>();
-        StartCoroutine(logger.LogLevelStart(LevelSelector.levelChosen, ""));
     }
 
     // Update is called once per frame
@@ -68,7 +64,6 @@ public class LevelManager : MonoBehaviour
         }
         // return to level select
         if (Input.GetKeyDown(KeyCode.Escape)){
-            logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " E");
             SceneManager.LoadScene("World_1");
             return;
         }
@@ -199,9 +194,7 @@ public class LevelManager : MonoBehaviour
         int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         Debug.Log("You won!");
 
-        logger.LogLevelAction(panel + 2, "" + moveCount); // 2 is for move count on win
-        logger.LogLevelAction(panel + 8, "" + LoggerController.numRestarts); // Log number of restarts on this level before win
-        Debug.Log(LoggerController.numRestarts);
+
         LevelSelector.levelChosen++;
         Debug.Log("next Level : " + LevelSelector.levelChosen);
 
@@ -209,13 +202,6 @@ public class LevelManager : MonoBehaviour
             Unlocker.Unlocked();
 
         print("NEXT LEVEL: " + LevelSelector.levelChosen);
-        LoggerController.LOGGER.LogLevelAction(6, "" + LevelSelector.levelChosen); // Log level beat
-        logger.LogLevelAction(panel + 4, LoggerController.deathCount + ""); // death count
-
-        logger.LogLevelAction(panel + 9, startPos + " " + movePath + " W"); // Log path of player on win
-
-        logger.LogLevelEnd((LoggerController.numRestarts + LoggerController.deathCount) + " W"); // Log end of level || Details: total retries including restarts and deaths
-        LoggerController.ResetFields();
 
         int curRetries = LevelSelector.currentRetries;
         int lvlChosen = LevelSelector.levelChosen;
@@ -243,10 +229,7 @@ public class LevelManager : MonoBehaviour
     {
         int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
         Debug.Log("You died");
-        LoggerController.deathCount++;
         LevelSelector.currentRetries++;
-        logger.LogLevelAction(1 + panel, "" + moveCount); // 1 is for move count on losses
-        logger.LogLevelAction(9 + panel, startPos + " " + movePath + " L"); // Log path of player on loss
 
         FinishLvl();
         SceneManager.LoadScene("Level");
@@ -257,9 +240,6 @@ public class LevelManager : MonoBehaviour
     {
         LevelSelector.currentRetries++;
         int panel = PlayerPrefs.GetInt("levelEndPanel") * 10;
-        LoggerController.numRestarts++;
-        logger.LogLevelAction(7, "(" + grid.player.position.x + ", " + grid.player.position.y + ")"); // Logs where the user restarts
-        logger.LogLevelAction(9, startPos + " " + (movePath.Equals("") ? "O" : movePath) + " R"); // Log path of player on restart
 
         FinishLvl();
         SceneManager.LoadScene("Level");

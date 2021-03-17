@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static GameElement;
-using cse481.logging;
 
 public class Levels : MonoBehaviour
 {
   public LevelManager manager;
-  public CapstoneLogger logger;
-  public static int LAST_LEVEL = 23; // for triggering ending cutscene. Please edit this
+  public static int LAST_LEVEL = 24; // for triggering ending cutscene. Please edit this
 
   // Start is called before the first frame update
   void Awake()
   {
-    logger = LoggerController.LOGGER;
     Invoke("LoadLevel" + LevelSelector.levelChosen, 0f);
   }
 
@@ -44,7 +41,6 @@ public class Levels : MonoBehaviour
     Vector2Int stars = new Vector2Int(0, 0);
 
     manager.LoadLevel(jayPos, objects, cars, portals, 0, stars);
-    // logger.LogLevelEnd("ELevel_1_1");
   }
 
   private void LoadLevel2() // teaches mole-cops
@@ -906,7 +902,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
         GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
         for (int i = 0; i < height; i++)
         {
-            objects[0, i] = GameElement.ElementType.Zebra;
+            objects[0, i] = GameElement.ElementType.Cone;
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
 
             if (i != 4)
@@ -926,9 +922,6 @@ private void LoadLevel19() // this level is a bit too hard lmao
         cars.Add(new Vector2Int(5, 10));
         cars.Add(new Vector2Int(7, 11));
 
-        objects[0, 3] = GameElement.ElementType.Cone;
-        objects[0, 4] = GameElement.ElementType.Cone;
-        objects[0, 5] = GameElement.ElementType.Cone;
         for (int i = 1; i < width - 2; i++)
         {
             objects[i, 4] = GameElement.ElementType.Zebra;
@@ -943,4 +936,72 @@ private void LoadLevel19() // this level is a bit too hard lmao
         portals.Add((new Vector2Int(1, 0), new Vector2Int(1, height - 1)));
         manager.LoadLevel(jayPos, objects, cars, portals, 2, stars);
   }
+
+    // seven bridge puzzle
+    private void LoadLevel24()
+    {
+        Vector2Int jayPos = new Vector2Int(3, 4);
+
+        int width, height;
+        width = 12;
+        height = 8;
+
+        GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
+        for (int i = 0; i < height; i++)
+        {
+            objects[width - 1, i] = GameElement.ElementType.Flagpole;
+            objects[width - 3, i] = GameElement.ElementType.Zebra;
+            objects[0, i] = GameElement.ElementType.Zebra;
+            if (i != 0)
+            {
+                objects[width - 2, i] = GameElement.ElementType.Cone;
+            }
+
+        }
+        for (int i = 0; i < width - 2; i++)
+        {
+          
+            objects[i, height - 1] = GameElement.ElementType.Zebra;
+            if (i != width - 2)
+            {
+                objects[i, 1] = GameElement.ElementType.Zebra;
+            }
+        }
+        for (int i = 0; i < width - 3; i++)
+            objects[i, 0] = GameElement.ElementType.Cone;
+
+        for (int i = 3; i < 6; i++)
+        {
+            for (int j = 2; j < 5; j++)
+            {
+                objects[j, i] = GameElement.ElementType.Zebra;
+            }
+        }
+        for (int i = 3; i < 6; i++)
+        {
+            for (int j = width - 6; j < width - 3; j++)
+            {
+                objects[j, i] = GameElement.ElementType.Zebra;
+            }
+        }
+        objects[0, 4] = GameElement.ElementType.ManHole;
+        objects[2, 2] = GameElement.ElementType.ManHole;
+        objects[4, 2] = GameElement.ElementType.ManHole;
+        objects[6, 2] = GameElement.ElementType.ManHole;
+        objects[8, 2] = GameElement.ElementType.Zebra;
+        objects[2, height - 2] = GameElement.ElementType.ManHole;
+        objects[4, height - 2] = GameElement.ElementType.ManHole;
+        objects[6, height - 2] = GameElement.ElementType.ManHole;
+        objects[8, height - 2] = GameElement.ElementType.Zebra;
+        objects[5, 4] = GameElement.ElementType.ManHole;
+
+        List<Vector2Int> cars = new List<Vector2Int>();
+
+        cars.Add(new Vector2Int(width - 3, 9));
+
+
+        List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
+        Vector2Int stars = new Vector2Int(0, 0);
+        manager.LoadLevel(jayPos, objects, cars, portals, 8, stars);
+    }
 }

@@ -2,31 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using cse481.logging;
 
 public class MainMenuController : MonoBehaviour
 {
-    public CapstoneLogger logger;
     public LevelChanger fader;
 
     public void Awake()
     {
         Unlocker.InitializeUnlocker();
-        logger = LoggerController.LOGGER;
 
-        bool levelEndPanel = false;
-        if (!PlayerPrefs.HasKey("levelEndPanel"))
-        {
-            PlayerPrefs.SetInt("levelEndPanel", levelEndPanel ? 1 : 0); // For AB testing
-            PlayerPrefs.Save();
-        }
-
-        StartCoroutine(logger.LogLevelStart(0, ""));
     }
 
     public void Play()
     {
-        logger.LogLevelEnd(""); // Log end of level
         fader.FadeToLevel("World_1");
     }
 
