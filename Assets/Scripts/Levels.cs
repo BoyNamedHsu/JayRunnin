@@ -715,13 +715,34 @@ private void LoadLevel19() // this level is a bit too hard lmao
     // NOTE: This array is rotated 90d counterclockwise before being loaded in
     // This has to do with how arrays are indexed, and uh can be fixed later
     GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
-    for (int i = 0; i < height; i++)
-    {
-      objects[0, i] = GameElement.ElementType.Sidewalk;
-      objects[width - 1, i] = GameElement.ElementType.Flagpole;
-    }
 
-    objects[0, 3] = GameElement.ElementType.ConeWalk;
+    for (int j = 4; j < width - 1; j++)
+    {
+            objects[j, 3] = GameElement.ElementType.Zebra;
+    }
+    for (int j = 2; j < width - 2; j++)
+    {
+        objects[j, 5] = GameElement.ElementType.Zebra;
+    }
+        for (int i = 0; i < height; i++)
+    {
+        objects[0, i] = GameElement.ElementType.Sidewalk;
+        objects[width - 1, i] = GameElement.ElementType.Flagpole;
+
+    }
+        for (int i = 2; i < width - 2; i++)
+        {
+            objects[i, 0] = GameElement.ElementType.Zebra;
+
+
+        }
+        for (int i = 4; i <= 9; i++)
+        {
+            objects[i, 1] = GameElement.ElementType.Zebra;
+
+
+        }
+        objects[0, 3] = GameElement.ElementType.ConeWalk;
     objects[0, 1] = GameElement.ElementType.ConeWalk;
     objects[0, 0] = GameElement.ElementType.ConeWalk;
 
@@ -775,9 +796,9 @@ private void LoadLevel19() // this level is a bit too hard lmao
     objects[10, 0] = GameElement.ElementType.ConeWalk;
 
     List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(4, 35));
-    cars.Add(new Vector2Int(7, 35));
-    cars.Add(new Vector2Int(9, 35));
+    cars.Add(new Vector2Int(4, 15));
+    cars.Add(new Vector2Int(7, 15));
+    cars.Add(new Vector2Int(9, 15));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     portals.Add((new Vector2Int(2, 2), new Vector2Int(1, 0)));
@@ -789,7 +810,7 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
   private void LoadLevel20() // this level is a bit too hard lmao
   {
-    Vector2Int jayPos = new Vector2Int(0, 0);
+    Vector2Int jayPos = new Vector2Int(0, 6);
 
     int width, height;
     width = 11;
@@ -801,7 +822,11 @@ private void LoadLevel19() // this level is a bit too hard lmao
       objects[0, i] = GameElement.ElementType.Sidewalk;
       objects[width - 1, i] = GameElement.ElementType.Flagpole;
     }
-
+    for (int i = 1; i <= 3; i++)
+    {
+        objects[2, i] = GameElement.ElementType.Zebra;
+    }
+        objects[0, 5] = GameElement.ElementType.ConeWalk;
     objects[1, 6] = GameElement.ElementType.ManHole;
     objects[1, 5] = GameElement.ElementType.Cone;
     objects[1, 4] = GameElement.ElementType.Cone;
@@ -840,11 +865,15 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
     objects[9, 2] = GameElement.ElementType.Cone;
     objects[10, 2] = GameElement.ElementType.ConeWalk;
+        objects[7, 0] = GameElement.ElementType.Zebra;
+        objects[7, 1] = GameElement.ElementType.Zebra;
+        objects[5, 0] = GameElement.ElementType.Zebra;
+        objects[5, 1] = GameElement.ElementType.Zebra;
+        objects[6, 1] = GameElement.ElementType.Zebra;
 
-
-    List<Vector2Int> cars = new List<Vector2Int>();
-    cars.Add(new Vector2Int(2, 20));
-    cars.Add(new Vector2Int(7, 29));
+        List<Vector2Int> cars = new List<Vector2Int>();
+    cars.Add(new Vector2Int(2, 11));
+    cars.Add(new Vector2Int(7, 16));
 
     List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
     Vector2Int stars = new Vector2Int(0, 0);
@@ -853,37 +882,39 @@ private void LoadLevel19() // this level is a bit too hard lmao
 
   private void LoadLevel22()
   {
-        Vector2Int jayPos = new Vector2Int(0, 1);
+        Vector2Int jayPos = new Vector2Int(1, 1);
 
         int width, height;
-        width = 5;
+        width = 6;
         height = 3;
 
         GameElement.ElementType?[,] objects = new GameElement.ElementType?[width, height];
         for (int i = 0; i < height; i++)
         {
             objects[width - 1, i] = GameElement.ElementType.Flagpole;
+            objects[0, i] = GameElement.ElementType.ConeWalk;
         }
 
 
 
         List<Vector2Int> cars = new List<Vector2Int>();
-        for (int i = 0; i < width - 1; i++)
+        for (int i = 1; i < width - 1; i++)
         {
             cars.Add(new Vector2Int(i, 9));
         }
-        cars.Add(new Vector2Int(2, 8));
-        cars.Add(new Vector2Int(0, 6));
-        cars.Add(new Vector2Int(0, 4));
-        cars.Add(new Vector2Int(1, 7));
-        cars.Add(new Vector2Int(1, 5));
+        cars.Add(new Vector2Int(3, 8));
+        cars.Add(new Vector2Int(1, 6));
+        cars.Add(new Vector2Int(1, 4));
+        cars.Add(new Vector2Int(2, 7));
         cars.Add(new Vector2Int(2, 5));
-        cars.Add(new Vector2Int(0, 1));
-        cars.Add(new Vector2Int(1, 3));
-        cars.Add(new Vector2Int(1, 2));
+        cars.Add(new Vector2Int(3, 5));
+        cars.Add(new Vector2Int(1, 1));
         cars.Add(new Vector2Int(2, 3));
-        cars.Add(new Vector2Int(3, 4));
+        cars.Add(new Vector2Int(2, 2));
         cars.Add(new Vector2Int(3, 3));
+        cars.Add(new Vector2Int(4, 4));
+        cars.Add(new Vector2Int(4, 3));
+
 
 
         List<(Vector2Int, Vector2Int)> portals = new List<(Vector2Int, Vector2Int)>();
