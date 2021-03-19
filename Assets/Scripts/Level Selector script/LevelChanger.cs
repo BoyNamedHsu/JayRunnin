@@ -9,6 +9,13 @@ public class LevelChanger : MonoBehaviour
     public GameObject image;
     private static string levelToLoad;
 
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+    }
     // Takes index of level and fades into that level
     public void FadeToLevel (string level)
     {

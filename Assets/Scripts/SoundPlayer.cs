@@ -33,7 +33,7 @@ public class SoundPlayer : MonoBehaviour
             }
             else if (name == "car")
             {
-                car.Play();
+                car.PlayOneShot(car.clip);
             }
             else if (name == "thud")
             {
